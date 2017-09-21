@@ -2,3 +2,5 @@
 node_modules
 #for mac os
 .DS_Store
+# ignore my  secrets
+credentials.js
