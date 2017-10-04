@@ -20,6 +20,11 @@ app.use(require('express-session')({
 app.get("/", function(req,res){
   res.render("home");
 });
+
+// To add new Actor to Database
+app.get('/addUSer', function(req, res) {
+  res.render('addUser');
+});
 app.get("/search", function(req,res){
   res.render("search", {
           pageTestScript: '/qa/tests-search.js', username:req.session.username
