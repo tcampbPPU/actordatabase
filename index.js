@@ -22,7 +22,7 @@ app.get("/", function(req,res){
 });
 
 // To add new Actor to Database
-app.get('/addUSer', function(req, res) {
+app.get('/addUser', function(req, res) {
   res.render('addUser');
 });
 app.get("/search", function(req,res){
