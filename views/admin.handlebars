@@ -1,25 +1,15 @@
-  <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-         <a class="navbar-brand" href="/">LunaMISTA</a>
-         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-           <span class="navbar-toggler-icon"></span>
-         </button>
-         <div class="collapse navbar-collapse" id="navbarNav">
-           <ul class="navbar-nav">
-             <li class="nav-item">
-               <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
-             </li>
-             <li class="nav-item">
-               <a class="nav-link" href="/search">Search</a>
-             </li>
-             <li class="nav-item active">
-               <a class="nav-link" href="/admin">Admin Users</a>
-             </li>
-             <li class="nav-item">
-               <a class="nav-link disabled" href="#">Disabled</a>
-             </li>
-           </ul>
-         </div>
-     </nav>
-<h1>Date and Time</h1>
-<p>Today is: {{date}}</p>
-
+{{#if adminlogin}}
+<div class="" style="width:1000px; margin: 0 auto;">
+  <div class="" style="width:100%; height:30px; line-height:30px;">
+    <div class="" style="float:right;"> Welcome {{admin}}!<span style="margin-left:30px;"><a href="logout">Logout</a></span></div>
+  </div>
+  <table>
+    <tr><td><a href="search">Search</a></td></tr>
+    <tr><td><a href="history">Search History</a></td></tr>
+    <tr><td><a href="#creatnewaccount">Create Account for a user</a></td></tr>
+    <tr><td><a href="#">Create Account for an Admin</a></td></tr>
+  </table>
+</div>
+   {{else}}
+ <h1>sorry, you are not allowed to view this page now, please log in </h1>
+{{/if}}
