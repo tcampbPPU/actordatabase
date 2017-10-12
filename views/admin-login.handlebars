@@ -1,0 +1,61 @@
+<style>
+        body {
+                background: url("img/cinema3.jpg");
+                background-repeat: no-repeat;
+                background-size: cover;
+                color: white;
+        }
+        .content {
+                padding-top: 5%;
+        }
+        .box {
+                border: 1px solid white;
+                background: rgba(13,13,13,.7);
+                color: white;
+                width: 600px;
+                height: 565px;
+                margin-top: 5%;
+        }
+        .c {
+                padding-top: 5%;
+        }
+</style>
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+<div class="container">
+  <h1 class="navbar-brand">LunaMista Admin</h1>
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+  <div class="collapse navbar-collapse" id="navbarNav">
+    <ul class="navbar-nav">
+      <li class="nav-item active">
+        <a class="nav-link" href="/">Home <span class="sr-only">(current)</span></a>
+      </li>
+    </ul>
+  </div>
+</div>
+</nav>
+
+<div class="container box">
+<div class="boxe">
+<div class="row justify-content-center">
+<div class="col-6 content-center c">
+<h2>Welcome Admin.</h2>
+</div>
+</div>
+<div class="row justify-content-center">
+<div class="col-6 content-center">
+<div class="content">
+<form action="/welcome" method="POST">
+  <div class="form-group">
+    <input type="userName" class="form-control" id="exampleInputUseName" aria-describedby="userNameHelp" name="username" placeholder="Enter username
+">
+  </div>
+  <div class="form-group">
+    <input type="password" class="form-control" id="exampleInputPassword1" name="password" placeholder="Password">
+  </div>
+  <button type="submit" class="btn btn-primary btn-lg btn-block">Login</button>
+</form>
+</div>
+</div>
+</div>
