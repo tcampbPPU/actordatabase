@@ -2,7 +2,7 @@
 var express = require('express');
 //var fortune = require('./lib/fortune.js');
 var app = express();
-var handlebars = require('express-handlebars').create({ defaultLayout:'main-movie', helpers: {
+var handlebars = require('express-handlebars').create({ defaultLayout:'main', helpers: {
         section: function(name, options){
             if(!this._sections) this._sections = {};
             this._sections[name] = options.fn(this);
