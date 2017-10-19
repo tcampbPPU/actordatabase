@@ -25,11 +25,10 @@ app.use(require('express-session')({
 app.get("/", function(req,res){
     res.render("home");
 });
-
-app.get("/search", function(req,res){
-  res.render("search");
+// Root Dir
+app.get('/', function(req, res) {
+  res.render('home');
 });
-
 app.get("/history", function(req,res){
   if(req.session.admin_id){
   }else {
@@ -42,6 +41,9 @@ app.get("/creatnewaccount", function(req,res){
 });
 app.get("/forgotpassword", function(req,res){
   res.render("forgotpassword");
+});
+app.get("/search", function(req,res){
+  res.render("search");
 });
 
 //custom 404 page
