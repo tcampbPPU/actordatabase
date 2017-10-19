@@ -26,7 +26,6 @@ app.get("/", function(req,res){
     res.render("home");
 });
 
-<<<<<<< HEAD
 // Looks for files in Public Dir
 app.use(express.static(__dirname + '/public'));
 
@@ -67,10 +66,8 @@ app.post('/addUser', [function(req, res, next) {
 app.get('/datetime', function(req, res) {
   var date = new Date();
   res.render('datetime', { datetime: date});
-=======
 app.get("/search", function(req,res){
   res.render("search");
->>>>>>> 2b570f142dda5a2f61160bfc34163b7fdf7fcb82
 });
 
 app.get("/history", function(req,res){
