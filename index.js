@@ -38,7 +38,7 @@ app.get("/history", function(req,res){
 });
 
 app.get("/creatnewaccount", function(req,res){
-  res.render("newaccount");
+  res.render("addUser");
 });
 app.get("/forgotpassword", function(req,res){
   res.render("forgotpassword");
