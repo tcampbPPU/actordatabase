@@ -34,6 +34,14 @@ app.get('/', function(req, res) {
   res.render('home');
 });
 
+app.get('admin-login', function(req, res) {
+  res.render('admin-login');
+});
+
+app.get('login', function(req, res) {
+  res.render('login');
+});
+
 // To redirect After login given
 // TODO Check Login succsess
 app.post('/', [function(req, res, next) {
