@@ -36,7 +36,6 @@ app.get('/', function(req, res) {
   res.render('home');
 });
 
-
 app.get('/login', function(req, res) {
   res.render('login');
 });
@@ -77,11 +76,14 @@ app.get("/history", function(req,res){
   }
 });
 
-app.get("/creatnewaccount", function(req,res){
-  res.render("newaccount");
+app.get("/addUser", function(req,res){
+  res.render("addUser");
 });
 app.get("/forgotpassword", function(req,res){
   res.render("forgotpassword");
+});
+app.get("/search", function(req,res){
+  res.render("search");
 });
 
 //custom 404 page
