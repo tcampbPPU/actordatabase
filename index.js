@@ -34,9 +34,6 @@ app.get('/', function(req, res) {
   res.render('home');
 });
 
-app.get('/admin-login', function(req, res) {
-  res.render('admin-login');
-});
 
 app.get('/login', function(req, res) {
   res.render('login');
