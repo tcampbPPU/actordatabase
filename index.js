@@ -1,7 +1,7 @@
 var express = require('express');
-var credentials = require('./credentials.js');
-var expressValidator = require('express-validator');
-var formidable = require('formidable');
+//var credentials = require('./credentials.js');
+// var expressValidator = require('express-validator');
+// var formidable = require('formidable');
 var mysql = require('mysql');
 var fs = require('fs');
 var app = express();
@@ -15,6 +15,8 @@ app.use( function( req, res, next){
   res.locals.showTests = app.get(' env') !== 'production' && req.query.test === '1';
   next();
  });
+// Skip till Node-modules get updated
+/*
 app.use(require('body-parser').urlencoded({extended:true}));
 app.use(require('cookie-parser')(credentials.cookieSecret));
 app.use(require('express-session')({
@@ -22,14 +24,31 @@ app.use(require('express-session')({
  saveUninitialized:false,
  secret:credentials.cookieSecret
 }));
+*/
+
 app.get("/", function(req,res){
     res.render("home");
 });
 
+// Redirect to new page after sign on
+
+app.post('/', [function(req, res, next) {
+  next();
+}, function(req, res) {
+  res.render('addUser');
+}]);
+
+app.get("/addUser", function(req,res){
+    res.render("addUser");
+});
+
+
+
+
+// Block Test
+/* 
 // Looks for files in Public Dir
 app.use(express.static(__dirname + '/public'));
-
-// Render looks in views for file name in extenstion
 
 // Root Dir
 app.get('/', function(req, res) {
@@ -41,7 +60,6 @@ app.get('/login', function(req, res) {
 });
 
 // To redirect After login given
-// TODO Check Login succsess
 app.post('/', [function(req, res, next) {
   next();
 }, function(req, res) {
@@ -61,14 +79,6 @@ app.post('/addUser', [function(req, res, next) {
 
 }]);
 
-// Date Dir
-app.get('/datetime', function(req, res) {
-  var date = new Date();
-  res.render('datetime', { datetime: date});
-app.get("/search", function(req,res){
-  res.render("search");
-});
-
 app.get("/history", function(req,res){
   if(req.session.admin_id){
   }else {
@@ -79,18 +89,21 @@ app.get("/history", function(req,res){
 app.get("/addUser", function(req,res){
   res.render("addUser");
 });
+
 app.get("/forgotpassword", function(req,res){
   res.render("forgotpassword");
 });
+
 app.get("/search", function(req,res){
   res.render("search");
 });
-
+*/
 //custom 404 page
 app.use(function(req, res){
   res.status(404);
   res.render("404");
 });
+
 //custom 500 page
 app.use(function(err, req, res, next){
   console.log(err.stack);
