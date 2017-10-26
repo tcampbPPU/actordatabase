@@ -27,7 +27,7 @@ app.get("/", function(req,res){
 });
 // Root Dir
 app.get('/', function(req, res) {
-  res.render('home');
+  res.render('landing');
 });
 app.get("/history", function(req,res){
   if(req.session.admin_id){
