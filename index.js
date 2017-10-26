@@ -6,6 +6,13 @@ var mysql = require('mysql');
 var fs = require('fs');
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:"main"});
+var mysql = require('mysql');
+var connection = mysql.createConnection({
+        host: 'fkonat.it.pointpark.edu',
+        user: 'lunamista',
+        password: 'lunamista123',
+        database:'lunadb'
+});
 
 app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
@@ -22,13 +29,35 @@ app.use(require('express-session')({
  saveUninitialized:false,
 // secret:credentials.cookieSecret
 }));
-app.get("/", function(req,res){
-    res.render("home");
-});
+//app.get("/", function(req,res){
+//    res.render("home");
+//});
 // Root Dir
 app.get('/', function(req, res) {
   res.render('landing');
 });
+app.get('/admin_page', function(req, res) {
+        res.render('admin_page');
+});
+
+app.get('/admin_mail', function(req, res) {
+        res.render('admin_mail');
+})
+app.get('/admin_search', function(req, res) {
+        res.render('admin_search');
+});
+
+app.post('/process-search', function(req, res) {
+         var search = req.body.search;
+       // console.log(search);
+        var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
+        connection.query(q, function(err, results) {
+         if (err) throw err;
+           res.send({success: results});
+         });
+});
+
+
 app.get("/history", function(req,res){
   if(req.session.admin_id){
   }else {
