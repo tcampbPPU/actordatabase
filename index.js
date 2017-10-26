@@ -1,5 +1,4 @@
 var express = require('express');
-var credentials = require('./credentials.js');
 var expressValidator = require('express-validator');
 var formidable = require('formidable');
 var mysql = require('mysql');
@@ -16,19 +15,20 @@ app.use( function( req, res, next){
   next();
  });
 app.use(require('body-parser').urlencoded({extended:true}));
-app.use(require('cookie-parser')(credentials.cookieSecret));
+//app.use(require('cookie-parser')(credentials.cookieSecret));
 app.use(require('express-session')({
  resave:false,
  saveUninitialized:false,
- secret:credentials.cookieSecret
+// secret:credentials.cookieSecret
 }));
-app.get("/", function(req,res){
-    res.render("home");
-});
+//app.get("/", function(req,res){
+  //  res.render("home");
+//});
 // Root Dir
 app.get('/', function(req, res) {
-  res.render('home');
+  res.render('landing-page');
 });
+
 app.get("/history", function(req,res){
   if(req.session.admin_id){
   }else {
