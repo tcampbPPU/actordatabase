@@ -6,7 +6,7 @@
     <meta name="description" content="">
     <title>Actor Database</title>
       <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
     {{#if showTests}}
         <link rel="stylesheet" href="/vendor/mocha.css">
     {{/if}}
@@ -40,7 +40,8 @@
   }
   .user_info_edit_links{
     cursor: pointer;
-    display: none;
+    font-size:1.7em;
+    visibility: hidden;
   }
   .user_info_edit_links:hover{
     color:lightblue;
@@ -72,6 +73,7 @@
   .remove:hover{
     color:darkred;
   }
+  tr:nth-child(even) {background-color: rgba(100,100,100,0.4)}
     </style>
     <script type="text/javascript" src="utility.js"></script>
   </head>

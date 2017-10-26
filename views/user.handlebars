@@ -1,0 +1,252 @@
+{{#if login}}
+<div id="main_content" style="width:1000px; margin: 0 auto;">
+
+   <div class="" style="width:100%; height:30px; line-height:30px;">
+     <div class="" style="float:right;"> Welcome {{first_name}}!
+
+       <span style="margin-left:30px;"><a href="logout">Logout</a></span>
+     </div>
+   </div>
+  <div class="photoDiv" style="width:100%; height:230px; margin:0 auto; overflow-y:scroll; overflow-x:hide; border-bottom:1px solid grey; margin-bottom:30px;">
+     <div class="imageDiv" id='images_area' style="width:1060px; height:200px; margin:0 auto; overflow-y:scroll;">
+       <div id="addPhotoLink" style='width:200px; margin:0 auto; color:grey;'> Add Photo</div>
+     </div>
+  </div>
+  <div class="" style="float:left">
+    <h3>Basic Info</h3>
+    <table class='user_info_table'>
+      <tr><td class="user_info_titles">First Name:</td><td class="user_info_values">{{first_name}} </td><td><small class='user_info_edit_links' data-name='name'>&#x270E;</small></td></tr>
+      <tr><td class="user_info_titles">Last Name:</td><td class="user_info_values">{{ last_name }}</td><td><small class='user_info_edit_links' data-name='last_name'>&#x270E;</small></td></tr>
+      <tr><td class="user_info_titles">Password:</td><td class="user_info_values">	&#x1f512;</td><td><small class='user_info_edit_links' data-name='password'>&#x270E;</small></td></tr>
+      <tr><td class="user_info_titles">Sex:</td><td class="user_info_values">{{ sex }}</td><td><small class='user_info_edit_links' data-name='sex'>&#x270E;</small></td></tr>
+      <tr><td class="user_info_titles">Email:</td><td class="user_info_values">{{ email }}</td><td><small class='user_info_edit_links' data-name='email'>&#x270E;</small></td></tr>
+    </table>
+
+    </div>
+    {{#if is_admin }}
+        <div class="" style="float:right; background:linear-gradient(#000, #999 50%, #000); padding:10px; ">
+          <h5>Administrator Tools</h5>
+          <div class="" style="    min-height:200px;">
+            <div style="width:100%; cursor:pointer; font-size:0.8em;">Search</div>
+            <div style="width:100%; cursor:pointer; font-size:0.8em;">My Search History</div>
+            <div style="width:100%; cursor:pointer; font-size:0.8em;">Give Admin Privilege</div>
+          </div>
+        </div>
+    {{else}}
+         {{#if users_id}}
+            {{else}}
+               <br>
+               <span id='file_profile' onclick="displayIt();" style="clear:both;float:left; color:blue; font-size:0.8em; cursor:pointer;">Create my Actor Profile</span>
+         {{/if}}
+          <div id="actor_info" style=' clear:both; '>
+            <div id="" style="float:left; ">
+              <table class='user_info_table'>
+                <tr><td class="user_info_titles">Home Phone:</td><td class="user_info_values">{{ home_phone }}</td><td><small class='user_info_edit_links' data-name='home_phone'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Cell Phone:</td><td class="user_info_values">{{  cell_phone}}</td><td><small class='user_info_edit_links' data-name='cell_phone'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Address:</td><td class="user_info_values">{{ address }}</td><td><small class='user_info_edit_links' data-name='address'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Location:</td><td class="user_info_values">{{ location }}</td><td><small class='user_info_edit_links' data-name='location'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">birthday:</td><td class="user_info_values">{{ birthday }}</td><td><small class='user_info_edit_links' data-name='birthday'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Ethnicity:</td><td class="user_info_values">{{ ethnicity }}</td><td><small class='user_info_edit_links' data-name='ethnicity'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Hair Color:</td><td class="user_info_values">{{ hair_color }}</td><td><small class='user_info_edit_links' data-name='hair_color'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Hair Type:</td><td class="user_info_values">{{ hair_type }}</td><td><small class='user_info_edit_links' data-name='hair_type'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">US Citizen:</td><td class="user_info_values">{{ us_citizen }}</td><td><small class='user_info_edit_links' data-name='us_citizen'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Union Status:</td><td class="user_info_values">{{ union_status }}</td><td><small class='user_info_edit_links' data-name='union_status'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Union Number:</td><td class="user_info_values">{{ union_number }}</td><td><small class='user_info_edit_links' data-name='union_number'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Facial Hair:</td><td class="user_info_values">{{ facial_hair }}</td><td><small class='user_info_edit_links' data-name='facial_hair'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Piercings:</td><td class="user_info_values">{{ piercings }}</td><td><small class='user_info_edit_links' data-name='piercings'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Tattoos:</td><td class="user_info_values">{{ tattoos }}</td><td><small class='user_info_edit_links' data-name='tattoos'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Eyes:</td><td class="user_info_values">{{ eyes }}</td><td><small class='user_info_edit_links' data-name='eyes'>&#x270E;</small></td></tr>
+              </table>
+            </div>
+            <div class="" style="float:right; ">
+              <h3>Emergency Contact</h3>
+              <table class='user_info_table'>
+                <tr><td class="user_info_titles">Name:</td><td class="user_info_values">{{  emergency_name}}</td><td><small class='user_info_edit_links' data-name='emergency_contact_name'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Phone:</td><td class="user_info_values">{{emergency_number  }}</td><td><small class='user_info_edit_links' data-name='emergency_contact_number'>&#x270E;</small></td></tr>
+              </table>
+              <br>
+              <h3>Cars Owned</h3>
+              <table class='user_info_table' id='car_owned'>
+
+              </table>
+            </div>
+            <br>
+            <br>
+            <div style="clear:both;">
+              <h3>Measurements</h3>
+              <table class='user_info_table'>
+                <tr><td class="user_info_titles">Height:</td><td class="user_info_values">{{ height }} cm</td><td><small class='user_info_edit_links' data-name='height'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Weight:</td><td class="user_info_values">{{ weight }} lbs</td><td><small class='user_info_edit_links' data-name='weight'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Shoe:</td><td class="user_info_values">{{ shoe }} inches</td><td><small class='user_info_edit_links' data-name='shoe_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Bust:</td><td class="user_info_values">{{ bust }} inches</td><td><small class='user_info_edit_links' data-name='bust_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Waist:</td><td class="user_info_values">{{  waist}} inches</td><td><small class='user_info_edit_links' data-name='waist_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Hip Size:</td><td class="user_info_values">{{ hip }} inches</td><td><small class='user_info_edit_links' data-name='hip_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Dress Size:</td><td class="user_info_values">{{ dress }}</td><td><small class='user_info_edit_links' data-name='dress_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Neck Size:</td><td class="user_info_values">{{ neck }} inches</td><td><small class='user_info_edit_links' data-name='neck_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Sleeve Size:</td><td class="user_info_values">{{sleeve  }}</td><td><small class='user_info_edit_links' data-name='sleeve'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Chest Size:</td><td class="user_info_values">{{ chest }} inches</td><td><small class='user_info_edit_links' data-name='chest_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Hat Size:</td><td class="user_info_values">{{ hat }} inches</td><td><small class='user_info_edit_links' data-name='hat_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Jacket Size:</td><td class="user_info_values">{{ jacket }} inches</td><td><small class='user_info_edit_links' data-name='jacket_size'>&#x270E;</small></td></tr>
+                <tr><td class="user_info_titles">Inseam:</td><td class="user_info_values">{{ inseam }} inches</td><td><small class='user_info_edit_links' data-name='inseam'>&#x270E;</small></td></tr>
+              </table>
+            </div>
+          </div>
+    {{/if}}
+
+
+</div>
+<script src="https://code.jquery.com/jquery-2.0.2.min.js"> </script>
+<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script type="text/javascript">
+// for(var i =0; i<$(".user_info_values").length; i++){
+//   var aspan = $("<span>Edit</span>");
+//   $(".user_info_values")[i].append(aspan);
+//   aspan.click(function(e){
+//     console.log(e.target);
+//   });
+
+// }
+function displayIt(){
+  console.log("displaying it");
+  $("#actor_info").toggle("fast");
+}
+  $(".user_info_table small").click(function(){
+       console.log(this.dataset.name,utility);
+       var name_ = this.dataset.name;
+      //  var width = 300, height=300;
+      //  var top= (window.innerHeight/2)+$("body").scrollTop()-(height/2) ;
+      //  var left = (window.innerWidth/2)+$("body").scrollLeft() -(width/2);
+       console.log(window.innerHeight,top,left);
+       if($("#edit_panel").length>0){
+         //$("#edit_panel").css({"top":top+"px" ,"left":left+"px"});
+         $("#edit_panel").remove();
+       }
+         var box = $("<div id='edit_panel'style='border:1px solid lightgrey; width:auto; height:auto; position:absolute; top:0px; left:0px;'></div>");
+         var form = $("<form id='update_form'action='/update-user-info' method='post'></form>");
+         box.append(form);
+         var button_divs = $("<div class='form-row'></div>");
+         var row1 = $("<div class='form-group col-md-6'></div>");
+         var button_cancel = $("<button type='button'>Cancel</button>");
+         row1.append(button_cancel);
+         var row2 = $("<div class='form-group col-md-6'></div>");
+         var button_save = $("<button type='submit' style='float:right;'>Save</button>");
+         row2.append(button_save);
+         button_divs.append(row1,row2);
+         //var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputEdit'>New "+utility.displayName[name_]+"</label><br><input type='text' class='form-control' id='inputEdit' placeholder='"+utility.displayName[name_]+"' name='chest'></div>");
+         var input_div = $(utility.displayName[name_].form);
+         var input = $("<input type='text' class='form-control'  placeholder='Name' name='emergency_name'>");
+         form.append("<center><h6>Editing</h6></center>",input_div,"<br>",button_divs);
+         $("#main_content").append(box);
+         var width = box.width(), height=box.height();
+         var top= (window.innerHeight/2)+$("body").scrollTop()-(height/2) ;
+         var left = (window.innerWidth/2)+$("body").scrollLeft() -(width/2);
+         box.css({"top":top+"px" ,"left":left+"px"});
+         var dropdowns = utility.displayName[name_].dropdown; //field to filled with info
+         if(dropdowns){
+           for(var i=0; i<dropdowns.length; i++ ){
+             $("#"+dropdowns[i].id).autocomplete({
+             source: utility[dropdowns[i].type]
+           });
+           }
+         }
+         var optionToBeFilled = utility.displayName[name_].options; //select option to be filled
+         if(optionToBeFilled){
+           for(var j =0; j<optionToBeFilled.length; j++){
+             if(optionToBeFilled[j].type ==="heights"){
+                  utility.giveHeightToDropdown(optionToBeFilled[j].id);
+             }
+             if(optionToBeFilled[j].type ==="ethnicity"){
+               utility.giveEtnicityToDropdown(optionToBeFilled[j].id);
+             }
+           }
+         }
+          button_cancel.click(function(){
+            $("#edit_panel").remove();
+          });
+
+          button_save.click(function(e){
+            //$("#edit_panel").remove();
+          });
+
+          $('#update_form').on('submit', function(evt){
+            evt.preventDefault();
+            $.ajax({
+                url: "/update-user-info",
+                type: 'POST',
+                data: $(this).serialize(),
+                success: function(data){
+                    if(data.success){
+                       console.log('response: ',data.success);
+                      location.assign("/user");
+                    }else{
+                      console.log(' There was a problem.');
+                     }
+                },
+                error: function(){
+                   console.log("error #update_form");
+                 }
+           });
+          });
+
+  });
+
+  $(".user_info_table tr").hover(function(e){
+    $($(this).find("small")).css({"visibility":"visible"});
+    //$(this).css({"border-bottom":"1px solid grey"});
+  },
+  function(){
+    $($(this).find("small")).css({"visibility":"hidden"});
+    $(this).css({"border-bottom":"none"});
+  }
+);
+function getCars(){
+  $.ajax({
+      url: "/get_user_cars",
+      type: 'POST',
+      success: function(data){
+          if(data.success){
+             console.log('response: ',data.success);
+             for(var i =0; i< data.success.length; i++){
+               var tr =$("<tr></tr>");
+               var td1 = $("<td>"+data.success[i].make+",</td>");
+               var td2 = $("<td>"+data.success[i].color+",</td>");
+               var td3 = $("<td>"+data.success[i].year+"</td>");
+               tr.append((i+1)+"- ",td1,td2,td3);
+               $("#car_owned").append(tr);
+             }
+          }else{
+            console.log(' There was a problem.');
+           }
+      },
+      error: function(){
+         //$ container.html(' There was a problem.');
+         console.log("error get_user_cars");
+       }
+ });
+}
+function getImages(){
+  $.ajax({
+      url: "/get_user_images",
+      type: 'POST',
+      success: function(data){
+          if(data.success){
+             console.log('Images response: ',data.success);
+
+          }else{
+            console.log(' There was a problem.');
+           }
+      },
+      error: function(){
+         //$ container.html(' There was a problem.');
+         console.log("error get_user_images");
+       }
+ });
+}
+getImages();
+getCars();
+
+</script>
+
+   {{else}}
+ <h1>sorry, you are not allowed to view this page now, please log in </h1>
+{{/if}}
