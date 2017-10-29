@@ -3,14 +3,6 @@ var express = require('express');
 var expressValidator = require('express-validator');
 var formidable = require('formidable');
 var mysql = require('mysql');
-
-var con = mysql.createConnection({
-  host : 'fkonat.it.pointpark.edu',
-  user : 'lunamista',
-  password : 'lunamista123',
-  database : 'lunadb'
-});
-
 var fs = require('fs');
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:"main"});
@@ -24,9 +16,8 @@ app.use( function( req, res, next){
   next();
  });
 
-var bodyParser = require('body-parser');
+app.use(require('body-parser').urlencoded({extended:true}));
 
-// Skip till Node-modules get updated
 /*
 app.use(require('body-parser').urlencoded({extended:true}));
 app.use(require('cookie-parser')(credentials.cookieSecret));
@@ -36,9 +27,6 @@ app.use(require('express-session')({
  secret:credentials.cookieSecret
 }));
 */
-
-// Call to Express body parser json for DB querys and inserts
-app.use(bodyParser.json());
 
 app.get("/", function(req,res){
     res.render("home");
@@ -50,42 +38,29 @@ app.post('/', [function(req, res, next) {
   res.send('Hello World!');
 }]);
 
-/* TO CHECK user login with DB records
-app.post("/", function (req, res) {
-//  console.log(req.body.user.email);
-//  console.log(req.body.user.pwd);
-  var email = req.body.user.email;
-  var pwd = req.body.user.pwd;
-  var q = "SELECT * FROM users WHERE user[email] LIKE '%" + email +"%'" AND user[pwd] LIKE '%" + pwd +"%'";
-  con.query(q, function(err, results) {
-    if (err) throw err;
-      res.send({success: results});
-});
-*/
-
 app.get("/addUser", function(req,res){
     res.render("addUser");
 });
 
 // Gets From data from addUser Page, then redirects
-app.post('/addUser', [function(req, res, next){
-//  console.log(request.body.user.first_name);
-//  console.log(request.body.user.last_name);
-//  console.log(request.body.user.usr_name);
-//  console.log(request.body.user.email);
-//  console.log(request.body.user.home_phone);
-//  console.log(request.body.user.cell_phone);
-//  console.log(request.body.user.address);
-var sql = "INSERT INTO Test (first_name, last_name, usr_name, email, home_phone, cell_phone, address, is_admin) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-var values = [
-    [request.body.user.first_name, request.body.user.last_name, request.body.user.usr_name, request.body.user.email, request.body.user.home_phone, request.body.user.cell_phone, request.body.user.address, 0],
-];
-con.query(sql, [values], function(err) {
+app.post('/addUser', function(req, res){
+  var con = mysql.createConnection({
+    host : 'fkonat.it.pointpark.edu',
+    user : 'lunamista',
+    password : 'lunamista123',
+    database : 'lunadb'
+  });
+  var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?)";
+  var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
+//console.log(req.body);
+//console.log(req.query);
+//console.log(req.body);
+  con.query(sql, values, function(err, results) {
     if (err) throw err;
-    con.end();
-  //next();
-  }, 
-}]);
+      con.end();
+   res.redirect('/');
+  }); 
+});
 
 
 
