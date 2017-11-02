@@ -18,16 +18,6 @@ app.use( function( req, res, next){
 
 app.use(require('body-parser').urlencoded({extended:true}));
 
-/*
-app.use(require('body-parser').urlencoded({extended:true}));
-app.use(require('cookie-parser')(credentials.cookieSecret));
-app.use(require('express-session')({
- resave:false,
- saveUninitialized:false,
- secret:credentials.cookieSecret
-}));
-*/
-
 app.get("/", function(req,res){
     res.render("home");
 });
@@ -52,71 +42,12 @@ app.post('/addUser', function(req, res){
   });
   var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?)";
   var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
-//console.log(req.body);
-//console.log(req.query);
-//console.log(req.body);
   con.query(sql, values, function(err, results) {
     if (err) throw err;
       con.end();
    res.redirect('/');
   }); 
 });
-
-
-
-// Block Test
-/* 
-// Looks for files in Public Dir
-app.use(express.static(__dirname + '/public'));
-
-// Root Dir
-app.get('/', function(req, res) {
-  res.render('home');
-});
-
-app.get('/login', function(req, res) {
-  res.render('login');
-});
-
-// To redirect After login given
-app.post('/', [function(req, res, next) {
-  next();
-}, function(req, res) {
-  res.render('addUser');
-}]);
-
-// Movie DB Test
-app.get('/addUSer', function(req, res) {
-  res.render('addUser');
-});
-
-// To redirect After User has been added
-app.post('/addUser', [function(req, res, next) {
-  next();
-}, function(req, res) {
-  res.render('home');
-
-}]);
-
-app.get("/history", function(req,res){
-  if(req.session.admin_id){
-  }else {
-    res.render("searchhistory",{admin:req.session.firstName,adminlogin:req.session.admin_id});
-  }
-});
-
-app.get("/addUser", function(req,res){
-  res.render("addUser");
-});
-
-app.get("/forgotpassword", function(req,res){
-  res.render("forgotpassword");
-});
-
-app.get("/search", function(req,res){
-  res.render("search");
-});
-END*/
 
 //custom 404 page
 app.use(function(req, res){
