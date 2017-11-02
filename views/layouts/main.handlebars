@@ -10,15 +10,17 @@
     {{#if showTests}}
         <link rel="stylesheet" href="/vendor/mocha.css">
     {{/if}}
-    <style media="screen">
+   <style media="screen">
     html {
       position: relative;
       min-height: 100%;
     }
+
     body {
       /* Margin bottom by footer height */
       margin-bottom: 30px;
     }
+
     .footer {
       position: absolute;
       bottom: 0;
@@ -28,53 +30,66 @@
       line-height: 30px; /* Vertically center the text there */
       background-color: #f5f5f5;
     }
-  h3{
+
+  h3 {
     color:white;
   }
-  .user_info_titles{
+
+  .user_info_titles {
     color:grey;
+  }
+
+  .user_info_values {
 
   }
-  .user_info_values{
 
-  }
-  .user_info_edit_links{
+  .user_info_edit_links {
     cursor: pointer;
     display: none;
   }
-  .user_info_edit_links:hover{
+
+  .user_info_edit_links:hover {
     color:lightblue;
   }
-  .search_toggle_divs{
+
+  .search_toggle_divs {
     display: none;
   }
-  #search_container h6{
+
+  #search_container h6 {
     cursor: pointer;
   }
-  #search_container h6:hover{
+
+  #search_container h6:hover {
     color:grey;
   }
-  #edit_panel{
+
+  #edit_panel {
     padding: 10px;
     background-color: Lightgrey;
     color: black;
     z-index: 3;
   }
-  #result_table_row{
-  font-size: 0.8em;
+
+  #result_table_row {
+    font-size: 0.8em;
   }
-  #result_table_hearding{
+
+  #result_table_heading {
     color:lightgrey;
   }
-  .viewLinks:hover{
+
+  .viewLinks:hover {
     color:lightblue;
   }
-  .remove:hover{
+
+  .remove:hover {
     color:darkred;
   }
     </style>
     <script type="text/javascript" src="utility.js"></script>
   </head>
+
   <body style='background-color:black; color:white;'>
 
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
