@@ -6,6 +6,12 @@ var mysql = require('mysql');
 var fs = require('fs');
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:"main"});
+var con = mysql.createConnection({
+      host : 'fkonat.it.pointpark.edu',
+      user : 'lunamista',
+      password : 'lunamista123',
+      database : 'lunadb'
+});
 
 app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
@@ -18,23 +24,30 @@ app.use( function( req, res, next){
 
 app.use(require('body-parser').urlencoded({extended:true}));
 
+// Home Landing Page
+
 app.get('/', function(req, res) {
   res.render('landing', {
     menu: [{"page": "home", "label": "Home"}, {"page": "about", "label": "About"},{"page": "addUser", "label": "Edit Info"}]
   });
 });
 
-/*
-app.post('/', [function(req, res, next) {
-  next();
-}, function(req, res) {
-  res.send('Hello World!');
-}]);
-*/
-
-app.get("/addUser", function(req,res){
-    res.render("addUser");
+app.get("/home", function(req,res){
+    res.render("home");
 });
+
+app.get("/addUser", function(req,res){         
+    res.render("addUser");                     
+});
+
+app.post('/home', function(req, res, con){       
+  var sql = "SELECT users.email, users.password FROM users WHERE users.email = req.body.email  AND users.password = req.body.password";
+  con.query(sql, function(err, results) {
+    if (err) throw err;
+      con.end();
+   res.redirect('/');
+  });  
+});      
 
 // Gets From data from addUser Page, then redirects
 app.post('/addUser', function(req, res){
