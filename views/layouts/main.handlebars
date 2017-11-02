@@ -33,10 +33,8 @@
   }
   .user_info_titles{
     color:grey;
-
   }
   .user_info_values{
-
   }
   .user_info_edit_links{
     cursor: pointer;
@@ -84,18 +82,17 @@
            </button>
            <div class="collapse navbar-collapse" id="navbarNav">
              <ul class="navbar-nav">
-               <li class="nav-item disabled">
+               <!--<li class="nav-item disabled">
                  <a class="nav-link disabled" href="/">Home <span class="sr-only">(current)</span></a>
                </li>
                <li class="nav-item">
                  <a class="nav-link " href="search">Search</a>
-               </li>
-               <li class="nav-item">
-                 <a class="nav-link " href="history">History</a>
-               </li>
-               <li class="nav-item">
-                 <a class="nav-link " href="addUser">User</a>
-               </li>
+               </li> -->
+               {{#each menu}}
+	       <li class="nav-item">
+	         <a class="nav-link" href="{{page}}">{{label}}</a>
+	       </li>
+	       {{/each}}
              </ul>
            </div>
        </nav>
@@ -103,7 +100,7 @@
      {{{body}}}
     <footer class="footer">
      <div class="container">
-       <span class="text-muted">footer.</span>
+       <span class="text-muted"><center>Work in Progress..</center></span>
      </div>
    </footer>
         {{#if showTests}}

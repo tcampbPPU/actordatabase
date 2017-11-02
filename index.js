@@ -18,15 +18,19 @@ app.use( function( req, res, next){
 
 app.use(require('body-parser').urlencoded({extended:true}));
 
-app.get("/", function(req,res){
-    res.render("home");
+app.get('/', function(req, res) {
+  res.render('landing', {
+    menu: [{"page": "home", "label": "Home"}, {"page": "about", "label": "About"},{"page": "addUser", "label": "Edit Info"}]
+  });
 });
 
+/*
 app.post('/', [function(req, res, next) {
   next();
 }, function(req, res) {
   res.send('Hello World!');
 }]);
+*/
 
 app.get("/addUser", function(req,res){
     res.render("addUser");
