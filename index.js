@@ -32,7 +32,7 @@ app.use(require('express-session')({
  secret:credentials.cookieSecret
 }));
 app.get("/", function(req,res){
-    res.render("home");
+    res.render("home",info={"menu":[{page:"home",label:"Home",isCurent:true},{page:"about",label:"About"}]});
 });
 
 app.get("/search", function(req,res){
@@ -58,34 +58,48 @@ app.get("/logout", function(req,res){
   res.redirect(303,'/');
 });
 
+// app.post("/update-user-info", function(req,res){
+//
+//   var user_info =["first_name","last_name","sex","is_admin","email"];
+//   for(key in req.body ){
+//     if(key ==="password" || key ==="current_password" || key === "confirm_password"){
+//
+//       console.log("current: ",req.body.current_password,"password: ",req.body.password,"confirm_password: ", req.body.confirm_password);
+//       break;
+//     }else if(user_info.indexOf(key)!==-1){
+//       console.log(key,": ",req.body[key]);
+//         var query = "UPDATE users SET "+key+" = '"+req.body[key]+"'  WHERE id = '"+req.session.user_id+"';";
+//         con.query(query, function (err, result, fields) {
+//           if (err){
+//             throw err;
+//           }else {
+//               //res.redirect(303,'/user');
+//
+//                 //console.log("this success: ",succeeded);
+//           }
+//         });
+//
+//     }else {
+//      //for info that are in actors
+//        console.log(key,": ",req.body[key]);
+//     }
+//   }
+//   res.send({success:true});
+// });
+
+
+
 app.post("/update-user-info", function(req,res){
-
-  var user_info =["first_name","last_name","sex","is_admin","email"];
+  console.log("update-user-info",req.body);
+  var table = req.body.table_name;
   for(key in req.body ){
-    if(key ==="password" || key ==="current_password" || key === "confirm_password"){
-
-      console.log("current: ",req.body.current_password,"password: ",req.body.password,"confirm_password: ", req.body.confirm_password);
-      break;
-    }else if(user_info.indexOf(key)!==-1){
-      console.log(key,": ",req.body[key]);
-        var query = "UPDATE users SET "+key+" = '"+req.body[key]+"'  WHERE id = '"+req.session.user_id+"';";
-        con.query(query, function (err, result, fields) {
-          if (err){
-            throw err;
-          }else {
-              //res.redirect(303,'/user');
-
-                //console.log("this success: ",succeeded);
-          }
-        });
-
-    }else {
-     //for info that are in actors
-       console.log(key,": ",req.body[key]);
+    if(key!=="table_name"){
+           console.log("in table:",table," change",key,".to.",req.body[key]);
     }
   }
   res.send({success:true});
 });
+
 app.post("/login", function(req,res){
   console.log("enter login route");
   req.check('email','invalid email address').isEmail();
@@ -132,68 +146,91 @@ app.post("/login", function(req,res){
 });
 
 
+// app.get("/user", function(req,res){
+//   if(req.session.user_id){
+//     var query0="SELECT users.*, cars.*, actors.* FROM users JOIN cars ON cars.actors_users_id = users.id JOIN actors ON actors.users_id = cars.actors_users_id  WHERE users.id = '"+req.session.user_id+"'  "
+//     var query ="SELECT * FROM users LEFT JOIN actors ON users.id = actors.users_id  WHERE id = '"+req.session.user_id+"'  "; //"SELECT * FROM users WHERE id = '"+req.session.user_id+"' " //ON users.id=actors.users_id WHERE id = '"+req.session.user_id+"'
+//       con.query(query, function (err, result, fields) {
+//         if(err){
+//          //error
+//         }
+//         else {
+//           if(result[0]){
+//             var info={login:req.session.user_id?req.session.user_id:false,};
+//             for(key in result[0]){
+//               if(key!=="password" && result[0][key]!== null){
+//                 info[key] = result[0][key];
+//               }
+//             }
+//             if(result[0].is_admin){
+//               info["menu"] = [{page:"search",label:"Search"},{page:"search-history",label:"Search History"},{page:"give-privilege",label:"Give Admin Privilege"}];
+//             }
+//             res.render("user",info);
+//           }
+//         }
+//       });
+//   }else {
+//     res.redirect(303,'/');
+//   }
+// });
+var voids = {"password":true,"is_admin":true,"id":true,"users_id":true};
+var users_info_names={"first_name":true,"last_name":true,"sex":true,"email":true};
+var actors_info_names={"first_name":true,"last_name":true,"sex":true,"email":true};
+var measurements ={"weight":true,"height":true,"neck_size":true,"sleeve_size":true,"waist_size":true,"inseam_size":true,"dress_size":true,"jacket_size":true,"shoe_size":true,"bust_size":true,"chest_size":true,"hip_size":true,"hat_size":true,}
 app.get("/user", function(req,res){
   if(req.session.user_id){
-    var query0="SELECT users.*, cars.*, actors.* FROM users JOIN cars ON cars.actors_users_id = users.id JOIN actors ON actors.users_id = cars.actors_users_id  WHERE users.id = '"+req.session.user_id+"'  "
-    var query ="SELECT * FROM users LEFT JOIN actors ON users.id = actors.users_id  WHERE id = '"+req.session.user_id+"'  "; //"SELECT * FROM users WHERE id = '"+req.session.user_id+"' " //ON users.id=actors.users_id WHERE id = '"+req.session.user_id+"'
+    var query ="SELECT * FROM users LEFT JOIN actors ON users.id = actors.users_id  WHERE id = '"+req.session.user_id+"'  ";
+    //var query ="SELECT * FROM users  WHERE id = '"+req.session.user_id+"'";
       con.query(query, function (err, result, fields) {
         if(err){
          //error
         }
         else {
           if(result[0]){
-            res.render("user", {
-                    login:req.session.user_id?req.session.user_id:false,
-                    //user:req.session.firstName,
-                    is_admin :result[0].is_admin,
-                    first_name:result[0].first_name,
-                    last_name:result[0].last_name,
-                    email:result[0].email,
-                    sex:result[0].sex,
-                    users_id:result[0].users_id,
-                    home_phone:(result[0].home_phone?result[0].home_phone:"-"),
-                    cell_phone:result[0].cell_phone,
-                    address:result[0].street+", "+ result[0].city+", "+result[0].state+", "+result[0].zip,
-                    emergency_name:result[0].emergency_contact_name,
-                    emergency_number:result[0].emergency_contact_number,
-                    height:result[0].height,
-                    weight:result[0].weight,
-                    shoe:result[0].shoe_size,
-                    bust:result[0].bust_size,
-                    waist:result[0].waist_size,
-                    hip:result[0].hip_size,
-                    dress:result[0].dress_size,
-                    neck:result[0].neck_size,
-                    sleeve:result[0].sleeve,
-                    chest:result[0].chest_size,
-                    hat:result[0].hat_size,
-                    jacket:result[0].jacket_size,
-                    inseam:result[0].inseam,
-                    location:result[0].location,
-                    birthday:result[0].birthday,
-                    ethnicity:result[0].ethnicity,
-                    hair_color:result[0].hair_color,
-                    hair_type:result[0].hair_type,
-                    us_citizen:result[0].us_citizen,
-                    union_status:result[0].union_status,
-                    union_number:result[0].union_number,
-                    facial_hair:result[0].facial_hair,
-                    piercings:result[0].piercings,
-                    tattoos:result[0].tattoos,
-                    eyes:result[0].eyes,
-
-            });
+            var info={user_name: result[0].first_name,login:req.session.user_id?req.session.user_id:false,user_info:[],actor_info:[],is_admin:result[0].is_admin,all_users:[],users_id:result[0].users_id,actors_measurement:[]};
+            for(key in result[0]){
+              if(users_info_names[key]){
+                //user info only
+                info.user_info.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+              }
+              else if (measurements[key]) {
+                //actors measurements only
+                info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+              }else if (!voids[key]) {
+                //actors others info only
+                  info.actor_info.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+              }
+            }
+            if(result[0].is_admin){
+              info["menu"] = [{page:"home",label:"Home",isCurent:true},{page:"search",label:"Search"},{page:"search-history",label:"Search History"},{page:"give-privilege",label:"Give Admin Privilege"}];
+              con.query("SELECT first_name,last_name,sex, is_admin, id FROM users", function (err, result, fields){
+                 if(err) throw err;
+                 for(rs in result){
+                   info.all_users.push(result[rs]);
+                 }
+             });
+           }
+            //console.log(info);
+            res.render("user",info);
           }
         }
-        //console.log(result);
-        //res.render("user");
       });
   }else {
     res.redirect(303,'/');
-    // res.render("user", {
-    //         login:req.session.user_id?req.session.user_id:false, user:req.session.firstName
-    // });
-    //con.end();
+  }
+});
+
+app.post("/get-all-users",function(req,res){
+  if(req.session.user_id){
+    var query ="SELECT id,first_name,last_name,is_admin,email,sex,height,eye_color,gender,weight,hair_color,hair_type,tattoo,piercings,facial_hair,eyes_color,us_citizen,neck_size,sleeve_size,waist_size,inseam_size,dress_size,jacket_size,shoe_size,bust_size,chest_size,hip_size,hat_size,union_status,union_number FROM users LEFT JOIN actors ON users.id = actors.users_id";
+    var q = "SELECT first_name,last_name,sex, is_admin, id FROM users";
+    con.query(query, function (err, result, fields){
+       if(err) throw err;
+       res.send({success:result,admin_id:req.session.user_id});
+   });
+
+  }else {
+    res.send({success:false});
   }
 });
 
@@ -240,3 +277,19 @@ app.use(function(err, req, res, next){
 app.listen(app.get('port'), function(){
 console.log('listening on http:// localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
 });
+
+function upperCaseIt(word){
+  return word[0].toUpperCase()+word.substring(1,word.length);
+}
+function upperCaseFirstLetter(word0){
+  var word = word0.split("_");
+  var new_Word=false;
+  for(var i =0; i<word.length; i++){
+    if(!new_Word){
+      new_Word = upperCaseIt(word[i]);
+    }else {
+        new_Word+=" "+upperCaseIt(word[i]);
+    }
+  }
+  return new_Word;
+}
