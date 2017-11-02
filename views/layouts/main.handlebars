@@ -103,7 +103,19 @@
 
                {{/each}}
              </ul>
+
            </div>
+           {{#if login}}
+           <span class="nav-item " style="float:right;" >
+             <table>
+               <tr>
+                 <td><img src="img/user.png" style='width:30px; height:30px; margin-right:3px; border-radius:100px; border:1px solid white;' alt=""> </td><td>{{user_name}}</td><td> <a class="nav-link " href="logout" >Logout</a></td>
+               </tr>
+             </table>
+
+          </span>
+
+          {{/if}}
        </nav>
 
      {{{body}}}
