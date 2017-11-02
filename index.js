@@ -56,7 +56,7 @@ app.post('/process-search', function(req, res) {
         connection.query(q, function(err, results) {
          if (err) throw err;
            res.send({success: results});
-         });
+	});
 });
 
 
