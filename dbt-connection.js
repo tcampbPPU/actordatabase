@@ -19,3 +19,24 @@ con.connect(function(err) {
 //    });
 //  });
 });
+
+/*
+function formBuild(type, class, id, name){
+
+};
+
+var data = [];
+
+for each (variable in object) {
+ // 
+}
+
+
+
+for (var i = 0; i < rows.length; i++;){
+  data.push(rows[i].first_name);
+  data.push(rows[i].last_name);
+  data.push(rows[i].email);
+  data.push(rows[i].password);    
+  data.push(rows[i].sex);
+};
