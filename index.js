@@ -8,24 +8,6 @@ var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:"main"});
 var mysql = require('mysql');
 
-// DB Connection
-function connect(cb){
-  var con = mysql.createConnection({
-      host : 'fkonat.it.pointpark.edu',
-      user : 'lunamista', 
-      password : 'lunamista123',
-      database : 'lunadb'
-  });
-  con.connect(function(err){
-    if (err){
-      console.log('error: ' + err.stack);
-      return;
-    }
-    cb(con);
-    console.log('Connected!');
-  });
-}
-
 app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
 app.set('port', process.env.PORT || 4000);
@@ -203,7 +185,7 @@ app.post('/addUser', function(req, res){
             console.log("email is good");
           }*/
         }else {
-          console.log("Email already being used");
+          console.log("TRY AGAIN Email already being used");
         }
     });
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?)";
