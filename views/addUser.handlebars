@@ -1,35 +1,80 @@
-<center><h3>User Information</h3>
-<div class="container">
-  <p>The form below is for the user to edit their personal info</p>
-  <form action="/addUser"  method="POST">
-    <div class="form-group col-md-4">
-      <label for="first_name">First Name:</label>
-      <input type="text" class="form-control" id="first_name" name="first_name">
-    </div>
+  <script src="https://code.jquery.com/jquery-2.0.2.min.js"></script>
+  <script type="text/javascript">
+  function checkEmail() {
+   var email = document.getElementById("email").value;
+   if(email) {
+    $.ajax({
+    type: 'post',
+    url: 'http://tcampb.it.pointpark.edu:4040/addUser',
+    data: {
+     user_email:email,
+    },
+    success: function (response) {
+     $('#email_status').html(response);
+     if(response == "OK"){
+      return true;
+     }
+     else {
+      return false;
+     }
+    }
+    });
+   }
+   else {
+    $( '#email_status' ).html("");
+    return false;
+   }
+  }
 
-    <div class="form-group col-md-4">
-      <label for="last_name">Last Name:</label>
-      <input type="text" class="form-control" id="last_name" name="last_name">
-    </div>
+  function checkall() {
+   var emailhtml=document.getElementById("email_status").innerHTML;
 
-    <div class="form-group col-md-4">
-      <label for="email">Email:</label>
-      <input type="email" class="form-control" id="email" name="email">
-    </div>
+   if((emailhtml) == "OK"){
+    return true;
+   }
+   else{
+    return false;
+   }
+  }
+</script>
+<body>
+  <center><h3>User Information</h3>
+  <div class="container">
+    <p>The form below is for the user to edit their personal info</p>
+    <form action="/addUser"  method="POST">
+      <div class="form-group col-md-4">
+        <label for="first_name">First Name:</label>
+        <input type="text" class="form-control" id="first_name" name="first_name">
+      </div>
 
-    <div class="form-group col-md-4">
-      <label for="password">Password:</label>
-      <input type="text" class="form-control" id="password" name="password">
-    </div>
+      <div class="form-group col-md-4">
+        <label for="last_name">Last Name:</label>
+        <input type="text" class="form-control" id="last_name" name="last_name">
+      </div>
 
-    <div class="form-group col-md-4">
-      <label for="sex">Sex:</label>
-      <input type="text" class="form-control" id="sex" name="sex">
-    </div>
+      <div class="form-group col-md-4">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" name="email" onkeyup="checkEmail();">
+        <span id="email_status"></span>
+        <br>
+      </div>
 
-    <div class="form-group col-md-4">                                
-      <input type="submit" class="btn primary">                      
-    </div> 
-</form>
-<br>
-</div>
+      <div class="form-group col-md-4">
+        <label for="password">Password:</label>
+        <input type="text" class="form-control" id="password" name="password">
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="sex">Sex:</label>
+        <input type="text" class="form-control" id="sex" name="sex">
+      </div>
+
+      <div class="form-group col-md-4">
+        <input type="submit" class="btn primary">
+      </div>
+  </form>
+  <br>
+  </div>
+</body>
+</html>
+
