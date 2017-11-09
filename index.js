@@ -36,53 +36,42 @@ app.use(require('body-parser').urlencoded({extended:true}));
 //    res.render("home");
 //});
 
+function getMenu(req) {
+  var menu = [];
+  var isAdmin = true;
+  if (isAdmin) {
+    menu.push({"page": "search", "label": "Search"});
+    menu.push({"page": "searchhistory", "label": "History"});
+  } else {
+    menu.push({"page": "login", "label": "Log In"});
+    menu.push({"page": "signup", "label": "Sign Up"});
+    menu.push({"page": "forgotpassword", "label": "Forgot Password"});
+  }
+  menu.push({"page": "about", "label": "About"});
+  return menu;
+}
+
 // Root Dir
 app.get('/', function(req, res) {
   res.render('landing', {
-    menu: [{"page": "home", "label": "Home"}, {"page": "about", "label": "About"}]
+    menu: getMenu(req)
   });
 });
 
-app.get('/admin_page', function(req, res) {
-        res.render('admin_page');
-});
-
-app.get('/admin_mail', function(req, res) {
-        res.render('admin_mail');
-});
-
-app.get('/admin_search', function(req, res) {
-        res.render('admin_search');
-});
-
-app.post('/process-search', function(req, res) {
-  var search = req.body.search;
-  // console.log(search);
-  var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
-  connection.query(q, function(err, results) {
-  if (err) throw err;
-  res.send({success: results});
+app.get("/addUser", function(req,res){
+  res.render("addUser", {
+    menu: getMenu(req)
   });
-});
-
-
-app.get("/history", function(req,res){
-  if(req.session.admin_id){
-  } else {
-    res.render("searchhistory",{admin:req.session.firstName,adminlogin:req.session.admin_id});
-  }
-});
-
-app.get("/creatnewaccount", function(req,res){
-  res.render("addUser");
 });
 
 app.get("/forgotpassword", function(req,res){
   res.render("forgotpassword");
+    menu: getMenu(req)
 });
 
 app.get("/search", function(req,res){
   res.render("search");
+    menu: getMenu(req)
 });
 
 //custom 404 page

@@ -10,6 +10,7 @@
     {{#if showTests}}
         <link rel="stylesheet" href="/vendor/mocha.css">
     {{/if}}
+
    <style media="screen">
     html {
       position: relative;
@@ -99,16 +100,10 @@
            </button>
            <div class="collapse navbar-collapse" id="navbarNav">
              <ul class="navbar-nav">
-               <li class="nav-item disabled">
-                 <a class="nav-link disabled" href="/">Home <span class="sr-only">(current)</span></a>
-               </li>
-               <li class="nav-item">
-                 <a class="nav-link " href="search">Search</a>
-               </li>
                {{#each menu}}
-	       <li class="nav-item">
-	         <a class="nav-link" href="{{page}}">{{label}}</a>
-	       </li>
+	         <li class="nav-item">
+	           <a class="nav-link" href="{{page}}">{{label}}</a>
+	         </li>
 	       {{/each}}
              </ul>
            </div>
@@ -119,21 +114,24 @@
      <div class="container">
        <span class="text-muted">footer.</span>
      </div>
-   </footer>
-        {{#if showTests}}
-              <div id="mocha"></div>
-              <script src="/vendor/mocha.js"></script>
-              <script src="/vendor/chai.js"></script>
-              <script>
-                 mocha.ui('tdd');
-                 var assert = chai.assert;
-             </script>
-             <script src="/qa/test-global.js"></script>
-             {{#if pageTestScript}}
-                <script src="{{pageTestScript}}"></script>
-             {{/if}}
-             <script>mocha.run();</script>
-      {{/if}}
+    </footer>
+
+    {{#if showTests}}
+      <div id="mocha"></div>
+        <script src="/vendor/mocha.js"></script>
+        <script src="/vendor/chai.js"></script>
+        <script>
+          mocha.ui('tdd');
+          var assert = chai.assert;
+        </script>
+      
+          <script src="/qa/test-global.js"></script>
+        {{#if pageTestScript}}
+          <script src="{{pageTestScript}}"></script>
+        {{/if}}
+      <script>mocha.run();</script>
+    {{/if}}
+
       <script src="https://code.jquery.com/jquery-2.0.2.min.js"> </script>
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
