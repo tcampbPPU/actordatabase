@@ -20,7 +20,7 @@ app.set('port', process.env.PORT || 4000);
 app.use(express.static(__dirname +'/public'));
 
 app.use( function( req, res, next){
-  res.locals.showTests = app.get(' env') !== 'production' && req.query.test === '1';
+  res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
   next();
  });
 
@@ -63,6 +63,17 @@ app.get("/addUser", function(req,res){
     menu: getMenu(req)
   });
 });
+ 
+app.post('/process-search', function(req, res) {
+  var search = req.body.search;
+ // console.log(search);
+  var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
+  connection.query(q, function(err, results) {
+    if (err) throw err;
+      res.send({success: results});
+  }); 
+});
+
 
 app.get("/forgotpassword", function(req,res){
   res.render("forgotpassword");
@@ -73,6 +84,12 @@ app.get("/search", function(req,res){
   res.render("search");
     menu: getMenu(req)
 });
+
+app.get("/about", function(req,res){
+  res.render("about");
+    menu: getMenu(req)
+});
+
 
 //custom 404 page
 app.use(function(req, res){
