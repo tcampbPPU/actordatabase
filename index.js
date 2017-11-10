@@ -16,7 +16,6 @@ app.use( function( req, res, next){
   res.locals.showTests = app.get(' env') !== 'production' && req.query.test === '1';
   next();
  });
-
 app.use(require('body-parser').urlencoded({extended:true}));
 app.use(expressValidator());
 
@@ -51,6 +50,8 @@ function getMenu(req){
   menu.push({"page": "about", "label": "About"});
   return menu;
 };
+
+// Root Dir. Displays to USER on Page Load w/ Nav-Bar
 app.get('/', function(req, res) {
   res.render('landing', {
   menu: getMenu(req)
@@ -83,10 +84,6 @@ app.get('/success', function(req, res) {
 
 app.get('/error-page', function(req, res) {
   res.render('error-page');
-});
-
-app.get('/login', function(req, res) {
-  res.render('login');
 });
 
 app.get('/admin-login', function(req, res) {
@@ -132,7 +129,7 @@ app.post("/login", function(req,res){
       res.redirect(303,'/');
     }else {
       var email=req.body.email;
-        var q  ="SELECT id, email, password FROM users WHERE email = 'test@gmail.com';";
+      var q  ="SELECT id, email,password FROM users WHERE email = '"+email+"' ;";
         con.query(q, function (err, result, fields) {
           console.log(result);
           if (err){
@@ -146,7 +143,7 @@ app.post("/login", function(req,res){
                  //req.session.firstName = result[0].name;
                  req.session.cookie.maxAge = 9000000;
                  //req.session.userpassPassword = false;
-                 res.redirect(303,'/success');
+                 res.redirect(303,'/');
                 //.....
               }else {
                 //password false
@@ -166,6 +163,32 @@ app.post("/login", function(req,res){
   });
 });
 
+// To check if user already exists                           
+app.post('/addUser', function(req, res){                     
+  connect(function(con){                                     
+    var email = req.body.email;                              
+    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";                                                
+    con.query(sql, function(err, results, field) {                  
+      if (err) throw err;
+//      var json = JSON.stringify(results[0]);
+      console.log(results[0]["COUNT(id)"]);
+      //var x = "COUNT(id)";
+      //console.log(json);
+      //console.log(json[x]);
+      console.log(email);                                    
+      console.log(results);
+      if(results[0]["COUNT(id)"] <  1) {
+        // Email is valid not in DB yet                                        
+        res.send("");                                        
+      }else{                                                   
+        res.send("Email Already Used.");           
+      }                                                            
+    });                                                      
+  });                                                        
+});
+
+
+// To add new user
 app.post('/addUser', function(req, res){
 /* TODO:
  *  Ajax for Duplicate entry // app.get
@@ -173,21 +196,6 @@ app.post('/addUser', function(req, res){
  * Fix Duplicate entry Error from crashing nodemon
 */
   connect(function(con){
-    var emailToCheck = req.body.email;
-    var duplicateSql = "SELECT COUNT(id) FROM users WHERE email = emailToCheck;";
-    var find = con.query(duplicateSql, function(err, results) {
-      if (find[0] === 0) {
-        // Means Email was not already used by another account
-          /*if (err){
-            console.log(err);
-          }else{
-            con.end();
-            console.log("email is good");
-          }*/
-        }else {
-          console.log("TRY AGAIN Email already being used");
-        }
-    });
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?)";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
@@ -317,7 +325,6 @@ app.use(function(req, res){
   res.status(404);
   res.render("404");
 });
-
 //custom 500 page
 app.use(function(err, req, res, next){
   console.log(err.stack);

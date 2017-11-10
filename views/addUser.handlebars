@@ -5,12 +5,13 @@
    if(email) {
     $.ajax({
     type: 'post',
-    url: 'http://tcampb.it.pointpark.edu:4040/addUser',
+    url: 'http://tcampb.it.pointpark.edu:4000/addUser',
     data: {
-     user_email:email,
+     email:email,
     },
     success: function (response) {
      $('#email_status').html(response);
+console.log(response);
      if(response == "OK"){
       return true;
      }
@@ -76,5 +77,3 @@
   <br>
   </div>
 </body>
-</html>
-
