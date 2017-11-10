@@ -12,10 +12,12 @@ app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
 app.set('port', process.env.PORT || 4000);
 app.use(express.static(__dirname +'/public'));
+
 app.use( function( req, res, next){
-  res.locals.showTests = app.get(' env') !== 'production' && req.query.test === '1';
+  res.locals.showTests = app.get('env') !== 'production' && req.query.test === '1';
   next();
  });
+
 app.use(require('body-parser').urlencoded({extended:true}));
 app.use(expressValidator());
 
@@ -90,10 +92,6 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
-app.get('/admin-login', function(req, res) {
-  res.render('admin-login');
-});
-
 app.get('/welcome', function(req, res) {
   res.render('welcome');
 });
@@ -106,11 +104,15 @@ app.get("/history", function(req,res){
 });
 
 app.get("/forgotpassword", function(req,res){
-  res.render("forgotpassword");
+  res.render("forgotpassword", {
+    menu: getMenu(req)
+  });
 });
 
 app.get("/search", function(req,res){
-  res.render("search");
+  res.render("search", {
+    menu: getMenu(req)
+  });
 });
 
 app.get("/addUser", function(req,res){
@@ -133,8 +135,8 @@ app.post("/login", function(req,res){
       res.redirect(303,'/');
     }else {
       var email=req.body.email;
-        var q  ="SELECT id, email, password FROM users WHERE email = 'test@gmail.com';";
-        con.query(q, function (err, result, fields) {
+       var q  ="SELECT id, email, password FROM users WHERE email = '" + email + "';";
+         con.query(q, function (err, result, fields) {
           console.log(result);
           if (err){
             throw err;
@@ -262,7 +264,8 @@ app.get("/user", function(req,res){
              });
            }
             //console.log(info);
-            res.render("user",info);
+
+           res.render("user",info);
           }
         }
       });
@@ -318,6 +321,7 @@ app.use(function(req, res){
   res.status(404);
   res.render("404");
 });
+
 //custom 500 page
 app.use(function(err, req, res, next){
   console.log(err.stack);
@@ -326,7 +330,7 @@ app.use(function(err, req, res, next){
 });
 
 app.listen(app.get('port'), function(){
-console.log('listening on http:// localhost:' + app.get('port') + '; press Ctrl-C to terminate.');
+  console.log("listening on http:// localhost:" + app.get("port") + "; press Ctrl-C to terminate.");
 });
 
 function upperCaseIt(word){
