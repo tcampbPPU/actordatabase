@@ -92,10 +92,6 @@ app.get('/login', function(req, res) {
   res.render('login');
 });
 
-app.get('/admin-login', function(req, res) {
-  res.render('admin-login');
-});
-
 app.get('/welcome', function(req, res) {
   res.render('welcome');
 });
@@ -137,8 +133,8 @@ app.post("/login", function(req,res){
       res.redirect(303,'/');
     }else {
       var email=req.body.email;
-        var q  ="SELECT id, email, password FROM users WHERE email = 'test@gmail.com';";
-        con.query(q, function (err, result, fields) {
+       var q  ="SELECT id, email, password FROM users WHERE email = '" + email + "';";
+         con.query(q, function (err, result, fields) {
           console.log(result);
           if (err){
             throw err;
@@ -266,7 +262,8 @@ app.get("/user", function(req,res){
              });
            }
             //console.log(info);
-            res.render("user",info);
+
+           res.render("user",info);
           }
         }
       });
