@@ -100,19 +100,34 @@
            </button>
            <div class="collapse navbar-collapse" id="navbarNav">
              <ul class="navbar-nav">
-               {{#each menu}}
-	         <li class="nav-item">
-	           <a class="nav-link" href="{{page}}">{{label}}</a>
-	         </li>
-	       {{/each}}
+               {{# each menu}}
+                 {{#if isCurent}}
+                   <li class="nav-item disabled">
+                  <a class="nav-link disabled" href="{{page}}">{{label}}</a>
+                   </li>
+                  {{else}}
+                  <li class="nav-item ">
+                  <a class="nav-link " href="{{page}}">{{label}} {{#if isCurent}} <span class="sr-only">(current)</span> {{/if}}</a>
+                   </li>
+                {{/if}}
+               {{/each}}         
              </ul>
            </div>
+           {{#if login}}
+             <span class="nav-item " style="float:right;" >
+               <table>
+                 <tr>
+                   <td><img src="img/user.png" style='width:30px; height:30px; margin-right:3px; border-radius:100px; border:1px solid white;' alt=""> </td><td>{{user_name}}</td><td> <a class="nav-link " href="logout" >Logout</a></td>
+                 </tr>
+               </table>
+             </span>
+           {{/if}}
        </nav>
 
      {{{body}}}
     <footer class="footer">
      <div class="container">
-       <span class="text-muted">footer.</span>
+       <span class="text-muted">Work in Progress.</span>
      </div>
     </footer>
 
