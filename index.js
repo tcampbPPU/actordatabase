@@ -104,13 +104,15 @@ app.get("/history", function(req,res){
 });
 
 app.get("/forgotpassword", function(req,res){
-  res.render("forgotpassword");
+  res.render("forgotpassword", {
     menu: getMenu(req)
+  });
 });
 
 app.get("/search", function(req,res){
-  res.render("search");
+  res.render("search", {
     menu: getMenu(req)
+  });
 });
 
 app.get("/addUser", function(req,res){
