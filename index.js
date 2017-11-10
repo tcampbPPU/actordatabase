@@ -169,6 +169,25 @@ app.post("/login", function(req,res){
   });
 });
 
+// To check if user already exists
+app.post('/addUser', function(req, res){
+  connect(function(con){
+    var email = req.body.email;
+    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
+    con.query(sql, function(err, results, field) {
+      if (err) throw err;
+      if(results[0]["COUNT(id)"] <  1) {
+        // Email is valid not in DB yet
+        res.send("");
+      }else{
+        res.send("Email Already Used.");
+      }
+    });
+  });
+});
+
+
+// To add new user
 app.post('/addUser', function(req, res){
 /* TODO:
  *  Ajax for Duplicate entry // app.get
@@ -176,21 +195,6 @@ app.post('/addUser', function(req, res){
  * Fix Duplicate entry Error from crashing nodemon
 */
   connect(function(con){
-    var emailToCheck = req.body.email;
-    var duplicateSql = "SELECT COUNT(id) FROM users WHERE email = emailToCheck;";
-    var find = con.query(duplicateSql, function(err, results) {
-      if (find[0] === 0) {
-        // Means Email was not already used by another account
-          /*if (err){
-            console.log(err);
-          }else{
-            con.end();
-            console.log("email is good");
-          }*/
-        }else {
-          console.log("Email already being used");
-        }
-    });
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?)";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
