@@ -120,7 +120,7 @@ app.get("/addUser", function(req,res){
 });
 
 app.get("/logout", function(req,res){
-  delete req.session.user_id;
+  delete req.session.users_id;
   res.redirect(303,'/');
 });
 
@@ -145,7 +145,7 @@ app.post("/login", function(req,res){
             if(result[0]){
                 //req.session.userpassEmail = false;
               if(result[0].password === req.body.password){
-                 req.session.user_id = result[0].id;
+                 req.session.users_id = result[0].id;
                  //req.session.firstName = result[0].name;
                  req.session.cookie.maxAge = 9000000;
                  //req.session.userpassPassword = false;
@@ -195,7 +195,7 @@ app.post('/addUser', function(req, res){
  * Fix Duplicate entry Error from crashing nodemon
 */
   connect(function(con){
-    var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?)";
+    var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
       console.log(values);
@@ -204,6 +204,7 @@ app.post('/addUser', function(req, res){
           res.redirect('/error-page');
         }else{
           con.end();
+          // Redirect to their new page using users_id
           res.redirect('/success');
         }
     });
@@ -235,16 +236,16 @@ var users_info_names={"first_name":true,"last_name":true,"sex":true,"email":true
 var actors_info_names={"first_name":true,"last_name":true,"sex":true,"email":true};
 var measurements ={"weight":true,"height":true,"neck_size":true,"sleeve_size":true,"waist_size":true,"inseam_size":true,"dress_size":true,"jacket_size":true,"shoe_size":true,"bust_size":true,"chest_size":true,"hip_size":true,"hat_size":true,}
 app.get("/user", function(req,res){
-  if(req.session.user_id){
-    var query ="SELECT * FROM users LEFT JOIN actors ON users.id = actors.users_id  WHERE id = '"+req.session.user_id+"'  ";
-    //var query ="SELECT * FROM users  WHERE id = '"+req.session.user_id+"'";
+  if(req.session.users_id){
+    var query ="SELECT * FROM users LEFT JOIN actors ON users.id = actors.users_id  WHERE id = '"+req.session.users_id+"'  ";
+    //var query ="SELECT * FROM users  WHERE id = '"+req.session.users_id+"'";
       con.query(query, function (err, result, fields) {
         if(err){
          //error
         }
         else {
           if(result[0]){
-            var info={user_name: result[0].first_name,login:req.session.user_id?req.session.user_id:false,user_info:[],actor_info:[],is_admin:result[0].is_admin,all_users:[],users_id:result[0].users_id,actors_measurement:[]};
+            var info={user_name: result[0].first_name,login:req.session.users_id?req.session.users_id:false,user_info:[],actor_info:[],is_admin:result[0].is_admin,all_users:[],users_id:result[0].users_id,actors_measurement:[]};
             for(key in result[0]){
               if(users_info_names[key]){
                 //user info only
@@ -279,12 +280,12 @@ app.get("/user", function(req,res){
 });
 
 app.post("/get-all-users",function(req,res){
-  if(req.session.user_id){
+  if(req.session.users_id){
     var query ="SELECT id,first_name,last_name,is_admin,email,sex,height,eye_color,gender,weight,hair_color,hair_type,tattoo,piercings,facial_hair,eyes_color,us_citizen,neck_size,sleeve_size,waist_size,inseam_size,dress_size,jacket_size,shoe_size,bust_size,chest_size,hip_size,hat_size,union_status,union_number FROM users LEFT JOIN actors ON users.id = actors.users_id";
     var q = "SELECT first_name,last_name,sex, is_admin, id FROM users";
     con.query(query, function (err, result, fields){
        if(err) throw err;
-       res.send({success:result,admin_id:req.session.user_id});
+       res.send({success:result,admin_id:req.session.users_id});
    });
 
   }else {
@@ -293,8 +294,8 @@ app.post("/get-all-users",function(req,res){
 });
 
 app.post("/get_user_images",function(req,res){
-  if(req.session.user_id){
-    con.query("SELECT image_url FROM images WHERE actors_users_id ='"+req.session.user_id+"'", function(err, result,fields){
+  if(req.session.users_id){
+    con.query("SELECT image_url FROM images WHERE actors_users_id ='"+req.session.users_id+"'", function(err, result,fields){
       if(err){
         res.send({success:false});
       }else {
@@ -307,8 +308,8 @@ app.post("/get_user_images",function(req,res){
 });
 
 app.post("/get_user_cars",function(req,res){
-  if(req.session.user_id){
-    con.query("SELECT * FROM cars WHERE actors_users_id ='"+req.session.user_id+"'", function(err, result,fields){
+  if(req.session.users_id){
+    con.query("SELECT * FROM cars WHERE actors_users_id ='"+req.session.users_id+"'", function(err, result,fields){
       if(err){
         res.send({success:false});
       }else {
