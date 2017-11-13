@@ -1,169 +1,117 @@
-<center><h3>ADD ACTOR TO DATABASE</h3></center>
-<div class="container">
-  <p>The form below is to add actor info into DB, Subject to change</p>
-  <form action="../index.js/"  method="POST">
+<script src="https://code.jquery.com/jquery-2.0.2.min.js"></script>
+<script type="text/javascript">
 
-    <div class="form-group col-md-4">
-      <label for="name">Name:</label>
-      <input type="text" class="form-control" id="name" name="name">
-    </div>
+var doesEmailAlreadyExist = true;
 
-    <div class="form-group col-md-4">
-      <label for="usr">Username:</label>
-      <input type="text" class="form-control" id="usr" name="usr">
-    </div>
+$(document).ready(function() {
+  $('#submit_btn').hide();
+     $('input').change(function(e) {
+         if ($('#first_name').val() && $('#last_name').val() && $('#email').val() && $('#password').val() && $('#sex').val() && validateEmail($('#email').val())) {
+            console.log("True", doesEmailAlreadyExist);
+             if(doesEmailAlreadyExist){
+               $('#submit_btn').hide();
+             }else {
+               $('#submit_btn').show();
+             }
+         }
+     });
 
-    <div class="form-group col-md-4">
-      <label for="email">Email:</label>
-      <input type="email" class="form-control" id="email" name="email">
-    </div>
+  $("#password").focus();
+  $("#pwd_box").click(function(){
+    if ($("#pwd_box").is(":checked")){
+       $("#password").clone()
+       .attr("type", "text").insertAfter("#password")
+       .prev().remove();
+    }else{
+       $("#password").clone()
+       .attr("type","password").insertAfter("#password")
+       .prev().remove();
+    }
+  });
+});
 
-    <div class="form-group col-md-4">
-      <label for="home_phone">Home Phone:</label>
-      <input type="tel" class="form-control" id="home_phone" name="home_phone">
-    </div>
+function validateEmail (email) {
+    var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+    return re.test(email);
+};
 
-    <div class="form-group col-md-4">
-      <label for="cell_phone">Cell Phone:</label>
-      <input type="tel" class="form-control" id="cell_phone" name="cell_phone">
-    </div>
+function checkEmail() {
+  var email = document.getElementById("email").value;
+  if(email) {
+    $.ajax({
+      type: 'post',
+      url: 'http://tcampb.it.pointpark.edu:4000/addUser',
+      data: {
+       email:email,
+      },
+      success: function (response) {
+       $('#email_status').html(response);
+       console.log(response);
+       if(response){
+        console.log("Email is good", doesEmailAlreadyExist);
+        doesEmailAlreadyExist = true;
+        return true;
+       }
+       else {
+        console.log("False", doesEmailAlreadyExist);
+        doesEmailAlreadyExist = false;
+        return false;
+       }
+      }
+    });
+  }
+  else {
+    $( '#email_status' ).html("");
+    return false;
+  }
+}
+function checkall() {
+   var emailhtml=document.getElementById("email_status").innerHTML;
+   if((emailhtml) == "OK"){
+    return true;
+   }
+   else{
+    return false;
+   }
+}
 
-    <div class="form-group col-md-4">
-      <label for="address">Address:</label>
-      <input type="text" class="form-control" id="address" name="address">
-    </div>
+</script>
+<body>
+  <center><h3>User Information</h3>
+  <div class="container">
+    <p>The form below is for the user to edit their personal info</p>
+    <form action="/addUser"  method="POST">
+      <div class="form-group col-md-4">
+        <label for="first_name">First Name:</label>
+        <input type="text" class="form-control" id="first_name" name="first_name">
+      </div>
 
-    <div class="fileupload fileupload-new" data-provides="fileupload">
-      <p class="font-weight-bold">Upload Picture</p>
-      <span class="btn btn-primary btn-file">
-       <span class="fileupload-new">Select Picture</span>
-       <span class="fileupload-exists">Change</span>
-       <input name="pic" type="file" />
-      </span>
-      <span class="fileupload-preview"></span>
-    </div>
+      <div class="form-group col-md-4">
+        <label for="last_name">Last Name:</label>
+        <input type="text" class="form-control" id="last_name" name="last_name">
+      </div>
 
+      <div class="form-group col-md-4">
+        <label for="email">Email:</label>
+        <input type="email" class="form-control" id="email" name="email" onkeyup="checkEmail();">
+        <span class="" id="email_status"></span>
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="password">Password:</label>
+        <input type="PASSWORD" class="form-control" id="password" name="password">
+        <input type="checkbox" id="pwd_box" class=""> Show password
+      </div>
+
+      <div class="form-group col-md-4">
+        <label for="sex">Sex:</label>
+        <input type="text" class="form-control" id="sex" name="sex">
+      </div>
+
+      <div class="form-group col-md-4">
+        <input type="submit" class="btn primary" id="submit_btn">
+      </div>
+  </form>
   <br>
-
-  <p class="font-weight-bold">Emergency Contact</p>
-
-    <div class="form-group col-md-4">
-      <label for="e_name">Name:</label>
-      <input type="text" class="form-control" id="e_name" name="e_name">
-    </div>
-
-    <div class="form-group col-md-4">
-      <label for="e_phone">Phone:</label>
-      <input type="tel" class="form-control" id="e_phone" name="e_phone">
-    </div>
-
-  <br>
-
-  <p class="font-weight-bold">Core</p>
-  
-      <div class="form-group col-md-4">
-        <label for="union_status">Union Status:</label>
-        <input type="text" class="form-control" id="union_status" name="union_status">
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="union_num">Union #:</label>
-        <input type="text" class="form-control" id="union_num" name="union_num">
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="sel1">Ethnicity: </label>
-          <select class="form-control" id="race" name="race">
-            <option>American Indian or Alaskan Native</option>
-            <option>Asian or Pacific Islander</option>
-            <option>Black or African American</option>
-            <option>Hispanic</option>
-            <option>White, non-Hispanic</option>
-          </select>
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="dob">Date of Birth:</label>
-        <input type="date" class="form-control" id="dob" name="birth">
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="gender">Gender:</label>
-        <label class="checkbox-inline">
-          <input type="checkbox" value="male" name="male">Male
-        </label>
-        <label class="checkbox-inline">
-          <input type="checkbox" value="Female" name="female">Female
-        </label>
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="sel1">Hair Color: </label>
-          <select class="form-control" id="hair_color" name="hair_color">
-            <option>Brown</option>
-            <option>Blonde</option>
-            <option>Black</option>
-            <option>Grey</option>
-            <option>Red</option>
-            <option>Bald</option>
-            <option>Other</option>
-          </select>
-      </div>
-      <div class="form-group col-md-4">
-        <label for="sel1">Hair Length: </label>
-          <select class="form-control" id="hair_length" name="hair_length">
-            <option>Short</option>
-            <option>Medium</option>
-            <option>Long</option>
-            <option>Other</option>
-          </select>
-      </div>
-           <div class="form-group col-md-4">
-        <label for="sel1">Eye Color: </label>
-          <select class="form-control" id="eye" name="eye">
-            <option>Amber</option>
-            <option>Blue</option>
-            <option>Brown</option>
-            <option>Gray</option>
-            <option>Green</option>
-            <option>Hazel</option>
-            <option>Other</option>
-          </select>
-      </div>
-      <div class="form-group col-md-4">
-        <label for="city">Location:</label>
-        <input type="text" class="form-control" id="city" name="city">
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="citizen">US Citizen:</label>
-        <label class="checkbox-inline">
-          <input type="checkbox" value="true" name="citizen_yes">Yes
-        </label>
-        <label class="checkbox-inline">
-          <input type="checkbox" value="false" name="citizen_no">No
-        </label>
-      </div>
-
-      <p class="font-weight-bold">Measurements</p>
-      <div class="form-group col-md-4">
-        <label for="height">Height:</label>
-        <input type="text" class="form-control" id="height" name="height">
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="weight">Weight:</label>
-        <input type="number" class="form-control" id="weight" name="weight">
-      </div>
-
-      <div class="form-group col-md-4">
-        <label for="shoe_size">Shoe Size:</label>
-        <input type="text" class="form-control" id="shoe_size" name="shoe_size">
-      </div>
-
-      <div class="form-group col-md-4">
-        <input type="submit" class="btn primary">
-      </div>
-</form>
-<br>
-</div>
+  </div>
+</body>
