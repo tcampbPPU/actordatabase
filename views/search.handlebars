@@ -1,18 +1,22 @@
 
 {{#if admin }}
-<div id="result_container" style="width:1000px; margin: 0 auto; display:none; color:white;">
+<div id="result_container" style="width:100%; padding-bottom:30px;  display:none; color:white;">
   <center><h3>Search Results</h3></center>
   <div class="">
-      <h6 id="heading_title" style="float:left"></h6>
-  </div>
-  <table style="width:100%;">
 
-  </table>
+
+  </div>
+  <div id="result_display" style="clear:both;  ">
+
+  </div>
   <br>
   <div class="">
     <label for="text_area">Message:</label><br>
     <textarea name="text" rows="8" cols="80" id='text_area' placeholder="Please type the message you would like to send here."></textarea>
-
+    <div class='form-group col-md-3'>
+      <!-- <label class='mr-sm-2' for='inputTitle'>Search Title:</label> -->
+      <input type='text' id='inputTitle'  class='form-control'  placeholder='Enter search title here' name='title'>
+    </div>
   </div>
    <div id="btn_div" ></div>
 
@@ -20,100 +24,136 @@
 <div class="container" id='search_container'style="width:1000px; margin: 0 auto;">
 <center><h3>Search</h3></center>
 <form  id="searchForm" action="/search_database" method="post">
-  <div class="form-group col-md-3">
+  <!-- <div class="form-group col-md-3">
     <label for="search_title" class="col-form-label">Search Title:</label>
     <input type="text" class="form-control" id="search_title" placeholder="title" name="search_title">
-  </div>
+  </div> -->
   <h6 data-target='name'>Name:</h6>
+    <input type="hidden" name="first_name[table]" value="users">
+    <input type="hidden" name="last_name[table]" value="users">
   <div class="search_toggle_divs" id='name'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="First name" name="first_name">
+        <input type="text" class="form-control"  placeholder="First name" name="first_name[first_name]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Last name" name="last_name">
+        <input type="text" class="form-control"  placeholder="Last name" name="last_name[last_name]">
+
       </div>
-    </div></div>
+    </div>
+  </div>
 
   <h6 data-target='phone'>Phone:</h6>
+    <input type="hidden" name="home_phone[table]" value="actors">
+      <input type="hidden" name="cell_phone[table]" value="actors">
   <div class="search_toggle_divs" id='phone'>
     <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="home Phone" name="home_phone">
+        <input type="text" class="form-control"  placeholder="home Phone" name="home_phone[home_phone]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Cell Phone" name="cell_phone">
+        <input type="text" class="form-control"  placeholder="Cell Phone" name="cell_phone[cell_phone]">
       </div>
     </div>
   </div>
   <h6 data-target='address'>Address:</h6>
+  <input type="hidden" name="street[table]" value="actors">
+  <input type="hidden" name="city[table]" value="actors">
+  <input type="hidden" name="state[table]" value="actors">
+  <input type="hidden" name="zip[table]" value="actors">
   <div class="search_toggle_divs" id='address'><div class="form-row">
     <div class="form-group col-md-3">
-      <input type="text" class="form-control"  placeholder="Street" name="street">
+      <input type="text" class="form-control"  placeholder="Street" name="street[street]">
     </div>
     <div class="form-group col-md-3">
-      <input type="text" class="form-control"  placeholder="City" name="city">
+      <input type="text" class="form-control"  placeholder="City" name="city[city]">
     </div>
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id='inputState' placeholder="State" name="state">
+      <input type="text" class="form-control" id='inputState' placeholder="State" name="state[state]">
     </div>
     <div class="form-group col-md-3">
-      <input type="text" class="form-control"  placeholder="zip" name="zip">
+      <input type="text" class="form-control"  placeholder="zip" name="zip[zip]">
     </div>
   </div></div>
 
   <h6 data-target='emergency_contacts' >Emergency Contact:</h6>
+    <input type="hidden" name="emergency_name[table]" value="actors">
+    <input type="hidden" name="emergency_number[table]" value="actors">
   <div class="search_toggle_divs" id='emergency_contacts'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Name" name="emergency_contact_name">
+        <input type="text" class="form-control"  placeholder="Name" name="emergency_name[emergency_name]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Cell Phone" name="emergency_contact_number">
+        <input type="text" class="form-control"  placeholder="Cell Phone" name="emergency_number[emergency_number]">
       </div>
     </div></div>
 
-  <h6 data-target='location'>Location:</h6>
-  <div class="search_toggle_divs" id='location'><input type="text" class="form-control col-md-3"  placeholder="Location" name="location"></div>
+  <!-- <h6 data-target='location'>Location:</h6>
+  <div class="search_toggle_divs" id='location'><input type="text" class="form-control col-md-3"  placeholder="Location" name="location"></div> -->
 
     <h6 data-target='union'>Union Info:</h6>
+      <input type="hidden" name="union_status[table]" value="actors">
+      <input type="hidden" name="union_number[table]" value="actors">
     <div class="search_toggle_divs" id='union'><div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Union status" name="union_status">
+        <input type="text" class="form-control"  placeholder="Union status" name="union_status[union_status]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Union #" name="union_number">
+        <input type="text" class="form-control"  placeholder="Union #" name="union_number[union_number]">
       </div>
     </div></div>
 
     <h6 data-target='ethnicity'>Ethnicity:</h6>
+    <input type="hidden" name="ethnicity[table]" value="actors">
     <div class="search_toggle_divs" id='ethnicity'>
-      <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='ethnicity_options' name="ethnicity">
+      <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='ethnicity_options' name="ethnicity[ethnicity]">
         <option selected></option>
       </select>
 
     </div>
 
     <h6 data-target='haircolor'>Hair Color:</h6>
-    <div class="search_toggle_divs" id='haircolor'>  <input type="text" class="form-control col-md-3"  placeholder="Hair Color" name="hair_color"></div>
+    <input type="hidden" name="hair_color[table]" value="actors">
+    <div class="search_toggle_divs" id='haircolor'>
+      <input type="text" class="form-control col-md-3"  placeholder="Hair Color" name="hair_color[hair_color]">
+    </div>
 
     <h6 data-target='hairtype'>Hair Type:</h6>
-    <div class="search_toggle_divs" id='hairtype'><input type="text" class="form-control col-md-3"  placeholder="Hair Type" name="hair_type"></div>
+    <input type="hidden" name="hair_type[table]" value="actors">
+    <div class="search_toggle_divs" id='hairtype'>
+      <input type="text" class="form-control col-md-3"  placeholder="Hair Type" name="hair_type[hair_type]">
+    </div>
 
      <h6 data-target='tattoos'>Tattoos </h6>
-     <div class="search_toggle_divs" id='tattoos'><input type="text" class="form-control col-md-3"  placeholder="Tattoos" name="tattoos"></div>
+      <input type="hidden" name="tattoo[table]" value="actors">
+     <div class="search_toggle_divs" id='tattoos'>
+       <input type="text" class="form-control col-md-3"  placeholder="Tattoos" name="tattoo[tattoo]">
+     </div>
 
       <h6 data-target='piercing'>Piercing </h6>
-      <div class="search_toggle_divs" id='piercing'> <input type="text" class="form-control col-md-3"  placeholder="Piercing" name="piercing"></div>
+      <input type="hidden" name="piercings[table]" value="actors">
+      <div class="search_toggle_divs" id='piercing'>
+        <input type="text" class="form-control col-md-3"  placeholder="Piercing" name="piercings[piercings]">
+      </div>
 
      <h6 data-target='facialhair'>Facial Hair </h6>
-     <div class="search_toggle_divs" id='facialhair'><input type="text" class="form-control col-md-3"  placeholder="Facial Hair" name="facial_hair"></div>
+     <input type="hidden" name="facial_hair[table]" value="actors">
+     <div class="search_toggle_divs" id='facialhair'>
+       <input type="text" class="form-control col-md-3"  placeholder="Facial Hair" name="facial_hair[facial_hair]">
+     </div>
 
-      <h6 data-target='eyes'>Eyes </h6>
-      <div class="search_toggle_divs" id='eyes'> <input type="text" class="form-control col-md-3"  placeholder="Eyes" name="eyes"></div>
+      <h6 data-target='eyes'>Eye Color </h6>
+       <input type="hidden" name="eye_color[table]" value="actors">
+        <input type="hidden" name="us_citizen[table]" value="actors">
+      <div class="search_toggle_divs" id='eyes'>
+         <input type="text" class="form-control col-md-3"  placeholder="Eyes" name="eye_color[eye_color]">
+       </div>
 
        <h6 data-target='us_citizen'>US citizen </h6>
-       <div class="search_toggle_divs" id='us_citizen'><input type="text" class="form-control col-md-3"  placeholder="US citizen" name="us_citizen"></div>
+       <div class="search_toggle_divs" id='us_citizen'>
+         <input type="text" class="form-control col-md-3"  placeholder="US citizen" name="us_citizen[us_citizen]">
+       </div>
 
-  <h6 data-target='dob'>D.O.B:</h6>
+  <!-- <h6 data-target='dob'>D.O.B:</h6>
   <div class="search_toggle_divs" id='dob'>  <div class="form-row">
       <div class="form-group col-md-3">
         <input type="date" class="form-control" name="birthday_min" >
@@ -121,162 +161,186 @@
       <div class="form-group col-md-3">
         <input type="date" class="form-control"  name="birthday_max">
       </div>
-    </div></div>
+    </div></div> -->
 
   <h6 data-target='sex'>Sex:</h6>
-  <div class="search_toggle_divs" id='sex'><input type="text" class="form-control col-md-3" id="sex_field" placeholder="Sex" name="sex"></div>
+      <input type="hidden" name="sex[table]" value="users">
+
+  <div class="search_toggle_divs" id='sex'>
+    <!-- <input type="text" class="form-control col-md-3" id="sex_field" placeholder="Sex" name="sex[sex]"> -->
+    <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='sex_field' name="sex[sex]">
+      <option selected></option>
+    </select>
+  </div>
 
   <h6 data-target='weight'>Weight:</h6>
+    <input type="hidden" name="weight[table]" value="actors">
   <div class="search_toggle_divs" id='weight'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Min" name="weight_min">
+        <input type="text" class="form-control"  placeholder="Min" name="weight[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control"  placeholder="Max" name="weight_max">
+        <input type="text" class="form-control"  placeholder="Max" name="weight[max]">
       </div>
-    </div></div>
+    </div>
+  </div>
 
   <h6 data-target='height'>Height:</h6>
+    <input type="hidden" name="height[table]" value="actors">
   <div class="search_toggle_divs" id='height'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMinOptions' name="height_min">
+        <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMinOptions' name="height[min]">
           <option selected ></option>
         </select>
       </div>
       <div class="form-group col-md-3">
-        <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMaxOptions' name="height_max">
+        <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMaxOptions' name="height[max]">
           <option selected></option>
         </select>
       </div>
     </div></div>
 
   <h6 data-target='shoe_size'>Shoe size:</h6>
+  <input type="hidden" name="shoe_size[table]" value="actors">
   <div class="search_toggle_divs" id='shoe_size'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="shoe_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="shoe_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="shoe_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="shoe_size[max]">
       </div>
     </div></div>
 
   <h6 data-target='jacket'>Jacket size:</h6>
+      <input type="hidden" name="jacket_size[table]" value="actors">
   <div class="search_toggle_divs" id='jacket'><div class="form-row">
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="jacket_min">
+      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="jacket_size[min]">
     </div>
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="jacket_max">
+      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="jacket_size[max]">
     </div>
   </div></div>
 
   <h6 data-target='dress'>Dress size:</h6>
+    <input type="hidden" name="dress_size[table]" value="actors">
   <div class="search_toggle_divs" id='dress'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="dress_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="dress_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="dress_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="dress_size[max]">
       </div>
     </div></div>
 
   <h6 data-target='chest'>Chest size:</h6>
+    <input type="hidden" name="chest_size[table]" value="actors">
   <div class="search_toggle_divs" id='chest'><div class="form-row">
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="chest_min">
+      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="chest_size[min]">
     </div>
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="chest_max">
+      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="chest_size[max]">
     </div>
   </div></div>
 
   <h6 data-target='hip'>Hip size:</h6>
+        <input type="hidden" name="hip_size[table]" value="actors">
   <div class="search_toggle_divs" id='hip'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hip_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hip_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hip_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hip_size[max]">
       </div>
     </div></div>
 
   <h6 data-target='waist'>Waist size:</h6>
+    <input type="hidden" name="waist_size[table]" value="actors">
   <div class="search_toggle_divs" id='waist'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="waist_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="waist_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="waist_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="waist_size[max]">
       </div>
     </div></div>
 
   <h6 data-target='bust'>Bust size:</h6>
+    <input type="hidden" name="bust_size[table]" value="actors">
   <div class="search_toggle_divs" id='bust'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="bust_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="bust_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="bust_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="bust_size[max]">
       </div>
     </div></div>
 
   <h6 data-target='inseam'>Inseam size:</h6>
+      <input type="hidden" name="inseam_size[table]" value="actors">
   <div class="search_toggle_divs" id='inseam'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="inseam_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="inseam_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="inseam_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="inseam_size[max]">
       </div>
     </div></div>
 
   <h6 data-target='neck'>Neck size:</h6>
+        <input type="hidden" name="neck_size[table]" value="actors">
   <div class="search_toggle_divs" id='neck'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="neck_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="neck_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="neck_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="neck_size[max]">
       </div>
     </div></div>
 
   <h6 data-target="sleeve">Sleeve size:</h6>
+  <input type="hidden" name="sleeve_size[table]" value="actors">
   <div class="search_toggle_divs" id='sleeve'><div class="form-row">
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="sleeve_min">
+      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="sleeve_size[min]">
     </div>
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="sleeve_max">
+      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="sleeve_size[max]">
     </div>
   </div></div>
 
   <h6 data-target='hat'>Hat size:</h6>
+        <input type="hidden" name="hat_size[table]" value="actors">
   <div class="search_toggle_divs" id='hat'>  <div class="form-row">
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hat_min">
+        <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hat_size[min]">
       </div>
       <div class="form-group col-md-3">
-        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hat_max">
+        <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hat_size[max]">
       </div>
     </div></div>
   <h6 data-target='car_year'>Car Year:</h6>
+      <input type="hidden" name="year[table]" value="cars">
   <div class="search_toggle_divs" id='car_year'><div class="form-row">
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="car_year_min">
+      <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="year[min]">
     </div>
     <div class="form-group col-md-3">
-      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="car_year_max">
+      <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="year[max]">
     </div>
   </div></div>
 
   <h6 data-target='car_make'>Make of Car:</h6>
+  <input type="hidden" name="make[table]" value="cars">
   <div class="search_toggle_divs" id='car_make'>
-     <input type="text" class="form-control col-md-3"  placeholder="Make of Car" name="make_car">
+     <input type="text" class="form-control col-md-3"  placeholder="Make of Car" name="make[make]">
   </div>
 
   <h6 data-target='car_color'>Car Color:</h6>
+       <input type="hidden" name="color[table]" value="cars">
   <div class="search_toggle_divs" id='car_color'>
-     <input type="text" class="form-control col-md-3"  placeholder="Car Color" name="car_color">
+     <input type="text" class="form-control col-md-3"  placeholder="Car Color" name="color[color]">
   </div>
   <button type="submit" class="btn btn-primary">Search</button>
 </form><br><br>
@@ -296,23 +360,33 @@ $("#search_container h6").click(function(){
 utility.giveHeightToDropdown("heightMaxOptions");
 utility.giveHeightToDropdown("heightMinOptions");
 utility.giveEtnicityToDropdown("ethnicity_options");
+utility.giveGenderToDropdown("sex_field");
 
 $('#searchForm').on('submit', function(evt){
   evt.preventDefault();
   $.ajax({
+    xhr: function() {
+          var xhr = new window.XMLHttpRequest();
+          // Upload progress
+          xhr.upload.addEventListener("progress", function(evt){
+              if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+                  console.log(Math.floor(percentComplete*100)+"%");
+              }
+         }, false);
+         return xhr;
+      },
       url: "/search_database",
       type: 'POST',
       data: $(this).serialize(),
       success: function(data){
           if(data.success){
-             console.log('response: ',data.success);
-             showResult(data.success,data.title);
+             showResult(data.success,data.query);
           }else{
-            console.log(' There was a problem.');
+            console.log(' There was a problem. search_database');
            }
       },
       error: function(){
-         //$ container.html(' There was a problem.');
          console.log("error");
        }
  });
@@ -327,23 +401,41 @@ function toggleResultAndSearch(view){
     $("#result_container").hide();
   }
 }
-function showResult(result,theTitle){
-  var title = theTitle;
+function showResult(result,query){
+   $("#result_display").empty();
   var actor_ids =[];
   if(result){
     var button_save = $("<button type='button' name='button' style='cursor:pointer;'>Save</button>");
     var button_send = $("<button type='button' name='button' style='cursor:pointer;'>Send Email</button>");
     $("#btn_div").append(button_save,button_send);
   }
-  $("#heading_title").html("Title: "+ title);
-    $("#result_container table").append("<tr style='background-color:darkgrey;'><td class='result_table_hearding' style='text-align:center;'>First Name</td><td class='result_table_hearding style='text-align:center;''>Last Name</td><td class='result_table_hearding' style='text-align:center;'>Email</td></tr>");
+  //$("#heading_title").html("Title: "+ title);
     for (elt in result){
-      actor_ids.push(result[elt].id);
-      $("#result_container table").append("<tr style='background-color:grey; border-bottom:1px solid lightgrey; color:black;'><td class='result_table_row'>"+result[elt].name+"</td><td class='result_table_row'>"+result[elt].last_name+"</td><td class='result_table_row'>"+result[elt].email+"</td></tr>");
+      actor_ids.push(result[elt].id); //save each id
+       var box = $("<div style='display:inline-block; width:200px; height:300px;padding:5px; margin: 3px; background-color:rgba(100,100,100,0.4); '></div>");
+       var name = $("<span style='font-size:0.7em;'>"+result[elt].first_name+" "+result[elt].last_name+"</span>");
+       var image = $("<img src='"+(result[elt].first_image?("data:image/png;base64,"+result[elt].first_image):"img/blank.png")+"' alt='' style='width:100%; height:200px; '>");
+        var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+Math.floor(result[elt].age*0.0027397260273973)+" </span>");
+        var cars = $("<span data-index="+0+" style='font-size:0.8em; cursor:pointer;'><span  style='background-color:grey; padding:2px;'>"+(result[elt].cars?result[elt].cars.split(",").length:"")+" Cars</span > <span id='name'>"+(result[elt].cars?result[elt].cars.split(",")[0]:"none")+"</span> </span>");
+       cars.click({cars:result[elt].cars,index:0},function(e){
+         var index = parseInt(e.data.index) + 1;
+         var cars = (e.data.cars?e.data.cars.split(","):false);
+         if(cars){
+           if(index>=cars.length){
+             index= 0;
+           }
+           $(this).children("#name").html(cars[index]);
+            e.data.index = index;
+         }
+       });
+       box.append(name,image,"<br>",age,"<br>",cars);
+         $("#result_display").append(box);
+         //console.log("cars:", result[elt].cars.split(","));
     }
+
      toggleResultAndSearch("result");
      button_save.click(function(){
-       var data = {actor_ids:actor_ids, message:$("#text_area").val(),title:title};
+       var data = {actor_ids:actor_ids, message:$("#text_area").val(),title:$("#inputTitle").val(),query:query};
        console.log(data);
        $.ajax({
            url: "/save_search",

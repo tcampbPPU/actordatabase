@@ -31,7 +31,6 @@ $(document).ready(function() {
     }
   });
 });
-
 function validateEmail (email) {
     var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
     return re.test(email);
@@ -42,7 +41,7 @@ function checkEmail() {
   if(email) {
     $.ajax({
       type: 'post',
-      url: 'http://tcampb.it.pointpark.edu:4000/addUser',
+      url: '/check_email',
       data: {
        email:email,
       },
@@ -76,12 +75,10 @@ function checkall() {
     return false;
    }
 }
-
 </script>
 <body>
-  <center><h3>User Information</h3>
+  <center><h3>Create Account</h3>
   <div class="container">
-    <p>The form below is for the user to edit their personal info</p>
     <form action="/addUser"  method="POST">
       <div class="form-group col-md-4">
         <label for="first_name">First Name:</label>
@@ -95,8 +92,8 @@ function checkall() {
 
       <div class="form-group col-md-4">
         <label for="email">Email:</label>
-        <input type="email" class="form-control" id="email" name="email" onkeyup="checkEmail();">
-        <span class="" id="email_status"></span>
+        <input type="email" class="form-control" id="email" name="email" onchange="checkEmail();">
+        <span class="" id="email_status" style='color:red; font-weight:bold;'></span>
       </div>
 
       <div class="form-group col-md-4">
