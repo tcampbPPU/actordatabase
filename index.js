@@ -190,34 +190,38 @@ app.post('/addUser', function(req, res){
 // To add new user
 app.post('/addUser', function(req, res){
 /* TODO:
- *  Ajax for Duplicate entry // app.get
- * Check Form for incomplete
- * Fix Duplicate entry Error from crashing nodemon
+ *  Redirect New added user to /user
 */
   connect(function(con){
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
-      console.log(values);
+      console.log(results.insertId);
         if (err){
           console.log(err);
           res.redirect('/error-page');
         }else{
+          if (results.insertId) {
+              console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+              res.redirect(303, '/user');
+          } else {
+              console.log("Error Redirecting pages");
+          }
           con.end();
-          // Redirect to their new page using users_id
-          res.redirect('/success');
         }
     });
   });
 });
 
 app.post('/process-search', function(req, res) {
-        var search = req.body.search;
-        var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
-        connection.query(q, function(err, results) {
-         if (err) throw err;
-           res.send({success: results});
-	});
+  var search = req.body.search;
+  var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
+  connect(function(con){
+    con.query(q, function(err, results) {
+     if (err) throw err;
+       res.send({success: results});
+  	});
+  });
 });
 
 app.post("/update-user-info", function(req,res){
