@@ -183,9 +183,6 @@ app.post('/check_email', function(req, res){
 
 // To add new user
 app.post('/addUser', function(req, res){
-/* TODO:
- *  Redirect New added user to /user
-*/
   connect(function(con){
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
@@ -195,14 +192,15 @@ app.post('/addUser', function(req, res){
           res.redirect(303,'/error-page');
         }else{
           if (results.insertId) {
-              console.log("New record created successfully. Last inserted ID is: " + results.insertId);
-              req.session.user_id = results.insertId;
-              // req.session.is_admin = result[0].is_admin;
-              req.session.user_first_name = req.body.first_name;
-              req.session.cookie.maxAge = 9000000;
-              res.redirect(303, '/user');
+            // Redirects new user to their own page
+            console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+            req.session.user_id = results.insertId;
+            req.session.user_first_name = req.body.first_name;
+            req.session.cookie.maxAge = 9000000;
+            res.redirect(303, '/user');
           } else {
               console.log("Error Redirecting pages");
+              res.redirect(303, '/error-page');
           }
           con.end();
         }
