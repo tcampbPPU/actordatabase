@@ -73,7 +73,8 @@
   .remove:hover{
     color:darkred;
   }
-  tr:nth-child(even) {background-color: rgba(100,100,100,0.4)}
+  tr:nth-child(odd) {background-color: rgba(100,100,100,0.4)}
+  tr:nth-child(even) {background-color: rgba(10,10,10,0.4)}
   .info_input{
     visibility: hidden;
   }
@@ -81,7 +82,6 @@
     <script type="text/javascript" src="utility.js"></script>
   </head>
   <body style='background-color:black; color:white;'>
-
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
            <a class="navbar-brand" href="/">LunaMISTA</a>
            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
@@ -90,7 +90,6 @@
            <div class="collapse navbar-collapse" id="navbarNav">
              <ul class="navbar-nav">
                {{# each menu}}
-
                  {{#if isCurent}}
                   <li class="nav-item disabled">
                  <a class="nav-link disabled" href="{{page}}">{{label}}</a>
@@ -100,28 +99,23 @@
                   <a class="nav-link " href="{{page}}">{{label}} {{#if isCurent}} <span class="sr-only">(current)</span> {{/if}}</a>
                     </li>
                  {{/if}}
-
                {{/each}}
              </ul>
-
            </div>
            {{#if login}}
            <span class="nav-item " style="float:right;" >
              <table>
-               <tr>
-                 <td><img src="img/user.png" style='width:30px; height:30px; margin-right:3px; border-radius:100px; border:1px solid white;' alt=""> </td><td>{{user_name}}</td><td> <a class="nav-link " href="logout" >Logout</a></td>
+               <tr style="background-color:inherit;">
+                 <td><img src="img/user.png" style='width:30px; height:30px; margin-right:3px; border-radius:100px; border:1px solid white;' alt=""> </td><td>{{user_name}}</td><td> <a class="nav-link " href="logout" style="color:grey;">Logout</a></td>
                </tr>
              </table>
-
           </span>
-
           {{/if}}
        </nav>
-
      {{{body}}}
     <footer class="footer">
      <div class="container">
-       <span class="text-muted">footer.</span>
+       <span class="text-muted">Work in Progress</span>
      </div>
    </footer>
         {{#if showTests}}
@@ -142,6 +136,5 @@
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>
       <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
   </body>
 </html>
