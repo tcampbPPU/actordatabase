@@ -153,7 +153,7 @@ app.post("/login", function(req,res){
                  req.session.cookie.maxAge = 9000000;
                  res.redirect(303,'/user');
               }else {
-                  res.redirect(303,'/');
+                  res.redirect(303,'/error-page');
               }
             }else {
                res.redirect(303,'/');
