@@ -1,3 +1,18 @@
+<style>
+body {
+  background: url("img/cinema4.jpeg") center center fixed;
+  background-repeat: no-repeat;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+}
+.b {
+ border: 1px solid black;
+ background: rgba(13,13,13,.0);
+ box-shadow: 0px 10px 50px black;
+}
+</style>
 <script src="https://code.jquery.com/jquery-2.0.2.min.js"></script>
 <script type="text/javascript">
 
@@ -17,6 +32,15 @@ $(document).ready(function() {
              }
          }
      });
+
+// To make User enter safer password...
+$("#password").keyup(function(){
+    var len = ($('#password').val());
+console.log(len);
+   if(len > 6){
+     console.log("over 6 ");
+  }
+});
 
   $("#password").focus();
   $("#pwd_box").click(function(){
@@ -78,7 +102,7 @@ function checkall() {
 </script>
 <body>
   <center><h3>Create Account</h3>
-  <div class="container">
+  <div class="container b">
     <form action="/addUser"  method="POST">
       <div class="form-group col-md-4">
         <label for="first_name">First Name:</label>

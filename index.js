@@ -27,6 +27,7 @@ app.use(require('express-session')({
  saveUninitialized:false,
  secret:credentials.cookieSecret
 }));
+
 /* DB Connection
  * USE connect(function(con){}); inside POST to call DB
 */
@@ -131,6 +132,7 @@ app.get("/logout", function(req,res){
   res.redirect(303,'/');
 });
 
+
 app.post("/login", function(req,res){
   connect(function(con){
     req.check('email','invalid email address').isEmail();
@@ -194,6 +196,10 @@ app.post('/addUser', function(req, res){
         }else{
           if (results.insertId) {
               console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+              req.session.user_id = results.insertId;
+              // req.session.is_admin = result[0].is_admin;
+              req.session.user_first_name = req.body.first_name;
+              req.session.cookie.maxAge = 9000000;
               res.redirect(303, '/user');
           } else {
               console.log("Error Redirecting pages");
@@ -203,6 +209,7 @@ app.post('/addUser', function(req, res){
     });
   });
 });
+
 
 app.post('/process-search', function(req, res) {
   var search = req.body.search;
