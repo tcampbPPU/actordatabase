@@ -27,6 +27,7 @@ app.use(require('express-session')({
  saveUninitialized:false,
  secret:credentials.cookieSecret
 }));
+
 /* DB Connection
  * USE connect(function(con){}); inside POST to call DB
 */
@@ -133,6 +134,7 @@ app.get("/logout", function(req,res){
   res.redirect(303,'/');
 });
 
+
 app.post("/login", function(req,res){
   connect(function(con){
     req.check('email','invalid email address').isEmail();
@@ -153,7 +155,7 @@ app.post("/login", function(req,res){
                  req.session.cookie.maxAge = 9000000;
                  res.redirect(303,'/user');
               }else {
-                  res.redirect(303,'/');
+                  res.redirect(303,'/error-page');
               }
             }else {
                res.redirect(303,'/');
@@ -183,25 +185,31 @@ app.post('/check_email', function(req, res){
 
 // To add new user
 app.post('/addUser', function(req, res){
-/* TODO:
- *  Ajax for Duplicate entry // app.get
- * Check Form for incomplete
- * Fix Duplicate entry Error from crashing nodemon
-*/
   connect(function(con){
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
+      console.log(results.insertId);
         if (err){
           res.redirect(303,'/error-page');
         }else{
+          if (results.insertId) {
+            // Redirects new user to their own page
+            console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+            req.session.user_id = results.insertId;
+            req.session.user_first_name = req.body.first_name;
+            req.session.cookie.maxAge = 9000000;
+            res.redirect(303, '/user');
+          } else {
+              console.log("Error Redirecting pages");
+              res.redirect(303, '/error-page');
+          }
           con.end();
-          // Redirect to their new page using users_id
-          res.redirect(303,'/');
         }
     });
   });
 });
+
 
 app.post('/delete-in-database', function(req, res){
   var table = req.body.table;
@@ -220,13 +228,16 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
+
 app.post('/process-search', function(req, res) {
-        var search = req.body.search;
-        var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
-        connection.query(q, function(err, results) {
-         if (err) throw err;
-           res.send({success: results});
-	});
+  var search = req.body.search;
+  var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
+  connect(function(con){
+    con.query(q, function(err, results) {
+     if (err) throw err;
+       res.send({success: results});
+  	});
+  });
 });
 
 app.post("/update-user-info", function(req,res){
