@@ -1,5 +1,6 @@
 // Add any outside files here...
 var express = require('express');
+var credentials = require('./credentials.js');
 var expressValidator = require('express-validator');
 var formidable = require('formidable');
 var mysql = require('mysql');
@@ -20,7 +21,12 @@ app.use( function( req, res, next){
 
 app.use(require('body-parser').urlencoded({extended:true}));
 app.use(expressValidator());
-
+app.use(require('cookie-parser')(credentials.cookieSecret));
+app.use(require('express-session')({
+ resave:false,
+ saveUninitialized:false,
+ secret:credentials.cookieSecret
+}));
 /* DB Connection
  * USE connect(function(con){}); inside POST to call DB
 */
@@ -43,63 +49,51 @@ function connect(cb){
 
 function getMenu(req){
   var menu =[];
-  var isLoggedIn = req.session.user_id ? true : false;
-  var isAdmin = req.session.is_admin ? true : false;
+  var isAdmin = req.session.is_admin;
+   menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
+
   if(isAdmin){
-    menu.push({"page": "search", "label": "Search For Actors"});
+    menu.push({"page": "search", "label": "Search For Actors"},{"page": "history", "label": "Search History"});
   } else{
-    menu.push({"page": "addUser", "label": "Edit Info"});
+    menu.push({"page": "addUser", "label": "Create Account"});
   }
-  menu.push({"page": "about", "label": "About"});
   return menu;
 };
 
 // Root Dir. Displays to USER on Page Load w/ Nav-Bar
 app.get('/', function(req, res) {
-  res.render('landing', {
-    menu: getMenu(req)
+  if(req.session.user_id){
+    res.redirect(303,'/user');
+  }else {
+    res.render('landing', {
+       menu: getMenu(req),
+       login:req.session.user_id?req.session.user_id:false,
+       user_name:req.session.user_first_name,
+    });
+  }
+});
+
+app.get('/home-login', function(req, res) {
+  res.render('home-login', {
+  menu: getMenu(req),
+  login:req.session.user_id?req.session.user_id:false,
+  user_name:req.session.user_first_name,
   });
 });
+// app.get('/', function(req, res) {
+//   res.render('home');
+// });
 
 app.get('/about', function(req, res) {
-  res.render("about", {
-    menu: getMenu(req)
+  res.render('about',{
+    menu: getMenu(req),
+    login:req.session.user_id?req.session.user_id:false,
+    user_name:req.session.user_first_name,
   });
-});
-
-app.get('/admin_page', function(req, res) {
-  res.render('admin_page');
-});
-
-app.get('/admin_mail', function(req, res) {
-  res.render('admin_mail');
-});
-
-app.get('/admin_search', function(req, res) {
-  res.render('admin_search');
-});
-
-app.get('/success', function(req, res) {
-  res.render('success');
 });
 
 app.get('/error-page', function(req, res) {
   res.render('error-page');
-});
-
-app.get('/login', function(req, res) {
-  res.render('login');
-});
-
-app.get('/welcome', function(req, res) {
-  res.render('welcome');
-});
-
-app.get("/history", function(req,res){
-  if(req.session.admin_id){
-  }else {
-    res.render("searchhistory",{admin:req.session.firstName,adminlogin:req.session.admin_id});
-  }
 });
 
 app.get("/forgotpassword", function(req,res){
@@ -107,15 +101,30 @@ app.get("/forgotpassword", function(req,res){
     menu: getMenu(req)
   });
 });
-
 app.get("/search", function(req,res){
-  res.render("search", {
-    menu: getMenu(req)
-  });
+  if(req.session.is_admin){
+    res.render("search",{
+      admin:req.session.is_admin,
+      user_name:req.session.user_first_name,
+      menu: getMenu(req),
+      login:req.session.user_id?req.session.user_id:false,
+      });
+  }else {
+    res.render("search",{
+      admin:req.session.is_admin,
+      user_name:req.session.user_first_name,
+      menu: getMenu(req),
+      login:req.session.user_id?req.session.user_id:false,
+    });
+  }
 });
-
 app.get("/addUser", function(req,res){
-  res.render("addUser");
+  res.render("addUser",{
+    menu: getMenu(req),
+    admin:req.session.is_admin,
+    login:req.session.user_id?req.session.user_id:false,
+    user_name:req.session.user_first_name,
+  });
 });
 
 app.get("/logout", function(req,res){
@@ -124,50 +133,54 @@ app.get("/logout", function(req,res){
 });
 
 app.post("/login", function(req,res){
-  console.log("enter login route");
   connect(function(con){
     req.check('email','invalid email address').isEmail();
     var errors = req.validationErrors();
-    console.log(errors);
-    if(errors){
+    if( errors){
       req.session.errors = errors;
       res.redirect(303,'/');
     }else {
       var email=req.body.email;
-       var q  ="SELECT id, email, password FROM users WHERE email = '" + email + "';";
-         con.query(q, function (err, result, fields) {
-          console.log(result);
-          if (err){
-            throw err;
-          }
-          else {
+        var q  ="SELECT * FROM users WHERE email = '"+email+"' ;"; //"SELECT id, email,FROM users WHERE email = '"+email+"' "
+        con.query(q, function (err, result, fields) {
+          if (err) throw err;
             if(result[0]){
-                //req.session.userpassEmail = false;
               if(result[0].password === req.body.password){
                  req.session.user_id = result[0].id;
-                 //req.session.firstName = result[0].name;
+                 req.session.is_admin = result[0].is_admin;
+                 req.session.user_first_name = result[0].first_name;
                  req.session.cookie.maxAge = 9000000;
-                 //req.session.userpassPassword = false;
-                 res.redirect(303,'/success');
-                //.....
+                 res.redirect(303,'/user');
               }else {
-                //password false
-                 //console.log("password not correct");
-                 //req.session.userpassPassword = true;
                   res.redirect(303,'/');
               }
             }else {
-              //not result email false
-              //console.log("email not found");
-              //req.session.userpassEmail = true;
                res.redirect(303,'/');
             }
-          }
         });
-     }
+    }
   });
 });
 
+// To check if user already exists
+app.post('/check_email', function(req, res){
+  connect(function(con){
+    var email = req.body.email;
+    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
+    con.query(sql, function(err, results, field) {
+      if (err) throw err;
+      if(results[0]["COUNT(id)"] <  1) {
+        // Email is valid not in DB yet
+        res.send("");
+      }else{
+        res.send("Email Already Used.");
+      }
+    });
+  });
+});
+
+
+// To add new user
 app.post('/addUser', function(req, res){
 /* TODO:
  *  Ajax for Duplicate entry // app.get
@@ -175,31 +188,15 @@ app.post('/addUser', function(req, res){
  * Fix Duplicate entry Error from crashing nodemon
 */
   connect(function(con){
-    var emailToCheck = req.body.email;
-    var duplicateSql = "SELECT COUNT(id) FROM users WHERE email = emailToCheck;";
-    var find = con.query(duplicateSql, function(err, results) {
-      if (find[0] === 0) {
-        // Means Email was not already used by another account
-          /*if (err){
-            console.log(err);
-          }else{
-            con.end();
-            console.log("email is good");
-          }*/
-        }else {
-          console.log("Email already being used");
-        }
-    });
-    var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?)";
+    var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
-      console.log(values);
         if (err){
-          console.log(err);
-          res.redirect('/error-page');
+          res.redirect(303,'/error-page');
         }else{
           con.end();
-          res.redirect('/success');
+          // Redirect to their new page using users_id
+          res.redirect(303,'/');
         }
     });
   });
@@ -215,31 +212,143 @@ app.post('/process-search', function(req, res) {
 });
 
 app.post("/update-user-info", function(req,res){
-  console.log("update-user-info",req.body);
-  var table = req.body.table_name;
-  for(key in req.body ){
-    if(key!=="table_name"){
-           console.log("in table:",table," change",key,".to.",req.body[key]);
+  if( req.session.user_id){
+    var table = req.body.table_name;
+    if(req.body.request_type==='admin_request'){
+        var q = "UPDATE "+req.body.table_name+" SET "+req.body.target+"='"+req.body.value+"' WHERE id = '"+ req.body.id+"';"
+        connect(function(con){
+          con.query(q, function (err, result, fields) {
+            if (err) throw err;
+              if(result){
+                res.send({success:result});
+              }else {
+                 res.send({success:false});
+              }
+          });
+        });
     }
+    else {
+      if(table!=="undefined"){
+        for(key in req.body ){
+          if(key!=="table_name"){
+                 if(key ==="password"){
+                   var current_pass = req.body[key].current_password,new_pass = req.body[key].new_password,confirm_pass=req.body[key].confirm_password;
+                   connect(function(con){
+                     con.query("SELECT password FROM users WHERE id = '"+req.session.user_id+"' ;", function (err, result, fields) {
+                       if (err) throw err;
+                         if(result[0]){
+                           if((result[0].password===current_pass) && (confirm_pass===new_pass) && confirm_pass.length>0){
+                             var q = "UPDATE users SET password='"+confirm_pass+"' WHERE id = '"+ req.session.user_id+"';";
+                             connect(function(con){
+                               con.query(q, function (err, result, fields) {
+                                 if (err) throw err;
+                                   if(result){
+                                     res.send({success:"succes"});
+                                   }else {
+                                      res.send({success:false});
+                                   }
+                               });
+                             });
+                           }else {
+                            // console.log("dennied incorrect credentials");
+                             res.send({success:false});
+                           }
+                         }else {
+                            res.send({success:false});
+                         }
+                     });
+                   });
+                 }else if (key ==="cars") {
+                   //console.log("changing carsx info",req.body);
+                   if(req.body.cars.make && req.body.cars.color && req.body.cars.year){
+                    // console.log("running the query");
+                       if(req.body.cars.id !=="undefined"){
+                         var q = "UPDATE cars SET make='"+req.body.cars.make+"', color='"+req.body.cars.color+"' ,year='"+req.body.cars.year+"' WHERE id = '"+ req.body.cars.id+"';";
+                       }else {
+                         var q = "INSERT INTO cars (make,color,year,actors_users_id) VALUES('"+req.body.cars.make+"','"+req.body.cars.color+"','"+req.body.cars.year+"','"+req.session.user_id+"')";
+                       }
+
+                       connect(function(con){
+                         con.query(q, function (err, result, fields) {
+                           if (err) throw err;
+                             if(result){
+                               res.send({success:"succes"});
+                             }else {
+                                res.send({success:false});
+                             }
+                         });
+                       });
+                   }else {
+                            res.send({success:false});
+                   }
+
+                 }else {
+                   var target = key,value=req.body[key];
+                   var id = (table==="users"?"id":"users_id");
+                   //console.log("in table:",table," change",target," to  ",value);
+                    connect(function(con){
+                          var query = "UPDATE "+table+" SET "+target+"='"+value+"' WHERE "+id+" = '"+ req.session.user_id+"';";
+                          con.query(query, function (err, result, fields) {
+                            if (err) throw err;
+                              if(result){
+                                res.send({success:{column_changed:target, value:value}});
+                              }else {
+                                 res.send({success:false});
+                              }
+                          });
+                    });
+                 }
+           }
+        }
+      }
+    }
+  }else {
+    res.send({success:false});
   }
-  res.send({success:true});
+
 });
 
-var voids = {"password":true,"is_admin":true,"id":true,"users_id":true};
+var voids = {"password":true,"is_admin":true,"id":true,"users_id":true,"admin_request":true,"image":true,"car_make":true,"car_color":true,"car_year":true,"car_id":true,"car_owner_id":true};
 var users_info_names={"first_name":true,"last_name":true,"sex":true,"email":true};
 var actors_info_names={"first_name":true,"last_name":true,"sex":true,"email":true};
 var measurements ={"weight":true,"height":true,"neck_size":true,"sleeve_size":true,"waist_size":true,"inseam_size":true,"dress_size":true,"jacket_size":true,"shoe_size":true,"bust_size":true,"chest_size":true,"hip_size":true,"hat_size":true,}
+
 app.get("/user", function(req,res){
   if(req.session.user_id){
+    var qtest ="SELECT u.* ,a.*, c.make as car_make, c.color as car_color, c.year as car_year, c.id as car_id, c.actors_users_id as car_owner_id FROM users as u LEFT JOIN actors a ON u.id = a.users_id LEFT JOIN cars c on a.users_id = c.actors_users_id WHERE u.id ='"+req.session.user_id+"';";
     var query ="SELECT * FROM users LEFT JOIN actors ON users.id = actors.users_id  WHERE id = '"+req.session.user_id+"'  ";
-    //var query ="SELECT * FROM users  WHERE id = '"+req.session.user_id+"'";
-      con.query(query, function (err, result, fields) {
-        if(err){
-         //error
+      connect( function(con){
+        con.query(qtest, function (err, result, fields) {
+        if(err) throw err;
+        //get cars
+        var cars =[];
+        for(var i =0; i<result.length; i++){
+          if(result[i].car_make || result[i].car_year||result[i].car_color || result[i].car_id ){
+             cars.push({
+               make:result[i].car_make,
+               year:result[i].car_year,
+               color:result[i].car_color,
+               id :result[i].car_id,
+             });
+          }
         }
-        else {
           if(result[0]){
-            var info={user_name: result[0].first_name,login:req.session.user_id?req.session.user_id:false,user_info:[],actor_info:[],is_admin:result[0].is_admin,all_users:[],users_id:result[0].users_id,actors_measurement:[]};
+            req.session.is_actor = result[0].users_id;
+            var info={
+              user_name: result[0].first_name,
+              login:req.session.user_id?req.session.user_id:false,
+              user_info:[],
+              actor_info:[],
+              is_admin:result[0].is_admin,
+              admin_request : result[0].admin_request,
+              all_users:[],
+              users_id:result[0].users_id,
+              actors_measurement:[],
+              emergency_name:result[0].emergency_name,
+              emergency_number:result[0].emergency_number,
+              cars:(cars.length>0?cars:false),
+            };
+
             for(key in result[0]){
               if(users_info_names[key]){
                 //user info only
@@ -254,34 +363,92 @@ app.get("/user", function(req,res){
               }
             }
             if(result[0].is_admin){
-              info["menu"] = [{page:"home",label:"Home",isCurent:true},{page:"search",label:"Search"},{page:"search-history",label:"Search History"},{page:"give-privilege",label:"Give Admin Privilege"}];
+              info["menu"] = getMenu(req);
               con.query("SELECT first_name,last_name,sex, is_admin, id FROM users", function (err, result, fields){
                  if(err) throw err;
                  for(rs in result){
                    info.all_users.push(result[rs]);
                  }
              });
+           }else {
+             info["menu"] = getMenu(req);
            }
-            //console.log(info);
-
-           res.render("user",info);
+            res.render("user",info);
           }
-        }
+      })
       });
   }else {
     res.redirect(303,'/');
   }
 });
 
-app.post("/get-all-users",function(req,res){
-  if(req.session.user_id){
-    var query ="SELECT id,first_name,last_name,is_admin,email,sex,height,eye_color,gender,weight,hair_color,hair_type,tattoo,piercings,facial_hair,eyes_color,us_citizen,neck_size,sleeve_size,waist_size,inseam_size,dress_size,jacket_size,shoe_size,bust_size,chest_size,hip_size,hat_size,union_status,union_number FROM users LEFT JOIN actors ON users.id = actors.users_id";
-    var q = "SELECT first_name,last_name,sex, is_admin, id FROM users";
+app.post("/search_database",function(req,res){
+  var data = req.body, count =0, query ="SELECT users.*, actors.*,DATEDIFF(CURDATE(),actors.birthday) as age, (SELECT image FROM images WHERE users.id = actors_users_id LIMIT 1 ) as first_image, GROUP_CONCAT( cars.year,' ',cars.color,' ',cars.make SEPARATOR ',') as cars FROM users LEFT JOIN actors ON  users.id = actors.users_id LEFT JOIN cars ON  users.id = cars.actors_users_id WHERE ";
+  for(key in data){
+      if(data[key].min && data[key].max){
+        query+= (count ===0?"":" AND ")+data[key].table+"."+key+" >= "+data[key].min+" AND "+data[key].table+"."+key+"<="+data[key].max;
+        count++;
+      }else if(data[key][key]){
+        query+= (count ===0?"":" AND ")+data[key].table+"."+key+" = '"+data[key][key]+"'";
+        count++;
+      }
+  }
+  query+= " GROUP BY users.id";
+  connect(function(con){
     con.query(query, function (err, result, fields){
        if(err) throw err;
-       res.send({success:result,admin_id:req.session.user_id});
+       res.send({success:result, query:query});
    });
+  });
+});
 
+app.post("/save_search",function(req,res){
+  if(req.session.user_id){
+    var query ="INSERT INTO searches(message, status, users_id,title,search_querry) VALUES (?,?,?,?,?)";
+    var values =[req.body.message,  'pending', req.session.user_id, req.body.title, req.body.query];
+    connect(function(con){
+      con.query(query,values, function (err, result, fields){
+         if(err) throw err;
+         if(result){
+           res.send({success:true});
+         }else {
+            res.send({success:false});
+         }
+      });
+    });
+  }else {
+      res.send({success:false});
+  }
+});
+
+app.post("/update-user-status-to-actor",function(req,res){
+  if(req.session.user_id){
+    connect(function(con){
+      var query ="INSERT INTO actors (users_id) VALUES (?)";
+      var values = [req.session.user_id];
+      con.query(query,values, function (err, result, fields) {
+        if (err) throw err;
+          if(result){
+            res.send({success:true});
+          }else {
+             res.send({success:false});
+          }
+      });
+    });
+  }else {
+      res.send({success:false});
+  }
+});
+app.post("/get-all-users",function(req,res){
+  if(req.session.user_id){
+    var query ="SELECT id,first_name,last_name,is_admin,email,sex,height,eye_color,weight,hair_color,hair_type,tattoo,piercings,facial_hair,us_citizen,neck_size,sleeve_size,waist_size,inseam_size,dress_size,jacket_size,shoe_size,bust_size,chest_size,hip_size,hat_size,union_status,union_number FROM users LEFT JOIN actors ON users.id = actors.users_id WHERE users.admin_request=1";
+    var q = "SELECT first_name,last_name,sex, is_admin, id FROM users";
+    connect(function(con){
+      con.query(query, function (err, result, fields){
+         if(err) throw err;
+         res.send({success:result,admin_id:req.session.user_id});
+     });
+    });
   }else {
     res.send({success:false});
   }
@@ -289,31 +456,91 @@ app.post("/get-all-users",function(req,res){
 
 app.post("/get_user_images",function(req,res){
   if(req.session.user_id){
-    con.query("SELECT image_url FROM images WHERE actors_users_id ='"+req.session.user_id+"'", function(err, result,fields){
-      if(err){
-        res.send({success:false});
-      }else {
-        res.send({success:result});
-      }
-    })
+    connect(function(con){
+      con.query("SELECT * FROM images WHERE actors_users_id ='"+req.session.user_id+"'", function(err, result,fields){
+        if(err){
+          res.send({success:false});
+        }else {
+          res.send({success:result});
+        }
+      })
+    });
   }else {
     res.send({success:false});
   }
 });
 
-app.post("/get_user_cars",function(req,res){
+app.post("/delete_image",function(req,res){
   if(req.session.user_id){
-    con.query("SELECT * FROM cars WHERE actors_users_id ='"+req.session.user_id+"'", function(err, result,fields){
-      if(err){
-        res.send({success:false});
-      }else {
-        res.send({success:result});
-      }
-    })
+    if(req.body.image_name){
+      connect(function(con){
+        con.query("DELETE FROM images WHERE id='"+req.body.image_name+"' ", function(err, result,fields){
+          if (err) throw err;
+        });
+      });
+
+      res.redirect(303,'/user');
+
+    }else {
+      res.send({success:"no image found"});
+    }
+
   }else {
     res.send({success:false});
   }
 });
+
+app.post("/upload_image:index",function(req,res){
+  if(req.session.user_id){
+      var form = new formidable.IncomingForm();
+       form.parse(req,function(err, fields, files){
+           if(err)throw err;
+           if(fields){
+             if(files.photo.type == "image/jpeg" ||files.photo.type == "image/png"||files.photo.type == "image/gif" ){
+               var dataDir = __dirname+'/public/img';
+               var oldPhoto_name = files.photo.name;
+               var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
+               var buf = fs.readFileSync(files.photo.path).toString("base64");
+               //console.log("new fileName: ",buf);
+               //fs.renameSync(files.photo.path,dataDir+'/'+newPhoto_name);
+               connect(function(con){
+                 var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
+                 var values = [buf,req.session.user_id];
+                 con.query(query, values, function(err, result,fields){
+                   if(err) throw err;
+                   if(result){
+                   }else {
+                   }
+                 });
+               });
+              res.redirect(303,'/user');
+               //res.send({success:true});
+             } else {
+               var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
+                res.send({success:"Format error"});
+             }
+           }
+        });
+  }else {
+    res.send({success:false});
+  }
+});
+app.post("/get_user_cars",function(req,res){
+  if(req.session.user_id){
+    connect(function(con){
+      con.query("SELECT * FROM cars WHERE actors_users_id ='"+req.session.user_id+"'", function(err, result,fields){
+        if(err){
+          res.send({success:false});
+        }else {
+          res.send({success:result});
+        }
+      })
+    });
+  }else {
+    res.send({success:false});
+  }
+});
+
 
 //custom 404 page
 app.use(function(req, res){
