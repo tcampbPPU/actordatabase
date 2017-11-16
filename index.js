@@ -53,9 +53,13 @@ function getMenu(req){
   var isAdmin = req.session.is_admin;
   menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
   if(isAdmin){
-    menu.push({"page": "search", "label": "Search For Actors"},{"page": "history", "label": "Search History"});
+    menu.push({"page": "search", "label": "Search"});
   } else{
-    menu.push({"page": "addUser", "label": "Create Account"});
+    if(req.session.user_id){
+
+    }else {
+      menu.push({"page": "addUser", "label": "Sign Up"},{"page": "home-login", "label": "Log In"});
+    }
   }
   return menu;
 };
@@ -389,7 +393,11 @@ app.get("/user", function(req,res){
               }
               else if (measurements[key]) {
                 //actors measurements only
-                info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+                if(key ==="height"){
+                  info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:getHeightInFeet(result[0][key])});
+                }else {
+                  info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+                }
               }else if (!voids[key]) {
                 //actors others info only
                   info.actor_info.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
@@ -621,3 +629,123 @@ function upperCaseFirstLetter(word0){
   }
   return new_Word;
 }
+
+
+var heights =[
+            {
+              "feet"  : "5’0”",
+              "cm" : 152.40
+            },
+            {
+              "feet"  : "5’1”",
+              "cm" : 154.94
+            },
+            {
+              "feet"  : "5’2”",
+              "cm" : 157.48
+            },
+            {
+              "feet"  : "5’3”",
+              "cm" : 160.02
+            },
+            {
+              "feet"  : "5’4”",
+              "cm" :  162.56
+            },
+            {
+              "feet"  : "5’5”",
+              "cm" : 165.10
+            },
+            {
+              "feet"  : "5’6”",
+              "cm" : 167.74
+            },
+            {
+              "feet"  : "5’7”",
+              "cm" : 170.18
+            },
+            {
+              "feet"  : "5’8”",
+              "cm" : 172.72
+            },
+            {
+              "feet"  : "5’9”",
+              "cm" : 175.26
+            },
+            {
+              "feet"  : "5’10”",
+              "cm" : 177.80
+            },
+            {
+              "feet"  : "5’11”",
+              "cm" : 180.34
+            },
+            {
+              "feet"  : "6’0”",
+              "cm" : 182.88
+            },
+            {
+              "feet"  : "6’1”",
+              "cm" : 185.45
+            },
+            {
+              "feet"  : "6’2”",
+              "cm" : 187.96
+            },
+            {
+              "feet"  : "6’3”",
+              "cm" : 190.50
+            },
+            {
+              "feet"  : "6’4”",
+              "cm" : 193.04
+            },
+            {
+              "feet"  : "6’5”",
+              "cm" : 195.58
+            },
+            {
+              "feet"  : "6’6”",
+              "cm" : 198.12
+            },
+            {
+              "feet"  : "6’7”",
+              "cm" : 200.66
+            },
+            {
+              "feet"  : "6’8”",
+              "cm" : 203.20
+            },
+            {
+              "feet"  : "6’9”",
+              "cm" : 205.74
+            },
+            {
+              "feet"  : "6’10”",
+              "cm" : 208.28
+            },
+            {
+              "feet"  : "6’11”",
+              "cm" : 210.82
+            },
+            {
+              "feet"  : "7’0”",
+              "cm" : 213.36
+            },
+            {
+              "feet"  : "7’1”",
+              "cm" : 215.90
+            },
+            {
+              "feet"  : "7’2”",
+              "cm" : 218.44
+            },
+          ];
+          function getHeightInFeet(value){
+            var height = heights;
+            for(var i =0; i< height.length; i++ ){
+              if(height[i].cm ===value){
+                return height[i].feet
+              }
+            }
+          }

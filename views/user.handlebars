@@ -330,7 +330,11 @@ function becomeActor(){
                                   $("#cars"+data.success.data.id+"_year").html(data.success.data.year);
                                 }
                               }
-                              $("#"+data.success.column_changed).html(data.success.value);
+                              if(data.success.column_changed ==="height"){
+                                  $("#"+data.success.column_changed).html(getHeightInFeet(data.success.value));
+                              }else {
+                                  $("#"+data.success.column_changed).html(data.success.value);
+                              }
                               //console.log($("#"+data.success.column_changed).siblings(".user_info_edit_links") );
                              $("#edit_panel_success").remove();
                              $("#edit_panel").prepend("<center id='edit_panel_success'><span style='color:green;'>success</span></center>");
@@ -538,6 +542,15 @@ function post(url,data0,callback){
  });
 }
 
+function getHeightInFeet(value){
+  var height = utility.heights;
+  for(var i =0; i< height.length; i++ ){
+    if(height[i].cm.toString()===value){
+      return height[i].feet;
+    }
+  }
+  return false;
+}
 </script>
 
    {{else}}
