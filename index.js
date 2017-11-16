@@ -27,7 +27,6 @@ app.use(require('express-session')({
  saveUninitialized:false,
  secret:credentials.cookieSecret
 }));
-
 /* DB Connection
  * USE connect(function(con){}); inside POST to call DB
 */
@@ -53,9 +52,13 @@ function getMenu(req){
   var isAdmin = req.session.is_admin;
   menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
   if(isAdmin){
-    menu.push({"page": "search", "label": "Search For Actors"},{"page": "history", "label": "Search History"});
+    menu.push({"page": "search", "label": "Search"});
   } else{
-    menu.push({"page": "addUser", "label": "Create Account"});
+    if(req.session.user_id){
+
+    }else {
+      menu.push({"page": "addUser", "label": "Sign Up"},{"page": "home-login", "label": "Log In"});
+    }
   }
   return menu;
 };
@@ -134,7 +137,6 @@ app.get("/logout", function(req,res){
   res.redirect(303,'/');
 });
 
-
 app.post("/login", function(req,res){
   connect(function(con){
     req.check('email','invalid email address').isEmail();
@@ -155,7 +157,7 @@ app.post("/login", function(req,res){
                  req.session.cookie.maxAge = 9000000;
                  res.redirect(303,'/user');
               }else {
-                  res.redirect(303,'/error-page');
+                  res.redirect(303,'/');
               }
             }else {
                res.redirect(303,'/');
@@ -185,31 +187,25 @@ app.post('/check_email', function(req, res){
 
 // To add new user
 app.post('/addUser', function(req, res){
+/* TODO:
+ *  Ajax for Duplicate entry // app.get
+ * Check Form for incomplete
+ * Fix Duplicate entry Error from crashing nodemon
+*/
   connect(function(con){
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
-      console.log(results.insertId);
         if (err){
           res.redirect(303,'/error-page');
         }else{
-          if (results.insertId) {
-            // Redirects new user to their own page
-            console.log("New record created successfully. Last inserted ID is: " + results.insertId);
-            req.session.user_id = results.insertId;
-            req.session.user_first_name = req.body.first_name;
-            req.session.cookie.maxAge = 9000000;
-            res.redirect(303, '/user');
-          } else {
-              console.log("Error Redirecting pages");
-              res.redirect(303, '/error-page');
-          }
           con.end();
+          // Redirect to their new page using users_id
+          res.redirect(303,'/');
         }
     });
   });
 });
-
 
 app.post('/delete-in-database', function(req, res){
   var table = req.body.table;
@@ -228,16 +224,13 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
-
 app.post('/process-search', function(req, res) {
-  var search = req.body.search;
-  var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
-  connect(function(con){
-    con.query(q, function(err, results) {
-     if (err) throw err;
-       res.send({success: results});
-  	});
-  });
+        var search = req.body.search;
+        var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
+        connection.query(q, function(err, results) {
+         if (err) throw err;
+           res.send({success: results});
+	});
 });
 
 app.post("/update-user-info", function(req,res){
@@ -389,7 +382,11 @@ app.get("/user", function(req,res){
               }
               else if (measurements[key]) {
                 //actors measurements only
-                info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+                if(key ==="height"){
+                  info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:getHeightInFeet(result[0][key])});
+                }else {
+                  info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+                }
               }else if (!voids[key]) {
                 //actors others info only
                   info.actor_info.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
@@ -621,3 +618,123 @@ function upperCaseFirstLetter(word0){
   }
   return new_Word;
 }
+
+
+var heights =[
+            {
+              "feet"  : "5’0”",
+              "cm" : 152.40
+            },
+            {
+              "feet"  : "5’1”",
+              "cm" : 154.94
+            },
+            {
+              "feet"  : "5’2”",
+              "cm" : 157.48
+            },
+            {
+              "feet"  : "5’3”",
+              "cm" : 160.02
+            },
+            {
+              "feet"  : "5’4”",
+              "cm" :  162.56
+            },
+            {
+              "feet"  : "5’5”",
+              "cm" : 165.10
+            },
+            {
+              "feet"  : "5’6”",
+              "cm" : 167.74
+            },
+            {
+              "feet"  : "5’7”",
+              "cm" : 170.18
+            },
+            {
+              "feet"  : "5’8”",
+              "cm" : 172.72
+            },
+            {
+              "feet"  : "5’9”",
+              "cm" : 175.26
+            },
+            {
+              "feet"  : "5’10”",
+              "cm" : 177.80
+            },
+            {
+              "feet"  : "5’11”",
+              "cm" : 180.34
+            },
+            {
+              "feet"  : "6’0”",
+              "cm" : 182.88
+            },
+            {
+              "feet"  : "6’1”",
+              "cm" : 185.45
+            },
+            {
+              "feet"  : "6’2”",
+              "cm" : 187.96
+            },
+            {
+              "feet"  : "6’3”",
+              "cm" : 190.50
+            },
+            {
+              "feet"  : "6’4”",
+              "cm" : 193.04
+            },
+            {
+              "feet"  : "6’5”",
+              "cm" : 195.58
+            },
+            {
+              "feet"  : "6’6”",
+              "cm" : 198.12
+            },
+            {
+              "feet"  : "6’7”",
+              "cm" : 200.66
+            },
+            {
+              "feet"  : "6’8”",
+              "cm" : 203.20
+            },
+            {
+              "feet"  : "6’9”",
+              "cm" : 205.74
+            },
+            {
+              "feet"  : "6’10”",
+              "cm" : 208.28
+            },
+            {
+              "feet"  : "6’11”",
+              "cm" : 210.82
+            },
+            {
+              "feet"  : "7’0”",
+              "cm" : 213.36
+            },
+            {
+              "feet"  : "7’1”",
+              "cm" : 215.90
+            },
+            {
+              "feet"  : "7’2”",
+              "cm" : 218.44
+            },
+          ];
+          function getHeightInFeet(value){
+            var height = heights;
+            for(var i =0; i< height.length; i++ ){
+              if(height[i].cm ===value){
+                return height[i].feet
+              }
+            }
+          }
