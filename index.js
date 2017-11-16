@@ -44,7 +44,7 @@ function connect(cb){
       return;
     }
     cb(con);
-    console.log('Connected!');
+    //console.log('Connected!');
   });
 }
 
@@ -129,6 +129,8 @@ app.get("/addUser", function(req,res){
 
 app.get("/logout", function(req,res){
   delete req.session.user_id;
+  delete req.session.is_admin;
+  delete req.session.user_first_name;
   res.redirect(303,'/');
 });
 
@@ -209,6 +211,24 @@ app.post('/addUser', function(req, res){
 });
 
 
+app.post('/delete-in-database', function(req, res){
+  var table = req.body.table;
+  var id = req.body.table_id;
+    console.log("delete-in-database ",table, id, table ==="cars");
+   if(table ==="cars"){
+    connect(function(con){
+        var sql = "DELETE FROM cars WHERE id ='"+id+"'";
+       con.query(sql,function(err, result) {
+           if (err) throw err;
+           if(result){
+                res.send({success:{deleted_id:id} });
+           }
+       });
+     });
+   }
+});
+
+
 app.post('/process-search', function(req, res) {
   var search = req.body.search;
   var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
@@ -271,9 +291,11 @@ app.post("/update-user-info", function(req,res){
                    //console.log("changing carsx info",req.body);
                    if(req.body.cars.make && req.body.cars.color && req.body.cars.year){
                     // console.log("running the query");
+                    var new_record=false, make = req.body.cars.make, color=req.body.cars.color, year = req.body.cars.year, car_id = req.body.cars.id;
                        if(req.body.cars.id !=="undefined"){
                          var q = "UPDATE cars SET make='"+req.body.cars.make+"', color='"+req.body.cars.color+"' ,year='"+req.body.cars.year+"' WHERE id = '"+ req.body.cars.id+"';";
                        }else {
+                         new_record = true;
                          var q = "INSERT INTO cars (make,color,year,actors_users_id) VALUES('"+req.body.cars.make+"','"+req.body.cars.color+"','"+req.body.cars.year+"','"+req.session.user_id+"')";
                        }
 
@@ -281,7 +303,9 @@ app.post("/update-user-info", function(req,res){
                          con.query(q, function (err, result, fields) {
                            if (err) throw err;
                              if(result){
-                               res.send({success:"succes"});
+                               console.log("cars info", result.insertId);
+                               //res.send({success:"succes"});
+                               res.send({success:{target:"cars",new_record:new_record,new_insertedId:result.insertId, data:{make:make,color:color,year:year,id:car_id}}});
                              }else {
                                 res.send({success:false});
                              }
@@ -406,15 +430,15 @@ app.post("/search_database",function(req,res){
   connect(function(con){
     con.query(query, function (err, result, fields){
        if(err) throw err;
-       res.send({success:result, query:query});
+       res.send({success:result, query:data});
    });
   });
 });
 
 app.post("/save_search",function(req,res){
   if(req.session.user_id){
-    var query ="INSERT INTO searches(message, status, users_id,title,search_querry) VALUES (?,?,?,?,?)";
-    var values =[req.body.message,  'pending', req.session.user_id, req.body.title, req.body.query];
+    var query ="INSERT INTO searches(message, status, users_id,title,search_query) VALUES (?,?,?,?,?)";
+    var values =[req.body.message,  'pending', req.session.user_id, req.body.title, JSON.stringify(req.body.query)];
     connect(function(con){
       con.query(query,values, function (err, result, fields){
          if(err) throw err;
@@ -479,6 +503,19 @@ app.post("/get_user_images",function(req,res){
   }
 });
 
+app.post("/get-history",function(req,res){
+  if(req.session.user_id){
+    connect(function(con){
+      con.query("SELECT * FROM searches WHERE users_id ='"+req.session.user_id+"'", function(err, result,fields){
+        if(err) throw err;
+        res.send({success:result});
+      })
+    });
+  }else {
+    res.send({success:false});
+  }
+});
+
 app.post("/delete_image",function(req,res){
   if(req.session.user_id){
     if(req.body.image_name){
@@ -509,6 +546,7 @@ app.post("/upload_image:index",function(req,res){
                var dataDir = __dirname+'/public/img';
                var oldPhoto_name = files.photo.name;
                var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
+
                var buf = fs.readFileSync(files.photo.path).toString("base64");
                //console.log("new fileName: ",buf);
                //fs.renameSync(files.photo.path,dataDir+'/'+newPhoto_name);
