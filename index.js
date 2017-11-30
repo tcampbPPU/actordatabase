@@ -48,6 +48,7 @@ function connect(cb){
   });
 }
 
+<<<<<<< HEAD
 //app.use(express.static(__dirname));
 //app.use(require('sesame')()); // for sessions
 
@@ -58,6 +59,15 @@ function connect(cb){
 //});
 
 //app.use(forgot.middleware);
+=======
+/*
+var forgot = require('../../')({
+    uri : '/resetpassword',
+    from : 'tcampb@pointpark.edu',
+    host : '/forgot', port : 4000,
+});
+*/
+>>>>>>> d87dc9cae6413e7f7149072a35cb78b84a71c88b
 
 function getMenu(req){
   var menu =[];
@@ -95,9 +105,12 @@ app.get('/home-login', function(req, res) {
   user_name:req.session.user_first_name,
   });
 });
-// app.get('/', function(req, res) {
-//   res.render('home');
-// });
+
+app.get("/forgot", function(req,res){
+  res.render("forgot", {
+    menu: getMenu(req)
+  });
+});
 
 app.get('/about', function(req, res) {
   res.render('about',{
@@ -250,6 +263,7 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
+<<<<<<< HEAD
 function addEmailToMailchimp(email) {
 var request = require("request");
 
@@ -272,14 +286,42 @@ request(options, function (error, response, body) {
 
 app.post('/forgotpassword', function (req, res) {
   
+=======
+// To check if the email entered for forgot password exists
+app.post('/forgot_pwd_reset', function(req, res){
+  connect(function(con){
+    var email = req.body.email;
+    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
+    con.query(sql, function(err, results, field) {
+      if (err) throw err;
+      if(results[0]["COUNT(id)"] >=  1) {
+        // Email Exist, Good to send Password reset link to
+        res.send("");
+      }else{
+        res.send("Email Not Found.");
+      }
+    });
+  });
+});
+
+
+
+app.post('/forgot', function (req, res) {
+  var email = req.body.email;
+>>>>>>> d87dc9cae6413e7f7149072a35cb78b84a71c88b
   var reset = forgot(email, function (err) {
       if (err) res.end('Error sending message: ' + err)
       else res.end('Check your inbox for a password reset message.')
   });
     
   reset.on('request', function (req_, res_) {
+<<<<<<< HEAD
       addEmailToMailchimp(req.body.email);
       fs.createReadStream(__dirname + '/forgot.handlebars').pipe(res_);
+=======
+      req_.session.reset = { email : email, id : reset.id };
+      fs.createReadStream(__dirname + '/forgot.html').pipe(res_);
+>>>>>>> d87dc9cae6413e7f7149072a35cb78b84a71c88b
   });
 });
 
@@ -608,7 +650,7 @@ app.post("/delete_image",function(req,res){
   }
 });
 
-app.post("/upload_image:index",function(req,res){
+app.post("/upload_image",function(req,res){
   if(req.session.user_id){
       var form = new formidable.IncomingForm();
        form.parse(req,function(err, fields, files){
@@ -675,7 +717,7 @@ app.use(function(err, req, res, next){
 });
 
 app.listen(app.get('port'), function(){
-  console.log("listening on http:// localhost:" + app.get("port") + "; press Ctrl-C to terminate.");
+  console.log("listening on http://localhost:" + app.get("port") + "; press Ctrl-C to terminate.");
 });
 
 function upperCaseIt(word){
