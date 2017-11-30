@@ -48,7 +48,6 @@ function connect(cb){
   });
 }
 
-<<<<<<< HEAD
 //app.use(express.static(__dirname));
 //app.use(require('sesame')()); // for sessions
 
@@ -59,15 +58,6 @@ function connect(cb){
 //});
 
 //app.use(forgot.middleware);
-=======
-/*
-var forgot = require('../../')({
-    uri : '/resetpassword',
-    from : 'tcampb@pointpark.edu',
-    host : '/forgot', port : 4000,
-});
-*/
->>>>>>> d87dc9cae6413e7f7149072a35cb78b84a71c88b
 
 function getMenu(req){
   var menu =[];
@@ -263,7 +253,6 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
-<<<<<<< HEAD
 function addEmailToMailchimp(email) {
 var request = require("request");
 
@@ -308,20 +297,7 @@ app.post('/forgot_pwd_reset', function(req, res){
 
 app.post('/forgot', function (req, res) {
   var email = req.body.email;
->>>>>>> d87dc9cae6413e7f7149072a35cb78b84a71c88b
-  var reset = forgot(email, function (err) {
-      if (err) res.end('Error sending message: ' + err)
-      else res.end('Check your inbox for a password reset message.')
-  });
     
-  reset.on('request', function (req_, res_) {
-<<<<<<< HEAD
-      addEmailToMailchimp(req.body.email);
-      fs.createReadStream(__dirname + '/forgot.handlebars').pipe(res_);
-=======
-      req_.session.reset = { email : email, id : reset.id };
-      fs.createReadStream(__dirname + '/forgot.html').pipe(res_);
->>>>>>> d87dc9cae6413e7f7149072a35cb78b84a71c88b
   });
 });
 
