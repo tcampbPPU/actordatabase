@@ -48,6 +48,14 @@ function connect(cb){
   });
 }
 
+/*
+var forgot = require('../../')({
+    uri : '/resetpassword',
+    from : 'tcampb@pointpark.edu',
+    host : '/forgot', port : 4000,
+});
+*/
+
 function getMenu(req){
   var menu =[];
   var isAdmin = req.session.is_admin;
@@ -84,9 +92,12 @@ app.get('/home-login', function(req, res) {
   user_name:req.session.user_first_name,
   });
 });
-// app.get('/', function(req, res) {
-//   res.render('home');
-// });
+
+app.get("/forgot", function(req,res){
+  res.render("forgot", {
+    menu: getMenu(req)
+  });
+});
 
 app.get('/about', function(req, res) {
   res.render('about',{
@@ -232,6 +243,51 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
+// To check if the email entered for forgot password exists
+app.post('/forgot_pwd_reset', function(req, res){
+  connect(function(con){
+    var email = req.body.email;
+    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
+    con.query(sql, function(err, results, field) {
+      if (err) throw err;
+      if(results[0]["COUNT(id)"] >=  1) {
+        // Email Exist, Good to send Password reset link to
+        res.send("");
+      }else{
+        res.send("Email Not Found.");
+      }
+    });
+  });
+});
+
+
+
+app.post('/forgot', function (req, res) {
+  var email = req.body.email;
+  var reset = forgot(email, function (err) {
+      if (err) res.end('Error sending message: ' + err)
+      else res.end('Check your inbox for a password reset message.')
+  });
+    
+  reset.on('request', function (req_, res_) {
+      req_.session.reset = { email : email, id : reset.id };
+      fs.createReadStream(__dirname + '/forgot.html').pipe(res_);
+  });
+});
+
+app.post('/resetpassword', function (req, res) {
+  if (!req.session.reset) return res.end('reset token not set');
+    
+  var password = req.body.password;
+  var confirm = req.body.confirm;
+  if (password !== confirm) return res.end('passwords do not match');
+    
+  // update the user db here    
+
+  forgot.expire(req.session.reset.id);
+  delete req.session.reset;
+  res.end('password reset');
+});
 
 app.post('/process-search', function(req, res) {
   var search = req.body.search;
@@ -544,7 +600,7 @@ app.post("/delete_image",function(req,res){
   }
 });
 
-app.post("/upload_image:index",function(req,res){
+app.post("/upload_image",function(req,res){
   if(req.session.user_id){
       var form = new formidable.IncomingForm();
        form.parse(req,function(err, fields, files){
@@ -611,7 +667,7 @@ app.use(function(err, req, res, next){
 });
 
 app.listen(app.get('port'), function(){
-  console.log("listening on http:// localhost:" + app.get("port") + "; press Ctrl-C to terminate.");
+  console.log("listening on http://localhost:" + app.get("port") + "; press Ctrl-C to terminate.");
 });
 
 function upperCaseIt(word){
