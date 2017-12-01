@@ -29,10 +29,10 @@
     <h3>Basic Info</h3>
     {{#if is_admin }}
     {{else}}
-    {{#if admin_request }}
+    <!-- {{#if admin_request }}
     {{else}}
      <span id='admin_request_sender' data-id ="{{login}}" style='cursor:pointer;'>Send an Admin Request</span>
-     {{/if}}
+     {{/if}} -->
     {{/if}}
     <table class='user_info_table' style="width:100%;">
       {{# each user_info}}
@@ -44,14 +44,14 @@
 
     </div>
     {{#if is_admin }}
-        <div class="" style="float:right; background:linear-gradient(#000, #999 10%, #000); padding:10px; ">
+        <!-- <div class="" style="float:right; background:linear-gradient(#000, #999 10%, #000); padding:10px; ">
           <center><h5 style='color:grey;'>Current Admin Request</h5></center>
           <div class="" id='admin_request_panel' style="    min-height:30px;  max-height:300px; overflow:scroll; border-bottom:1px solid grey;">
           </div>
           <center><h5 style='color:grey;'>Accepted Request </h5></center>
           <div class="" id='current_user_panel' style="    min-height:30px;  max-height:300px; overflow:scroll;">
           </div>
-        </div>
+        </div> -->
     {{else}}
          {{#if users_id}}
            <div id="actor_info" style=' clear:both; padding-top:30px; '>
@@ -66,7 +66,11 @@
            <table class='user_info_table' style="width:100%; font-size:0.8em;">
            <h3>Actor Info</h3>
              {{# each actor_info}}
-                <tr><td class="user_info_titles">{{label}}</td><td class="user_info_values" id='{{name}}'> {{value}}  </td><td><small class='user_info_edit_links' data-name='{{name}}' data-label='{{label}}' data-value='{{value}}' data-table='actors'>&#x270E;</small></td></tr>
+                <tr>
+                  <td class="user_info_titles">{{label}}</td>
+                  <td class="user_info_values" id='{{name}}'> {{value}}  </td>
+                  <td><small class='user_info_edit_links' data-name='{{name}}' data-label='{{label}}' data-value='{{value}}' data-table='actors'>&#x270E;</small></td>
+                </tr>
              {{/each}}
            </table>
          </div>
@@ -88,28 +92,21 @@
               </table>
               <br> -->
               <h3>Cars Owned</h3>
-              <table class='user_info_table' id='car_owned' style="width:100%; font-size:0.8em;">
                 {{#if cars}}
+                  <table class='user_info_table' id='car_owned' style="width:100%; font-size:0.8em;">
                 {{#each cars}}
-                 <tr>
+                 <tr id ="cars{{this.id}}_row">
                    <td class="user_info_titles" style='color:black;'>&#x1F698;</td>
-                   <td class="user_info_values"> {{this.make}} </td>
-                   <td class="user_info_values"> {{this.color}} </td>
-                   <td class="user_info_values"> {{this.year}} </td>
-                   <td><small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value='love' data-table='cars' data-tableid="{{this.id}}">&#x270E;</small></td>
+                   <td class="user_info_values" id='cars{{this.id}}_make'> {{this.make}} </td>
+                   <td class="user_info_values" id='cars{{this.id}}_color'> {{this.color}} </td>
+                   <td class="user_info_values" id='cars{{this.id}}_year'> {{this.year}} </td>
+                   <td><small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value='cars' data-table='cars' data-tableid="{{this.id}}">&#x270E; <span class='user_info_delete_links' data-tableid="{{this.id}}" data-table="cars" >&#x1F5D1;</span> </small></td>
                    </tr>
                    {{/each}}
-                   <tr>
-                     <td id ='add_car' class="user_info_titles" colspan="3">Add New Car</td>
-                     <td><small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value='love' data-table='cars' style="visibility:visible;">&#x270E;</small></td>
-                   </tr>
+                     </table>
                    {{else}}
-                   <tr >
-                     <td id ='add_car' class="user_info_titles">no car</td>
-                     <td><small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value='love' data-table='cars' >&#x270E;</small></td>
-                   </tr>
                 {{/if}}
-              </table>
+                <small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value=' ' data-table='cars' style="visibility:visible;">+</small>
             </div>
           </div>
     {{/if}}
@@ -126,7 +123,7 @@
      console.log("success",data);
    });
  });
-displayAllUsers();
+//displayAllUsers();
  function displayAllUsers(){
 
   console.log("current users panel ",$("#admin_request_panel").length);
@@ -235,9 +232,9 @@ function becomeActor(){
  });
 }
 
-  $(".user_info_table small").click(function(){
-     var name_ = this.dataset.name, value = this.dataset.value,label =this.dataset.label, table_name = this.dataset.table, car_id = this.dataset.tableid;
-     console.log("name: ",name_,"label: ",label, "value: ",value,car_id);
+  $("body").on('click','.user_info_edit_links',function(){
+     var name_ = this.dataset.name, value = $("#"+name_).html(),label =this.dataset.label, table_name = this.dataset.table, car_id = this.dataset.tableid;
+     //console.log("name: ",name_,"label: ",label, "value: ",value,car_id);
      //create the frame
          if($("#edit_panel").length>0){
            $("#edit_panel").remove();
@@ -266,7 +263,7 @@ function becomeActor(){
              var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputDate'>New "+label+"</label><br><input type='date' id='inputDate'  class='form-control'  placeholder='state' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
          }
          else {
-           var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputEdit'>New "+label+"</label><br><input type='text' class='form-control' id='inputEdit' placeholder='"+value+"' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
+           var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputEdit'>New "+label+"</label><br><input type='text' class='form-control' id='inputEdit' value='"+value+"' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
          }
          var title =$("<div class='modal-header'><h5 class='modal-title'><center><h6>Editing</h6></center></h5>  </div>");
          var title_close =$("<button type='button' class='close' data-dismiss='modal' aria-label='Close' ><span aria-hidden='true'>&times;</span>  </button>");
@@ -274,6 +271,7 @@ function becomeActor(){
         //  form.append("<center><h6>Editing</h6></center>",input_div,"<br>",button_divs);
         form.append(title,input_div,"<br>",button_divs);
          $("#main_content").append(box);
+         box.draggable();
          var width = box.width(), height=box.height();
          var top= (window.innerHeight/2)+$(document).scrollTop()-(height/2) ;
          var left = (window.innerWidth/2)+$(document).scrollLeft() -(width/2);
@@ -310,11 +308,38 @@ function becomeActor(){
                        data: $(this).serialize(),
                        success: function(data){
                            if(data.success){
-                              console.log('response: ',data.success);
-                              console.log("target; afetr",$("#"+data.success.column_changed).html(data.success.value));
+                              //console.log('response: ',data.success);
+                              if(data.success.target ==="cars"){
+                                if(data.success.new_record){
+                                  //location.assign("/user");
+
+                                  //append new row to table
+                                  var row = $("<tr id ='cars"+data.success.new_insertedId+"_row'></tr>");
+                                    var td1 = $("<td class='user_info_titles' style='color:black;'>&#x1F698;</td>");
+                                    var td2 = $("<td class='user_info_values' id='cars"+data.success.new_insertedId+"_make'> "+data.success.data.make+" </td>");
+                                    var td3 = $("<td class='user_info_values' id='cars"+data.success.new_insertedId+"_color'>"+data.success.data.color+" </td>");
+                                    var td4 = $("<td class='user_info_values' id='cars"+data.success.new_insertedId+"_year'> "+data.success.data.year+" </td>");
+                                    var td5 = $("<td><small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value='' data-table='cars' data-tableid="+data.success.new_insertedId+">&#x270E; <span class='user_info_delete_links' data-tableid="+data.success.new_insertedId+"  data-table='cars'>&#x1F5D1;</span> </small></td>");
+                                    row.append(td1,td2,td3,td4,td5);
+                                    $("#car_owned").append(row);
+                                    applyHoverAbility();
+                                  ///.....
+                                }else {
+                                  $("#cars"+data.success.data.id+"_make").html(data.success.data.make);
+                                  $("#cars"+data.success.data.id+"_color").html(data.success.data.color);
+                                  $("#cars"+data.success.data.id+"_year").html(data.success.data.year);
+                                }
+                              }
+                              if(data.success.column_changed ==="height"){
+                                  $("#"+data.success.column_changed).html(getHeightInFeet(data.success.value));
+                              }else {
+                                  $("#"+data.success.column_changed).html(data.success.value);
+                              }
+                              //console.log($("#"+data.success.column_changed).siblings(".user_info_edit_links") );
                              $("#edit_panel_success").remove();
                              $("#edit_panel").prepend("<center id='edit_panel_success'><span style='color:green;'>success</span></center>");
                               //location.assign("/user");
+                              $("#edit_panel").remove();
                            }else{
                              console.log(' There was a problem.');
                              $("#edit_panel_success").remove();
@@ -336,6 +361,7 @@ function becomeActor(){
 
   });
 
+function applyHoverAbility(){
   $(".user_info_table tr").hover(function(e){
     $($(this).find("small")).css({"visibility":"visible"});
     //$(this).css({"border-bottom":"1px solid grey"});
@@ -345,6 +371,17 @@ function becomeActor(){
     $(this).css({"border-bottom":"none"});
   }
 );
+
+$(".user_info_delete_links").click(function(e){
+  e.stopPropagation();
+  console.log(this.dataset.tableid, this.dataset.table);
+  post("/delete-in-database",{table:this.dataset.table,table_id:this.dataset.tableid},function(data){
+    //console.log("success deleted cars",data.deleted_id);
+    $("#cars"+data.deleted_id+"_row").remove();
+  });
+});
+}
+applyHoverAbility();
 
 
 
@@ -405,7 +442,7 @@ function getImages(){
                  }
                  var panel =$("<div id='image_upload_panel' style='border:1px solid lightgrey; width:300px; height: 200px; position:absolute; background-color:lightgrey; color:black;'></div>");
                  var close_btn =$("<button type='button' class='close' aria-label='Close'><span aria-hidden='true'>&times;</span></button>");
-                 var photo_field =$("<div class='form-group'><form id='upload_image_form' enctype='multipart/form-data' action='upload_image"+this.dataset.index+"' method='POST'><label for='fieldPhoto' class ='col-form-label'>Upload Photo</label><div class='col-md-12' ><input type='file' class ='form-control' required accept='image/*'' id ='fieldPhoto' name='photo' ></div><br><br><button type='submit'>Upload</button></form></div>");
+                 var photo_field =$("<div class='form-group'><form id='upload_image_form' enctype='multipart/form-data' action='upload_image' method='POST'><label for='fieldPhoto' class ='col-form-label'>Upload Photo</label><div class='col-md-12' ><input type='file' class ='form-control' required accept='image/*'' id ='fieldPhoto' name='photo' ></div><br><br><button type='submit'>Upload</button></form></div>");
                  panel.append(close_btn,photo_field);
                  $("#main_content").append(panel);
                  var width = panel.width(), height=panel.height();
@@ -487,7 +524,6 @@ function upperCaseFirstLetter(word0){
   return new_Word;
 }
 function post(url,data0,callback){
-  console.log("post")
   $.ajax({
       url: url,
       type: 'POST',
@@ -506,6 +542,15 @@ function post(url,data0,callback){
  });
 }
 
+function getHeightInFeet(value){
+  var height = utility.heights;
+  for(var i =0; i< height.length; i++ ){
+    if(height[i].cm.toString()===value){
+      return height[i].feet;
+    }
+  }
+  return false;
+}
 </script>
 
    {{else}}

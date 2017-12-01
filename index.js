@@ -27,6 +27,7 @@ app.use(require('express-session')({
  saveUninitialized:false,
  secret:credentials.cookieSecret
 }));
+
 /* DB Connection
  * USE connect(function(con){}); inside POST to call DB
 */
@@ -43,9 +44,17 @@ function connect(cb){
       return;
     }
     cb(con);
-    console.log('Connected!');
+    //console.log('Connected!');
   });
 }
+
+/*
+var forgot = require('../../')({
+    uri : '/resetpassword',
+    from : 'tcampb@pointpark.edu',
+    host : '/forgot', port : 4000,
+});
+*/
 
 function getMenu(req){
   var menu =[];
@@ -53,9 +62,13 @@ function getMenu(req){
    menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
 
   if(isAdmin){
-    menu.push({"page": "search", "label": "Search For Actors"},{"page": "history", "label": "Search History"});
+    menu.push({"page": "search", "label": "Search"});
   } else{
-    menu.push({"page": "addUser", "label": "Create Account"});
+    if(req.session.user_id){
+
+    }else {
+      menu.push({"page": "addUser", "label": "Sign Up"},{"page": "home-login", "label": "Log In"});
+    }
   }
   return menu;
 };
@@ -80,9 +93,12 @@ app.get('/home-login', function(req, res) {
   user_name:req.session.user_first_name,
   });
 });
-// app.get('/', function(req, res) {
-//   res.render('home');
-// });
+
+app.get("/forgot", function(req,res){
+  res.render("forgot", {
+    menu: getMenu(req)
+  });
+});
 
 app.get('/about', function(req, res) {
   res.render('about',{
@@ -129,8 +145,11 @@ app.get("/addUser", function(req,res){
 
 app.get("/logout", function(req,res){
   delete req.session.user_id;
+  delete req.session.is_admin;
+  delete req.session.user_first_name;
   res.redirect(303,'/');
 });
+
 
 app.post("/login", function(req,res){
   connect(function(con){
@@ -152,7 +171,7 @@ app.post("/login", function(req,res){
                  req.session.cookie.maxAge = 9000000;
                  res.redirect(303,'/user');
               }else {
-                  res.redirect(303,'/');
+                  res.redirect(303,'/error-page');
               }
             }else {
                res.redirect(303,'/');
@@ -182,33 +201,104 @@ app.post('/check_email', function(req, res){
 
 // To add new user
 app.post('/addUser', function(req, res){
-/* TODO:
- *  Ajax for Duplicate entry // app.get
- * Check Form for incomplete
- * Fix Duplicate entry Error from crashing nodemon
-*/
   connect(function(con){
     var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
     var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
+      console.log(results.insertId);
         if (err){
           res.redirect(303,'/error-page');
         }else{
+          if (results.insertId) {
+            // Redirects new user to their own page
+            console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+            req.session.user_id = results.insertId;
+            req.session.user_first_name = req.body.first_name;
+            req.session.cookie.maxAge = 9000000;
+            res.redirect(303, '/user');
+          } else {
+              console.log("Error Redirecting pages");
+              res.redirect(303, '/error-page');
+          }
           con.end();
-          // Redirect to their new page using users_id
-          res.redirect(303,'/');
         }
     });
   });
 });
 
+
+app.post('/delete-in-database', function(req, res){
+  var table = req.body.table;
+  var id = req.body.table_id;
+    console.log("delete-in-database ",table, id, table ==="cars");
+   if(table ==="cars"){
+    connect(function(con){
+        var sql = "DELETE FROM cars WHERE id ='"+id+"'";
+       con.query(sql,function(err, result) {
+           if (err) throw err;
+           if(result){
+                res.send({success:{deleted_id:id} });
+           }
+       });
+     });
+   }
+});
+
+// To check if the email entered for forgot password exists
+app.post('/forgot_pwd_reset', function(req, res){
+  connect(function(con){
+    var email = req.body.email;
+    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
+    con.query(sql, function(err, results, field) {
+      if (err) throw err;
+      if(results[0]["COUNT(id)"] >=  1) {
+        // Email Exist, Good to send Password reset link to
+        res.send("");
+      }else{
+        res.send("Email Not Found.");
+      }
+    });
+  });
+});
+
+
+
+app.post('/forgot', function (req, res) {
+  var email = req.body.email;
+  var reset = forgot(email, function (err) {
+      if (err) res.end('Error sending message: ' + err)
+      else res.end('Check your inbox for a password reset message.')
+  });
+    
+  reset.on('request', function (req_, res_) {
+      req_.session.reset = { email : email, id : reset.id };
+      fs.createReadStream(__dirname + '/forgot.html').pipe(res_);
+  });
+});
+
+app.post('/resetpassword', function (req, res) {
+  if (!req.session.reset) return res.end('reset token not set');
+    
+  var password = req.body.password;
+  var confirm = req.body.confirm;
+  if (password !== confirm) return res.end('passwords do not match');
+    
+  // update the user db here    
+
+  forgot.expire(req.session.reset.id);
+  delete req.session.reset;
+  res.end('password reset');
+});
+
 app.post('/process-search', function(req, res) {
-        var search = req.body.search;
-        var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
-        connection.query(q, function(err, results) {
-         if (err) throw err;
-           res.send({success: results});
-	});
+  var search = req.body.search;
+  var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
+  connect(function(con){
+    con.query(q, function(err, results) {
+     if (err) throw err;
+       res.send({success: results});
+  	});
+  });
 });
 
 app.post("/update-user-info", function(req,res){
@@ -262,9 +352,11 @@ app.post("/update-user-info", function(req,res){
                    //console.log("changing carsx info",req.body);
                    if(req.body.cars.make && req.body.cars.color && req.body.cars.year){
                     // console.log("running the query");
+                    var new_record=false, make = req.body.cars.make, color=req.body.cars.color, year = req.body.cars.year, car_id = req.body.cars.id;
                        if(req.body.cars.id !=="undefined"){
                          var q = "UPDATE cars SET make='"+req.body.cars.make+"', color='"+req.body.cars.color+"' ,year='"+req.body.cars.year+"' WHERE id = '"+ req.body.cars.id+"';";
                        }else {
+                         new_record = true;
                          var q = "INSERT INTO cars (make,color,year,actors_users_id) VALUES('"+req.body.cars.make+"','"+req.body.cars.color+"','"+req.body.cars.year+"','"+req.session.user_id+"')";
                        }
 
@@ -272,7 +364,9 @@ app.post("/update-user-info", function(req,res){
                          con.query(q, function (err, result, fields) {
                            if (err) throw err;
                              if(result){
-                               res.send({success:"succes"});
+                               console.log("cars info", result.insertId);
+                               //res.send({success:"succes"});
+                               res.send({success:{target:"cars",new_record:new_record,new_insertedId:result.insertId, data:{make:make,color:color,year:year,id:car_id}}});
                              }else {
                                 res.send({success:false});
                              }
@@ -356,7 +450,11 @@ app.get("/user", function(req,res){
               }
               else if (measurements[key]) {
                 //actors measurements only
-                info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+                if(key ==="height"){
+                  info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:getHeightInFeet(result[0][key])});
+                }else {
+                  info.actors_measurement.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
+                }
               }else if (!voids[key]) {
                 //actors others info only
                   info.actor_info.push({name:key,label:upperCaseFirstLetter(key), value:result[0][key]});
@@ -397,15 +495,15 @@ app.post("/search_database",function(req,res){
   connect(function(con){
     con.query(query, function (err, result, fields){
        if(err) throw err;
-       res.send({success:result, query:query});
+       res.send({success:result, query:data});
    });
   });
 });
 
 app.post("/save_search",function(req,res){
   if(req.session.user_id){
-    var query ="INSERT INTO searches(message, status, users_id,title,search_querry) VALUES (?,?,?,?,?)";
-    var values =[req.body.message,  'pending', req.session.user_id, req.body.title, req.body.query];
+    var query ="INSERT INTO searches(message, status, users_id,title,search_query) VALUES (?,?,?,?,?)";
+    var values =[req.body.message,  'pending', req.session.user_id, req.body.title, JSON.stringify(req.body.query)];
     connect(function(con){
       con.query(query,values, function (err, result, fields){
          if(err) throw err;
@@ -470,6 +568,19 @@ app.post("/get_user_images",function(req,res){
   }
 });
 
+app.post("/get-history",function(req,res){
+  if(req.session.user_id){
+    connect(function(con){
+      con.query("SELECT * FROM searches WHERE users_id ='"+req.session.user_id+"'", function(err, result,fields){
+        if(err) throw err;
+        res.send({success:result});
+      })
+    });
+  }else {
+    res.send({success:false});
+  }
+});
+
 app.post("/delete_image",function(req,res){
   if(req.session.user_id){
     if(req.body.image_name){
@@ -490,7 +601,7 @@ app.post("/delete_image",function(req,res){
   }
 });
 
-app.post("/upload_image:index",function(req,res){
+app.post("/upload_image",function(req,res){
   if(req.session.user_id){
       var form = new formidable.IncomingForm();
        form.parse(req,function(err, fields, files){
@@ -500,6 +611,7 @@ app.post("/upload_image:index",function(req,res){
                var dataDir = __dirname+'/public/img';
                var oldPhoto_name = files.photo.name;
                var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
+
                var buf = fs.readFileSync(files.photo.path).toString("base64");
                //console.log("new fileName: ",buf);
                //fs.renameSync(files.photo.path,dataDir+'/'+newPhoto_name);
@@ -556,7 +668,7 @@ app.use(function(err, req, res, next){
 });
 
 app.listen(app.get('port'), function(){
-  console.log("listening on http:// localhost:" + app.get("port") + "; press Ctrl-C to terminate.");
+  console.log("listening on http://localhost:" + app.get("port") + "; press Ctrl-C to terminate.");
 });
 
 function upperCaseIt(word){
@@ -574,3 +686,123 @@ function upperCaseFirstLetter(word0){
   }
   return new_Word;
 }
+
+
+var heights =[
+            {
+              "feet"  : "5’0”",
+              "cm" : 152.40
+            },
+            {
+              "feet"  : "5’1”",
+              "cm" : 154.94
+            },
+            {
+              "feet"  : "5’2”",
+              "cm" : 157.48
+            },
+            {
+              "feet"  : "5’3”",
+              "cm" : 160.02
+            },
+            {
+              "feet"  : "5’4”",
+              "cm" :  162.56
+            },
+            {
+              "feet"  : "5’5”",
+              "cm" : 165.10
+            },
+            {
+              "feet"  : "5’6”",
+              "cm" : 167.74
+            },
+            {
+              "feet"  : "5’7”",
+              "cm" : 170.18
+            },
+            {
+              "feet"  : "5’8”",
+              "cm" : 172.72
+            },
+            {
+              "feet"  : "5’9”",
+              "cm" : 175.26
+            },
+            {
+              "feet"  : "5’10”",
+              "cm" : 177.80
+            },
+            {
+              "feet"  : "5’11”",
+              "cm" : 180.34
+            },
+            {
+              "feet"  : "6’0”",
+              "cm" : 182.88
+            },
+            {
+              "feet"  : "6’1”",
+              "cm" : 185.45
+            },
+            {
+              "feet"  : "6’2”",
+              "cm" : 187.96
+            },
+            {
+              "feet"  : "6’3”",
+              "cm" : 190.50
+            },
+            {
+              "feet"  : "6’4”",
+              "cm" : 193.04
+            },
+            {
+              "feet"  : "6’5”",
+              "cm" : 195.58
+            },
+            {
+              "feet"  : "6’6”",
+              "cm" : 198.12
+            },
+            {
+              "feet"  : "6’7”",
+              "cm" : 200.66
+            },
+            {
+              "feet"  : "6’8”",
+              "cm" : 203.20
+            },
+            {
+              "feet"  : "6’9”",
+              "cm" : 205.74
+            },
+            {
+              "feet"  : "6’10”",
+              "cm" : 208.28
+            },
+            {
+              "feet"  : "6’11”",
+              "cm" : 210.82
+            },
+            {
+              "feet"  : "7’0”",
+              "cm" : 213.36
+            },
+            {
+              "feet"  : "7’1”",
+              "cm" : 215.90
+            },
+            {
+              "feet"  : "7’2”",
+              "cm" : 218.44
+            },
+          ];
+          function getHeightInFeet(value){
+            var height = heights;
+            for(var i =0; i< height.length; i++ ){
+              if(height[i].cm ===value){
+                return height[i].feet
+              }
+            }
+          }
