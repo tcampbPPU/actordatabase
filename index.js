@@ -8,6 +8,7 @@ var fs = require('fs');
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:"main"});
 var mysql = require('mysql');
+var crypto = require('crypto');
 
 app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
@@ -48,13 +49,6 @@ function connect(cb){
   });
 }
 
-/*
-var forgot = require('../../')({
-    uri : '/resetpassword',
-    from : 'tcampb@pointpark.edu',
-    host : '/forgot', port : 4000,
-});
-*/
 
 function getMenu(req){
   var menu =[];
@@ -111,11 +105,6 @@ app.get('/error-page', function(req, res) {
   res.render('error-page');
 });
 
-app.get("/forgotpassword", function(req,res){
-  res.render("forgotpassword", {
-    menu: getMenu(req)
-  });
-});
 app.get("/search", function(req,res){
   if(req.session.is_admin){
     res.render("search",{
@@ -260,18 +249,38 @@ app.post('/forgot_pwd_reset', function(req, res){
   });
 });
 
+//Matt Code
 
+function addEmailToMailchimp(email) {
+var request = require("request");
 
-app.post('/forgot', function (req, res) {
-  var email = req.body.email;
+var options = { method: 'POST',
+  url: 'https://us17.api.mailchimp.com/3.0/lists/dbf2982ae5/members',
+  headers: 
+   { 'postman-token': '37f93e37-299e-fc96-5e70-384f255e06ea',
+     'cache-control': 'no-cache',
+     authorization: 'Basic YW55c3RyaW5nOjY3ZGQ1ZjVkOGM2MzkzMTFhOTUyZjI3YWIxZjBkMjI3LXVzMTc=',
+     'content-type': 'application/json' },
+  body: { email_address: email,
+	 status: 'subscribed' },
+  json: true };
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+  console.log(body);
+});
+}
+
+app.post('/forgotpassword', function (req, res) {
+  
   var reset = forgot(email, function (err) {
       if (err) res.end('Error sending message: ' + err)
       else res.end('Check your inbox for a password reset message.')
   });
     
   reset.on('request', function (req_, res_) {
-      req_.session.reset = { email : email, id : reset.id };
-      fs.createReadStream(__dirname + '/forgot.html').pipe(res_);
+      addEmailToMailchimp(req.body.email);
+      fs.createReadStream(__dirname + '/forgot.handlebars').pipe(res_);
   });
 });
 
@@ -288,6 +297,7 @@ app.post('/resetpassword', function (req, res) {
   delete req.session.reset;
   res.end('password reset');
 });
+
 
 app.post('/process-search', function(req, res) {
   var search = req.body.search;
