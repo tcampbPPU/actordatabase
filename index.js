@@ -50,6 +50,24 @@ function connect(cb){
 }
 
 
+// generates random string of characters
+var genRandomString = function(length){
+    return crypto.randomBytes(Math.ceil(length/2))
+            .toString('hex') // converts to hexadecimal format
+            .slice(0,length);   // returns required number of characters
+};
+
+var sha512 = function(password, salt){
+    var hash = crypto.createHmac('sha512', salt);
+    hash.update(password);
+    var value = hash.digest('hex');
+    return {
+        salt:salt,
+        passwordHash:value
+    };
+};
+
+
 function getMenu(req){
   var menu =[];
   var isAdmin = req.session.is_admin;
@@ -190,8 +208,13 @@ app.post('/check_email', function(req, res){
 // To add new user
 app.post('/addUser', function(req, res){
   connect(function(con){
-    var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
-    var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
+    var salt = genRandomString(16);
+    var passwordData = sha512(req.body.password, salt);
+    // console.log('UserPassword = '+ req.body.password);
+    // console.log('Passwordhash = '+ passwordData.passwordHash);
+    // console.log('Salt = '+ passwordData.salt);
+    var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    var values = [req.body.first_name, req.body.last_name, req.body.email, passwordData.passwordHash, passwordData.salt, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
       console.log(results.insertId);
         if (err){
@@ -256,7 +279,7 @@ var request = require("request");
 
 var options = { method: 'POST',
   url: 'https://us17.api.mailchimp.com/3.0/lists/dbf2982ae5/members',
-  headers: 
+  headers:
    { 'postman-token': '37f93e37-299e-fc96-5e70-384f255e06ea',
      'cache-control': 'no-cache',
      authorization: 'Basic YW55c3RyaW5nOjY3ZGQ1ZjVkOGM2MzkzMTFhOTUyZjI3YWIxZjBkMjI3LXVzMTc=',
@@ -272,12 +295,12 @@ request(options, function (error, response, body) {
 }
 
 app.post('/forgotpassword', function (req, res) {
-  
+
   var reset = forgot(email, function (err) {
       if (err) res.end('Error sending message: ' + err)
       else res.end('Check your inbox for a password reset message.')
   });
-    
+
   reset.on('request', function (req_, res_) {
       addEmailToMailchimp(req.body.email);
       fs.createReadStream(__dirname + '/forgot.handlebars').pipe(res_);
@@ -286,12 +309,12 @@ app.post('/forgotpassword', function (req, res) {
 
 app.post('/resetpassword', function (req, res) {
   if (!req.session.reset) return res.end('reset token not set');
-    
+
   var password = req.body.password;
   var confirm = req.body.confirm;
   if (password !== confirm) return res.end('passwords do not match');
-    
-  // update the user db here    
+
+  // update the user db here
 
   forgot.expire(req.session.reset.id);
   delete req.session.reset;
