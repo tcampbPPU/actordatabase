@@ -1,5 +1,6 @@
 // Add any outside files here...
 var express = require('express');
+var credentials = require("./credentials.js");
 var expressValidator = require('express-validator');
 var formidable = require('formidable');
 var mysql = require('mysql');
@@ -24,7 +25,7 @@ app.use(require('cookie-parser')(credentials.cookieSecret));
 app.use(require('express-session')({
  resave:false,
  saveUninitialized:false,
-// secret:credentials.cookieSecret
+ secret:credentials.cookieSecret
 }));
 
 /* DB Connection
@@ -47,20 +48,13 @@ function connect(cb){
   });
 }
 
-/*
-var forgot = require('../../')({
-    uri : '/resetpassword',
-    from : 'tcampb@pointpark.edu',
-    host : '/forgot', port : 4000,
-});
-*/
 
 function getMenu(req){
   var menu =[];
   var isAdmin = req.session.is_admin;
   menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
   if(isAdmin){
-    menu.push({"page": "search", "label": "Search"});
+    menu.push({"page": "search", "label": "Search"}, {"page":"edit", "label":"Edit"});
   } else{
     if(req.session.user_id){
 
@@ -127,7 +121,9 @@ app.post("/get_app_info", function(req, res) {
 });
 
 app.get('/edit', function(req, res) {
-  res.render('edit');
+  res.render('edit', {
+     menu: getMenu(req)
+   });
 });
 
 app.post("/edit_page", function(req, res) {
