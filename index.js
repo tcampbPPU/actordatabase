@@ -101,6 +101,16 @@ app.get("/forgotpassword", function(req,res){
   });
 });
 
+app.post("/get_app_info", function(req, res) {
+  sql1="SELECT app_name FROM edits";
+   connect(function(con){
+        con.query(sql1, function(err, results) {
+         if (err) throw err;
+           res.send({success: results});
+      });
+   });
+});
+
 app.get("/search_fous", function(req,res){
   if(req.session.is_admin){
     res.render("search_fous",{
