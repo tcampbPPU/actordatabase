@@ -111,6 +111,21 @@ app.post("/get_app_info", function(req, res) {
    });
 });
 
+app.get('/edit', function(req, res) {
+  res.render('edit');
+});
+
+app.post("/edit_page", function(req, res) {
+  q="UPDATE edits SET app_name= '" +req.body.name +"' WHERE id =1";
+   connect(function(con){
+        con.query(q, function(err, results) {
+         if (err) throw err;
+           res.redirect("/");
+      });
+   });
+});
+
+
 app.get("/search_fous", function(req,res){
   if(req.session.is_admin){
     res.render("search_fous",{
