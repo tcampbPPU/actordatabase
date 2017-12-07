@@ -180,7 +180,7 @@ app.post("/login", function(req,res){
             if (err) throw err;
               if(result[0]){
                 var salt = result[0].salt;
-                console.log(salt, " match with salt from DB");
+                // console.log(salt, " match with salt from DB");
                 var passwordData = sha512(req.body.password, salt);
                 if(result[0].password === passwordData.passwordHash){
                    req.session.user_id = result[0].id;
@@ -280,7 +280,7 @@ app.post('/delete-in-database', function(req, res){
 });
 
 // To check if the email entered for forgot password exists
-app.post('/forgot_pwd_reset', function(req, res){
+app.post('/validate_email', function(req, res){
   try{
     connect(function(con){
       var email = req.body.email;
@@ -297,7 +297,7 @@ app.post('/forgot_pwd_reset', function(req, res){
     });
   }
   catch (err) {
-    console.log(err, " Error in forgot_pwd_reset.post function");
+    console.log(err, " Error in validate_email.post function");
   }
 });
 

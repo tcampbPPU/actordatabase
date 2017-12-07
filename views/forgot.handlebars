@@ -7,7 +7,7 @@ $(document).ready(function() {
     if (email) {
       $.ajax({
         type: 'post',
-        url: '/forgot_pwd_reset',
+        url: '/validate_email',
         data: {
         email:email,
       },
@@ -51,4 +51,3 @@ $(document).ready(function() {
   <br>
   </div>
 </body>
-
