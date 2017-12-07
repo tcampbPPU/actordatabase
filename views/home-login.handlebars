@@ -19,6 +19,7 @@ $(document).ready(function() {
   $('#submit_btn').attr("disabled","disabled");
   $('input').on('change', function() {
     var email = $('#email1').val();
+    $('#login_message').html("");
     if (email) {
       $.ajax({
         type: 'post',
