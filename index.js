@@ -59,7 +59,8 @@ var forgot = require('../../')({
 function getMenu(req){
   var menu =[];
   var isAdmin = req.session.is_admin;
-  menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
+   menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
+
   if(isAdmin){
     menu.push({"page": "search", "label": "Search"});
   } else{
