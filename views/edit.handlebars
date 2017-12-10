@@ -15,7 +15,7 @@
     box-shadow: 0px 10px 50px black;
     cursor: pointer;
     overflow-y: scroll;
-    height: 500px;
+    height: 680px;
     margin-top: 2%;
     width: 600px;
   }
@@ -29,6 +29,13 @@
   h3 {
   color:black;
  }
+.font {
+width: 200px;
+height: 200px;
+border: 1px solid red;
+    background-repeat: no-repeat;
+    background-size: cover;
+}
   </style>
 </head>
 <body>
@@ -41,12 +48,20 @@
       <form method="POST" action="/edit_page">
         <div class="form-group">
           <label for="name">Name your App</label>
-          <input type="text" name="name" class="form-control" placeholder="Name Me!" id="name">
+          <input type="text" name="app_name" class="form-control" placeholder="Name Me!" id="name">
         </div>
-        <!-- <div class="form-group">
+        <div class="form-group">
+          <label for="intro">Introduce your App</label>
+          <input type="text" name="app_intro" class="form-control" placeholder="Introduce Me!" id="intro">
+        </div>
+	  <div class="form-group">
+    <label for="aboutarea">About your App</label>
+    <textarea name = "app_about" class="form-control" id="aboutarea" placeholder="in couple words write about your app." rows="3"></textarea>
+  </div> 
+       <!-- <div class="form-group">
           <label for="font_pic">Choose Font Picture</label>
-          <input type="file" class="form-control-file" id="font_pic">
-        </div> -->
+          <input type="file" name = "font_photo" class="form-control-file" id="font_pic">
+        </div> --> 
           <button type="submit" class="btn btn-primary">Apply Changes</button>
       </form>
     </div>

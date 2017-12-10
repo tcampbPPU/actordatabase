@@ -156,9 +156,14 @@
                            var result = data.success;
                            $("#project_name").html(result[0].app_name);
 			   $("#project_name2").html(result[0].app_name);
-                        } else {
-                            console.log("error");
-                        }
+                           $("#project_name3").html(result[0].app_name);
+			   $("#project_intro").html(result[0].app_intro);
+			   $("#project_about").html(result[0].app_about);
+			  // $("#font").css("background-image", "url(" +result[0].app_photo+")");
+				console.log(result[0].app_photo);
+                        	} else {
+                            	console.log("error");
+                        	}
                     },
                     error: function(){
                         console.log("There was a problem.");

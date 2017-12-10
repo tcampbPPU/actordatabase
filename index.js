@@ -111,7 +111,7 @@ app.get("/forgotpassword", function(req,res){
 });
 
 app.post("/get_app_info", function(req, res) {
-  sql1="SELECT app_name FROM edits";
+  sql1="SELECT*FROM edits WHERE id = 1";
    connect(function(con){
         con.query(sql1, function(err, results) {
          if (err) throw err;
@@ -127,8 +127,24 @@ app.get('/edit', function(req, res) {
 });
 
 app.post("/edit_page", function(req, res) {
-  q="UPDATE edits SET app_name= '" +req.body.name +"' WHERE id =1";
-   connect(function(con){
+  var app_name = req.body.name;
+  var app_intro = req.body.intro;
+  var font_photo = req.body.font;
+  var app_about = req.body.about;
+  q="UPDATE edits SET ";
+  var firstcondition= true;
+  for (var property in req.body) {
+	var value = req.body[property];
+	if (value !== "") {
+		if (firstcondition) {
+			firstcondition = false;
+		} else {q += ", "}
+	q +=  property+ " = " + "'"+value+"'";
+	}
+}
+  q += " WHERE id = 1;";
+//console.log(q);
+  connect(function(con){
         con.query(q, function(err, results) {
          if (err) throw err;
            res.redirect("/");
