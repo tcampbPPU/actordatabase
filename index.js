@@ -157,10 +157,6 @@ app.get("/addUser", function(req,res){
   });
 });
 
-app.get("/reset-password", function(req,res){
-  res.render("reset-password");
-});
-
 app.get("/logout", function(req,res){
   delete req.session.user_id;
   delete req.session.is_admin;
@@ -209,17 +205,6 @@ app.post("/login", function(req,res){
   });
 });
 
-app.post("/reset", function(req,res) {
-  connect(function(con){
-    var email = req.body.email;
-    var password=req.body.password;
-    console.log(email, password);
-
-    con.end();
-  });
-});
-
-
 // To check if user already exists
 app.post('/check_email', function(req, res){
   connect(function(con){
@@ -242,7 +227,6 @@ app.post('/check_email', function(req, res){
     con.end();
   });
 });
-
 
 
 // To add new user
