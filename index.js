@@ -147,6 +147,7 @@ app.get("/search", function(req,res){
     });
   }
 });
+
 app.get("/addUser", function(req,res){
   res.render("addUser",{
     menu: getMenu(req),
@@ -154,6 +155,10 @@ app.get("/addUser", function(req,res){
     login:req.session.user_id?req.session.user_id:false,
     user_name:req.session.user_first_name,
   });
+});
+
+app.get("/reset-password", function(req,res){
+  res.render("reset-password");
 });
 
 app.get("/logout", function(req,res){
@@ -180,27 +185,40 @@ app.post("/login", function(req,res){
             if (err) throw err;
               if(result[0]){
                 var salt = result[0].salt;
-                // console.log(salt, " match with salt from DB");
                 var passwordData = sha512(req.body.password, salt);
                 if(result[0].password === passwordData.passwordHash){
                    req.session.user_id = result[0].id;
                    req.session.is_admin = result[0].is_admin;
                    req.session.user_first_name = result[0].first_name;
                    req.session.cookie.maxAge = 9000000;
-                   res.redirect(303,'/user');
+                   res.send({success:true});
                 }else {
-                    res.redirect(303,'/error-page');
+                    // res.redirect(303,'/error-page');
+                    res.send({password:password,email:email});
                 }
               }else {
-                 res.redirect(303,'/');
+                res.send({password:password,email:email});
+                 // res.redirect(303,'/error-page');
               }
           });
         }catch (err) {
           console.log(err, " Error in login.post function");
         }
     }
+    con.end();
   });
 });
+
+app.post("/reset", function(req,res) {
+  connect(function(con){
+    var email = req.body.email;
+    var password=req.body.password;
+    console.log(email, password);
+
+    con.end();
+  });
+});
+
 
 // To check if user already exists
 app.post('/check_email', function(req, res){
@@ -214,49 +232,49 @@ app.post('/check_email', function(req, res){
           // Email is valid not in DB yet
           res.send("");
         }else{
+          //console.log("Existing Email is attempted to be entered");
           res.send("Email Already Used.");
         }
       });
     }catch (err) {
       console.log(err, " Error in check_email.post function");
     }
+    con.end();
   });
 });
 
 
+
 // To add new user
 app.post('/addUser', function(req, res){
-  try {
-    connect(function(con){
-      var salt = genRandomString(16);
-      var passwordData = sha512(req.body.password, salt);
-      var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
-      var values = [req.body.first_name, req.body.last_name, req.body.email, passwordData.passwordHash, passwordData.salt, 0, req.body.sex];
-      con.query(sql, values, function(err, results) {
-        console.log(results.insertId);
-          if (err){
-            res.redirect(303,'/error-page');
-          }else{
-            if (results.insertId) {
-              // Redirects new user to their own page
-              console.log("New record created successfully. Last inserted ID is: " + results.insertId);
-              req.session.user_id = results.insertId;
-              req.session.user_first_name = req.body.first_name;
-              req.session.cookie.maxAge = 9000000;
-              res.redirect(303, '/user');
-            } else {
-                console.log("Error Redirecting pages");
-                res.redirect(303, '/error-page');
-            }
-            con.end();
+  connect(function(con){
+    req.assert('first_name', 'Name is required').notEmpty();
+    var salt = genRandomString(16);
+    var passwordData = sha512(req.body.password, salt);
+    var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    var values = [req.body.first_name, req.body.last_name, req.body.email, passwordData.passwordHash, passwordData.salt, 0, req.body.sex];
+    // console.log(sql, values);
+    con.query(sql, values, function(err, results) {
+      //console.log(results.insertId);
+        if (err){
+          res.redirect(303,'/error-page');
+        }else{
+          if (results.insertId) {
+            // Redirects new user to their own page
+            //console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+            req.session.user_id = results.insertId;
+            req.session.user_first_name = req.body.first_name;
+            req.session.cookie.maxAge = 9000000;
+            res.redirect(303, '/user');
+          } else {
+              console.log("Error Redirecting pages");
+              res.redirect(303, '/error-page');
           }
-      });
+          con.end();
+        }
     });
-  }catch (err) {
-    console.log(err, " Error in addUser.post function");
-  }
+  });
 });
-
 
 app.post('/delete-in-database', function(req, res){
   var table = req.body.table;
@@ -279,13 +297,14 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
-// To check if the email entered for forgot password exists
+// To check if the email entered for forgot password and home-login exists
 app.post('/validate_email', function(req, res){
   try{
     connect(function(con){
       var email = req.body.email;
       var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
       con.query(sql, function(err, results, field) {
+        // console.log(results);
         if (err) throw err;
         if(results[0]["COUNT(id)"] >=  1) {
           // Email Exist, Good to send Password reset link to
@@ -294,6 +313,7 @@ app.post('/validate_email', function(req, res){
           res.send("Email Not Found.");
         }
       });
+      con.end();
     });
   }
   catch (err) {

@@ -16,49 +16,42 @@ body {
 <script src="https://code.jquery.com/jquery-2.0.2.min.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
-  $('#submit_btn').attr("disabled","disabled");
-  $('input').on('change', function() {
-    var email = $('#email1').val();
-    $('#login_message').html("");
-    if (email) {
-      $.ajax({
-        type: 'post',
-        url: '/validate_email',//forgot_pwd_reset
-        data: {
-        email:email,
-      },
-      success: function (response) {
-        $('#email_status').html(response);
-        if(response){
+
+  $('#password1').hover(function () {
+     $('#password1').attr('type', 'text');
+  }, function () {
+     $('#password1').attr('type', 'password');
+  });
+
+  $('#login').on('submit', function(e) {
+    e.preventDefault();
+    $.ajax({
+      type: 'post',
+      url: '/login',
+      data: $(this).serialize(),
+      success: function(response) {
+        if (response.success) {
+          // console.log("able to login");
+          location.assign("/user");
+        }else{
+          $("#password1").effect("shake");
+          $("#message").html('Error! Email or Password Does Not Match Our Records. Try Again.');
           $('#login_message').html("<a href='/addUser'>**Click Here to Create Account**</a>");
-          return false;
-        }
-        else {
-          $('#submit_btn').removeAttr("disabled");
-          $('#submit_message').hide();
-          return true;
         }
       }
     });
-    }else {
-      $('#email_status').html("");
-      return false;
-    }
-  })
+  });
 });
 
 </script>
 <body>
-  <center>
+  <center><h3>Log In</h3><br>
     <br>
   <div class="container b">
-    <form action="/login"  method="POST">
+    <form action="/login"  method="POST" id="login">
       <div class="form-group col-md-4">
         <label for="email1">Email address</label>
         <input type="email" name ="email"class="form-control" id="email1" aria-describedby="emailHelp" placeholder="Enter email">
-        <span class="" id="email_status" style='color:red; font-weight:bold;'></span> <br>
-        <span class="" id="login_message" style='color:blue; font-weight:bold;'></span>
-        <!--<span class="" id="submit_message" style='color:red; font-weight:bold;'><br><a href="addUser">**Click Here to Create Account**</a></span>-->
       </div>
       <div class="form-group col-md-4">
        <label for="password1">Password</label>
@@ -69,6 +62,8 @@ $(document).ready(function() {
       <div class="form-group col-md-4">
         <input type="submit" class="btn primary" id="submit_btn" value="Login"> <br>
       </div>
+      <div id="message" style='color:red; font-weight:bold;'></div>
+      <span class="" id="login_message" style='color:blue; font-weight:bold;'></span>
   </form>
   <br>
   </div>
