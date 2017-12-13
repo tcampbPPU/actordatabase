@@ -110,6 +110,7 @@ app.get("/forgotpassword", function(req,res){
   });
 });
 
+// get elt for edit
 app.post("/get_app_info", function(req, res) {
   sql1="SELECT*FROM edits WHERE id = 1";
    connect(function(con){
@@ -120,17 +121,52 @@ app.post("/get_app_info", function(req, res) {
    });
 });
 
+// edit page
 app.get('/edit', function(req, res) {
   res.render('edit', {
      menu: getMenu(req)
    });
 });
 
+//upload font picture.
+app.post("/upload_font-image",function(req,res){
+  if(1===1) {
+      var form = new formidable.IncomingForm();
+       form.parse(req,function(err, fields, files) {
+           if(err)throw err;
+           if(fields) {
+             if(files.photo.type == "image/jpeg" ||files.photo.type == "image/png"||files.photo.type == "image/gif" ) {
+               var buf = fs.readFileSync(files.photo.path).toString("base64");
+               connect(function(con) {
+                 var query = "UPDATE edits SET photo=?  WHERE id=?";
+                 var values = [buf,1];
+                 con.query(query, values, function(err, result,fields){
+                   if(err) {
+			console.log(err);
+                      res.send({success:false});
+                   }
+                   if(result) {
+			console.log("img loaded with success!");
+                    // res.send({success:true});
+                   }else {
+			console.log(err);
+                     res.send({success:false});
+                   }
+                 });
+               });
+             } else {
+               var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
+                res.send({success:"Format error"});
+             }
+           }
+        });
+  }else {
+    res.send({success:false});
+  }
+});
+
+//make changes from edit page
 app.post("/edit_page", function(req, res) {
-  var app_name = req.body.name;
-  var app_intro = req.body.intro;
-  var font_photo = req.body.font;
-  var app_about = req.body.about;
   q="UPDATE edits SET ";
   var firstcondition= true;
   for (var property in req.body) {
@@ -139,11 +175,12 @@ app.post("/edit_page", function(req, res) {
 		if (firstcondition) {
 			firstcondition = false;
 		} else {q += ", "}
-	q +=  property+ " = " + "'"+value+"'";
+	//q +=  property+ " = " + '"'+value+'"';
+	q +=  property+ " = " + mysql.escape(value);
 	}
 }
   q += " WHERE id = 1;";
-//console.log(q);
+console.log(q);
   connect(function(con){
         con.query(q, function(err, results) {
          if (err) throw err;
