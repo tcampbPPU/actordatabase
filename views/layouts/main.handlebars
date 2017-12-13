@@ -7,13 +7,13 @@
     <title>Actor Database</title>
       <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {{#if showTests}}
         <link rel="stylesheet" href="/vendor/mocha.css">
     {{/if}}
     <style media="screen">
     body {
       background: url("img/cinema4.jpeg");
-
       background-position: center;
       background-repeat:no-repeat;
       background-size: cover;
@@ -39,7 +39,7 @@
     color:white;
   }
   .user_info_titles{
-    color:grey;
+    color:lavender;
 
   }
   .user_info_values{
@@ -53,8 +53,20 @@
   .user_info_edit_links:hover{
     color:darkred;
   }
-  .search_toggle_divs{
-    display: none;
+  /*.search_toggle_divs{
+    /display: none;
+  }*/
+  #profile_in_bucket{
+    color:white;
+  }
+  #delete_in_bucket{
+    color:white;
+  }
+  #profile_in_bucket:hover{
+    color:black;
+  }
+  #delete_in_bucket:hover{
+    color:red;
   }
   #search_container h6{
     cursor: pointer;
@@ -85,8 +97,44 @@
   .info_input{
     visibility: hidden;
   }
+  .search-history-boxes:hover .search-history-icon{
+    display: block;
+  }
+  .search-history-icon{
+    color:white;
+    display:none;
+  }
+  .search-history-icon:hover{
+    color:pink;
+  }
+  .right_click_options{
+    color:white;
+    background-color: inherit;
+  }
+  .right_click_options:hover{
+    color:black;
+    background-color: lightgrey;
+  }
+  .each-profile-box{
+    cursor:pointer;
+    background-color:rgba(100,100,100,0.4);
+  }
+  .each-profile-box:hover{
+    background-color:rgb(100,100,100);
+  }
+  .ui-dialog{
+   /*background-color: rgba(100,100,100,0.4);*/
+  }
+  .ui-dialog-titlebar{
+    /*background-color: rgba(100,100,100,0.4);*/
+  }
+  .hideTitle{
+    display:none;
+  }
     </style>
     <script type="text/javascript" src="utility.js"></script>
+    <script type="text/javascript" src="options.js"></script>
+
   </head>
   <body style='background-color:black; color:white;'>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
@@ -113,7 +161,7 @@
            <span class="nav-item " style="float:right;" >
              <table>
                <tr style="background-color:inherit;">
-                 <td><img src="img/user.png" style='width:30px; height:30px; margin-right:3px; border-radius:100px; border:1px solid white;' alt=""> </td><td>{{user_name}}</td><td> <a class="nav-link " href="logout" style="color:grey;">Logout</a></td>
+                 <td>{{user_name}}</td><td> <a class="nav-link " href="logout" style="color:grey;">Logout</a></td>
                </tr>
              </table>
           </span>
@@ -122,7 +170,7 @@
      {{{body}}}
     <footer class="footer">
      <div class="container">
-       <span class="text-muted">Work in Progress</span>
+       <span class="text-muted"></span
      </div>
    </footer>
         {{#if showTests}}

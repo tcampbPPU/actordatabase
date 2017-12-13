@@ -1,358 +1,370 @@
 
 {{#if admin }}
 <div id="result_container" style="width:100%; padding-bottom:30px;  display:none; color:white;">
-  <center><h3>Search Results</h3></center>
+  <input id='result_container-hidden-input-title' type="hidden" name="" value="">
+  <input id='bucket_container-hidden-input-title' type="hidden" name="" data-id=''value="">
+  <input id='result_container-hidden-input-search_id' type="hidden" name="" value="">
+  <center><h3 id='result-title'>Search Results</h3></center>
   <div class="">
 
 
   </div>
-  <div id="result_display" style="clear:both;  ">
+  <div id="result_display" style="clear:both;width:100%; ">
 
   </div>
   <br>
-  <div class="">
-    <label for="text_area">Message:</label><br>
-    <textarea name="text" rows="8" cols="80" id='text_area' placeholder="Please type the message you would like to send here."></textarea>
-    <div class='form-group col-md-3'>
-      <!-- <label class='mr-sm-2' for='inputTitle'>Search Title:</label> -->
-      <input type='text' id='inputTitle'  class='form-control'  placeholder='Enter search title here' name='title'>
-    </div>
-  </div>
-   <div id="btn_div" ></div>
+   <div id="btn_div" style='clear:both;'></div>
 
 </div>
-<div class="container" id='search_container'style="width:100%; ">
+<div class="container" id='search_container'style="width:100%;  overflow:scroll; ">
   <div class="form-row">
-    <div class="form-group col-md-3" id='history' style="border-right:1px solid lightgrey;">
+    <div class="form-group col-md-12" id='history-search'>
+      <span id="history_open_link" style="margin:10px; cursor:pointer;">History </span>
+      <span id="search_open_link" style="margin:10px; cursor:pointer;">Search </span>
+    </div>
+    <div class="form-group col-md-12" id='history' style="display:none;">
     <center><h3>History</h3></center>
     </div>
-    <div class="form-group col-md-9" id='fields' style="">
+    <div class="form-group col-md-12" id='fields' >
         <center><h3>Search</h3></center>
-        <form  id="searchForm" action="/search_database" method="post">
-          <h6 data-target='name'>Name:</h6>
-            <input type="hidden" name="first_name[table]" value="users">
-            <input type="hidden" name="last_name[table]" value="users">
-          <div class="search_toggle_divs" id='name'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="First name" name="first_name[first_name]" data-parentdiv='name'>
+        <div class="" style=" height:500px; overflow-y:scroll; overflow-x:hidden;">
+          <form  id="searchForm" action="/search_database" method="post">
+            <h6 data-target='name'>Name:</h6>
+              <input type="hidden" name="first_name[table]" value="users">
+              <input type="hidden" name="last_name[table]" value="users">
+            <div class="search_toggle_divs" id='name'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="First name" name="first_name[first_name]" data-parentdiv='name'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Last name" name="last_name[last_name]" data-parentdiv='name'>
+                </div>
               </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Last name" name="last_name[last_name]" data-parentdiv='name'>
+            </div>
 
+            <h6 data-target='chest'>Age:</h6>
+              <input type="hidden" name="age[table]" value="age">
+            <div class="search_toggle_divs" id='age'><div class="form-row">
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="age[min]" data-parentdiv='age'>
+              </div>
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="age[max]" data-parentdiv='age'>
               </div>
             </div>
           </div>
 
-          <h6 data-target='phone'>Phone:</h6>
-            <input type="hidden" name="home_phone[table]" value="actors">
-              <input type="hidden" name="cell_phone[table]" value="actors">
-          <div class="search_toggle_divs" id='phone'>
-            <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="home Phone" name="home_phone[home_phone]" data-parentdiv='phone'>
+            <h6 data-target='phone'>Phone:</h6>
+              <input type="hidden" name="home_phone[table]" value="actors">
+                <input type="hidden" name="cell_phone[table]" value="actors">
+            <div class="search_toggle_divs" id='phone'>
+              <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="home Phone" name="home_phone[home_phone]" data-parentdiv='phone'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Cell Phone" name="cell_phone[cell_phone]" data-parentdiv='phone'>
+                </div>
               </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Cell Phone" name="cell_phone[cell_phone]" data-parentdiv='phone'>
+            </div>
+            <h6 data-target='address'>Address:</h6>
+            <input type="hidden" name="street[table]" value="actors">
+            <input type="hidden" name="city[table]" value="actors">
+            <input type="hidden" name="state[table]" value="actors">
+            <input type="hidden" name="zip[table]" value="actors">
+            <div class="search_toggle_divs" id='address'><div class="form-row">
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control"  placeholder="Street" name="street[street]" data-parentdiv='address'>
               </div>
-            </div>
-          </div>
-          <h6 data-target='address'>Address:</h6>
-          <input type="hidden" name="street[table]" value="actors">
-          <input type="hidden" name="city[table]" value="actors">
-          <input type="hidden" name="state[table]" value="actors">
-          <input type="hidden" name="zip[table]" value="actors">
-          <div class="search_toggle_divs" id='address'><div class="form-row">
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control"  placeholder="Street" name="street[street]" data-parentdiv='address'>
-            </div>
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control"  placeholder="City" name="city[city]" data-parentdiv='address'>
-            </div>
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id='inputState' placeholder="State" name="state[state]" data-parentdiv='address'>
-            </div>
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control"  placeholder="zip" name="zip[zip]" data-parentdiv='address'>
-            </div>
-          </div></div>
-
-          <h6 data-target='emergency_contacts' >Emergency Contact:</h6>
-            <input type="hidden" name="emergency_name[table]" value="actors">
-            <input type="hidden" name="emergency_number[table]" value="actors">
-          <div class="search_toggle_divs" id='emergency_contacts'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Name" name="emergency_name[emergency_name]" data-parentdiv='emergency_contacts'>
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control"  placeholder="City" name="city[city]" data-parentdiv='address'>
               </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Cell Phone" name="emergency_number[emergency_number]" data-parentdiv='emergency_contacts' >
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id='inputState' placeholder="State" name="state[state]" data-parentdiv='address'>
+              </div>
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control"  placeholder="zip" name="zip[zip]" data-parentdiv='address'>
               </div>
             </div></div>
 
-          <!-- <h6 data-target='location'>Location:</h6>
-          <div class="search_toggle_divs" id='location'><input type="text" class="form-control col-md-3"  placeholder="Location" name="location"></div> -->
+            <h6 data-target='emergency_contacts' >Emergency Contact:</h6>
+              <input type="hidden" name="emergency_name[table]" value="actors">
+              <input type="hidden" name="emergency_number[table]" value="actors">
+            <div class="search_toggle_divs" id='emergency_contacts'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Name" name="emergency_name[emergency_name]" data-parentdiv='emergency_contacts'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Cell Phone" name="emergency_number[emergency_number]" data-parentdiv='emergency_contacts' >
+                </div>
+              </div></div>
 
-            <h6 data-target='union'>Union Info:</h6>
-              <input type="hidden" name="union_status[table]" value="actors">
-              <input type="hidden" name="union_number[table]" value="actors">
-            <div class="search_toggle_divs" id='union'><div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Union status" name="union_status[union_status]" data-parentdiv='union'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Union #" name="union_number[union_number]"  data-parentdiv='union'>
-              </div>
-            </div></div>
+              <h6 data-target='union'>Union Info:</h6>
+                <input type="hidden" name="union_status[table]" value="actors">
+                <input type="hidden" name="union_number[table]" value="actors">
+              <div class="search_toggle_divs" id='union'><div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Union status" name="union_status[union_status]" data-parentdiv='union'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Union #" name="union_number[union_number]"  data-parentdiv='union'>
+                </div>
+              </div></div>
 
-            <h6 data-target='ethnicity'>Ethnicity:</h6>
-            <input type="hidden" name="ethnicity[table]" value="actors">
-            <div class="search_toggle_divs" id='ethnicity'>
-              <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='ethnicity_options' name="ethnicity[ethnicity]"  data-parentdiv='ethnicity'>
-                <option selected></option>
-              </select>
-
-            </div>
-
-            <h6 data-target='haircolor'>Hair Color:</h6>
-            <input type="hidden" name="hair_color[table]" value="actors">
-            <div class="search_toggle_divs" id='haircolor'>
-              <input type="text" class="form-control col-md-3"  placeholder="Hair Color" name="hair_color[hair_color]" data-parentdiv='haircolor'>
-            </div>
-
-            <h6 data-target='hairtype'>Hair Type:</h6>
-            <input type="hidden" name="hair_type[table]" value="actors">
-            <div class="search_toggle_divs" id='hairtype'>
-              <input type="text" class="form-control col-md-3"  placeholder="Hair Type" name="hair_type[hair_type]" data-parentdiv='hairtype'>
-            </div>
-
-             <h6 data-target='tattoos'>Tattoos </h6>
-              <input type="hidden" name="tattoo[table]" value="actors">
-             <div class="search_toggle_divs" id='tattoos'>
-               <input type="text" class="form-control col-md-3"  placeholder="Tattoos" name="tattoo[tattoo]" data-parentdiv='tattoos'>
-             </div>
-
-              <h6 data-target='piercing'>Piercing </h6>
-              <input type="hidden" name="piercings[table]" value="actors">
-              <div class="search_toggle_divs" id='piercing'>
-                <input type="text" class="form-control col-md-3"  placeholder="Piercing" name="piercings[piercings]" data-parentdiv='piercing'>
-              </div>
-
-             <h6 data-target='facialhair'>Facial Hair </h6>
-             <input type="hidden" name="facial_hair[table]" value="actors">
-             <div class="search_toggle_divs" id='facialhair'>
-               <input type="text" class="form-control col-md-3"  placeholder="Facial Hair" name="facial_hair[facial_hair]" data-parentdiv='facialhair'>
-             </div>
-
-              <h6 data-target='eyes'>Eye Color </h6>
-               <input type="hidden" name="eye_color[table]" value="actors">
-                <input type="hidden" name="us_citizen[table]" value="actors">
-              <div class="search_toggle_divs" id='eyes'>
-                 <input type="text" class="form-control col-md-3"  placeholder="Eyes" name="eye_color[eye_color]" data-parentdiv='eyes'>
-               </div>
-
-               <h6 data-target='us_citizen'>US citizen </h6>
-               <div class="search_toggle_divs" id='us_citizen'>
-                 <input type="text" class="form-control col-md-3"  placeholder="US citizen" name="us_citizen[us_citizen]" data-parentdiv='us_citizen'>
-               </div>
-
-          <!-- <h6 data-target='dob'>D.O.B:</h6>
-          <div class="search_toggle_divs" id='dob'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="date" class="form-control" name="birthday_min" >
-              </div>
-              <div class="form-group col-md-3">
-                <input type="date" class="form-control"  name="birthday_max">
-              </div>
-            </div></div> -->
-
-          <h6 data-target='sex'>Sex:</h6>
-              <input type="hidden" name="sex[table]" value="users">
-
-          <div class="search_toggle_divs" id='sex'>
-            <!-- <input type="text" class="form-control col-md-3" id="sex_field" placeholder="Sex" name="sex[sex]"> -->
-            <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='sex_field' name="sex[sex]" data-parentdiv='sex'>
-              <option selected></option>
-            </select>
-          </div>
-
-          <h6 data-target='weight'>Weight:</h6>
-            <input type="hidden" name="weight[table]" value="actors">
-          <div class="search_toggle_divs" id='weight'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Min" name="weight[min]" data-parentdiv='weight'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control"  placeholder="Max" name="weight[max]" data-parentdiv='weight'>
-              </div>
-            </div>
-          </div>
-
-          <h6 data-target='height'>Height:</h6>
-            <input type="hidden" name="height[table]" value="actors">
-          <div class="search_toggle_divs" id='height'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMinOptions' name="height[min]" data-parentdiv='height'>
-                  <option selected ></option>
-                </select>
-              </div>
-              <div class="form-group col-md-3">
-                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMaxOptions' name="height[max]" data-parentdiv='height'>
+              <h6 data-target='ethnicity'>Ethnicity:</h6>
+              <input type="hidden" name="ethnicity[table]" value="actors">
+              <div class="search_toggle_divs" id='ethnicity'>
+                <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='ethnicity_options' name="ethnicity[ethnicity]"  data-parentdiv='ethnicity'>
                   <option selected></option>
                 </select>
-              </div>
-            </div></div>
 
-          <h6 data-target='shoe_size'>Shoe size:</h6>
-          <input type="hidden" name="shoe_size[table]" value="actors">
-          <div class="search_toggle_divs" id='shoe_size'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="shoe_size[min]" data-parentdiv='shoe_size'>
               </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="shoe_size[max]" data-parentdiv='shoe_size'>
-              </div>
-            </div></div>
 
-          <h6 data-target='jacket'>Jacket size:</h6>
-              <input type="hidden" name="jacket_size[table]" value="actors">
-          <div class="search_toggle_divs" id='jacket'><div class="form-row">
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="jacket_size[min]" data-parentdiv='jacket'>
+              <h6 data-target='haircolor'>Hair Color:</h6>
+              <input type="hidden" name="hair_color[table]" value="actors">
+              <div class="search_toggle_divs" id='haircolor'>
+                <input type="text" class="form-control col-md-2"  placeholder="Hair Color" name="hair_color[hair_color]" data-parentdiv='haircolor'>
+              </div>
+
+              <h6 data-target='hairtype'>Hair Type:</h6>
+              <input type="hidden" name="hair_type[table]" value="actors">
+              <div class="search_toggle_divs" id='hairtype'>
+                <input type="text" class="form-control col-md-2"  placeholder="Hair Type" name="hair_type[hair_type]" data-parentdiv='hairtype'>
+              </div>
+
+               <h6 data-target='tattoos'>Tattoos </h6>
+                <input type="hidden" name="tattoo[table]" value="actors">
+               <div class="search_toggle_divs" id='tattoos'>
+                 <input type="text" class="form-control col-md-2"  placeholder="Tattoos" name="tattoo[tattoo]" data-parentdiv='tattoos'>
+               </div>
+
+                <h6 data-target='piercing'>Piercing </h6>
+                <input type="hidden" name="piercings[table]" value="actors">
+                <div class="search_toggle_divs" id='piercing'>
+                  <input type="text" class="form-control col-md-2"  placeholder="Piercing" name="piercings[piercings]" data-parentdiv='piercing'>
+                </div>
+
+               <h6 data-target='facialhair'>Facial Hair </h6>
+               <input type="hidden" name="facial_hair[table]" value="actors">
+               <div class="search_toggle_divs" id='facialhair'>
+                 <input type="text" class="form-control col-md-2"  placeholder="Facial Hair" name="facial_hair[facial_hair]" data-parentdiv='facialhair'>
+               </div>
+
+                <h6 data-target='eyes'>Eye Color </h6>
+                 <input type="hidden" name="eye_color[table]" value="actors">
+                  <input type="hidden" name="us_citizen[table]" value="actors">
+                <div class="search_toggle_divs" id='eyes'>
+                   <input type="text" class="form-control col-md-2"  placeholder="Eyes" name="eye_color[eye_color]" data-parentdiv='eyes'>
+                 </div>
+
+                 <h6 data-target='us_citizen'>US citizen </h6>
+                 <div class="search_toggle_divs" id='us_citizen'>
+                   <input type="text" class="form-control col-md-2"  placeholder="US citizen" name="us_citizen[us_citizen]" data-parentdiv='us_citizen'>
+                 </div>
+
+
+
+            <h6 data-target='sex'>Sex:</h6>
+                <input type="hidden" name="sex[table]" value="users">
+
+            <div class="search_toggle_divs" id='sex'>
+              <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='sex_field' name="sex[sex]" data-parentdiv='sex'>
+                <option selected></option>
+              </select>
             </div>
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="jacket_size[max]" data-parentdiv='jacket'>
+
+            <h6 data-target='weight'>Weight:</h6>
+              <input type="hidden" name="weight[table]" value="actors">
+            <div class="search_toggle_divs" id='weight'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Min" name="weight[min]" data-parentdiv='weight'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control"  placeholder="Max" name="weight[max]" data-parentdiv='weight'>
+                </div>
+              </div>
+
+
             </div>
-          </div></div>
 
-          <h6 data-target='dress'>Dress size:</h6>
-            <input type="hidden" name="dress_size[table]" value="actors">
-          <div class="search_toggle_divs" id='dress'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="dress_size[min]" data-parentdiv='dress'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="dress_size[max]" data-parentdiv='dress'>
-              </div>
-            </div></div>
+            <h6 data-target='height'>Height:</h6>
+              <input type="hidden" name="height[table]" value="actors">
+            <div class="search_toggle_divs" id='height'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMinOptions' name="height[min]" data-parentdiv='height'>
+                    <option selected ></option>
+                  </select>
+                </div>
+                <div class="form-group col-md-2">
+                  <select class="custom-select mb-2 mr-sm-2 mb-sm-0" id='heightMaxOptions' name="height[max]" data-parentdiv='height'>
+                    <option selected></option>
+                  </select>
+                </div>
+              </div></div>
 
-          <h6 data-target='chest'>Chest size:</h6>
-            <input type="hidden" name="chest_size[table]" value="actors">
-          <div class="search_toggle_divs" id='chest'><div class="form-row">
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="chest_size[min]" data-parentdiv='chest'>
+            <h6 data-target='shoe_size'>Shoe size:</h6>
+            <input type="hidden" name="shoe_size[table]" value="actors">
+            <div class="search_toggle_divs" id='shoe_size'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="shoe_size[min]" data-parentdiv='shoe_size'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="shoe_size[max]" data-parentdiv='shoe_size'>
+                </div>
+              </div></div>
+
+            <h6 data-target='jacket'>Jacket size:</h6>
+                <input type="hidden" name="jacket_size[table]" value="actors">
+            <div class="search_toggle_divs" id='jacket'><div class="form-row">
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="jacket_size[min]" data-parentdiv='jacket'>
+              </div>
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="jacket_size[max]" data-parentdiv='jacket'>
+              </div>
             </div>
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="chest_size[max]" data-parentdiv='chest'>
-            </div>
-          </div></div>
-
-          <h6 data-target='hip'>Hip size:</h6>
-                <input type="hidden" name="hip_size[table]" value="actors">
-          <div class="search_toggle_divs" id='hip'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hip_size[min]" data-parentdiv='hip'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hip_size[max]" data-parentdiv='hip'>
-              </div>
-            </div></div>
-
-          <h6 data-target='waist'>Waist size:</h6>
-            <input type="hidden" name="waist_size[table]" value="actors">
-          <div class="search_toggle_divs" id='waist'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="waist_size[min]" data-parentdiv='waist'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="waist_size[max]" data-parentdiv='waist'>
-              </div>
-            </div></div>
-
-          <h6 data-target='bust'>Bust size:</h6>
-            <input type="hidden" name="bust_size[table]" value="actors">
-          <div class="search_toggle_divs" id='bust'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="bust_size[min]" data-parentdiv='bust'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="bust_size[max]" data-parentdiv='bust'>
-              </div>
-            </div></div>
-
-          <h6 data-target='inseam'>Inseam size:</h6>
-              <input type="hidden" name="inseam_size[table]" value="actors">
-          <div class="search_toggle_divs" id='inseam'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="inseam_size[min]" data-parentdiv='inseam'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="inseam_size[max]" data-parentdiv='inseam'>
-              </div>
-            </div></div>
-
-          <h6 data-target='neck'>Neck size:</h6>
-                <input type="hidden" name="neck_size[table]" value="actors">
-          <div class="search_toggle_divs" id='neck'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="neck_size[min]" data-parentdiv='neck'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="neck_size[max]" data-parentdiv='neck'>
-              </div>
-            </div></div>
-
-          <h6 data-target="sleeve">Sleeve size:</h6>
-          <input type="hidden" name="sleeve_size[table]" value="actors">
-          <div class="search_toggle_divs" id='sleeve'><div class="form-row">
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="sleeve_size[min]" data-parentdiv='sleeve'>
-            </div>
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="sleeve_size[max]" data-parentdiv='sleeve'>
-            </div>
-          </div></div>
-
-          <h6 data-target='hat'>Hat size:</h6>
-                <input type="hidden" name="hat_size[table]" value="actors">
-          <div class="search_toggle_divs" id='hat'>  <div class="form-row">
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hat_size[min]" data-parentdiv='hat'>
-              </div>
-              <div class="form-group col-md-3">
-                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hat_size[max]" data-parentdiv='hat'>
-              </div>
-            </div></div>
-          <h6 data-target='car_year'>Car Year:</h6>
-              <input type="hidden" name="year[table]" value="cars">
-          <div class="search_toggle_divs" id='car_year'><div class="form-row">
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="year[min]" data-parentdiv='car_year'>
-            </div>
-            <div class="form-group col-md-3">
-              <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="year[max]" data-parentdiv='car_year'>
-            </div>
-          </div></div>
-
-          <h6 data-target='car_make'>Make of Car:</h6>
-          <input type="hidden" name="make[table]" value="cars">
-          <div class="search_toggle_divs" id='car_make'>
-             <input type="text" class="form-control col-md-3"  placeholder="Make of Car" name="make[make]" data-parentdiv='car_make'>
           </div>
 
-          <h6 data-target='car_color'>Car Color:</h6>
-               <input type="hidden" name="color[table]" value="cars">
-          <div class="search_toggle_divs" id='car_color'>
-             <input type="text" class="form-control col-md-3"  placeholder="Car Color" name="color[color]" data-parentdiv='car_color'>
-          </div>
-          <button type="submit" class="btn btn-primary">Search</button>
-        </form><br><br>
+            <h6 data-target='dress'>Dress size:</h6>
+              <input type="hidden" name="dress_size[table]" value="actors">
+            <div class="search_toggle_divs" id='dress'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="dress_size[min]" data-parentdiv='dress'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="dress_size[max]" data-parentdiv='dress'>
+                </div>
+              </div></div>
 
+            <h6 data-target='chest'>Chest size:</h6>
+              <input type="hidden" name="chest_size[table]" value="actors">
+            <div class="search_toggle_divs" id='chest'><div class="form-row">
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="chest_size[min]" data-parentdiv='chest'>
+              </div>
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="chest_size[max]" data-parentdiv='chest'>
+              </div>
+            </div></div>
 
+            <h6 data-target='hip'>Hip size:</h6>
+                  <input type="hidden" name="hip_size[table]" value="actors">
+            <div class="search_toggle_divs" id='hip'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hip_size[min]" data-parentdiv='hip'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hip_size[max]" data-parentdiv='hip'>
+                </div>
+              </div></div>
 
+            <h6 data-target='waist'>Waist size:</h6>
+              <input type="hidden" name="waist_size[table]" value="actors">
+            <div class="search_toggle_divs" id='waist'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="waist_size[min]" data-parentdiv='waist'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="waist_size[max]" data-parentdiv='waist'>
+                </div>
+              </div></div>
 
+            <h6 data-target='bust'>Bust size:</h6>
+              <input type="hidden" name="bust_size[table]" value="actors">
+            <div class="search_toggle_divs" id='bust'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="bust_size[min]" data-parentdiv='bust'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="bust_size[max]" data-parentdiv='bust'>
+                </div>
+              </div></div>
 
+            <h6 data-target='inseam'>Inseam size:</h6>
+                <input type="hidden" name="inseam_size[table]" value="actors">
+            <div class="search_toggle_divs" id='inseam'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="inseam_size[min]" data-parentdiv='inseam'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="inseam_size[max]" data-parentdiv='inseam'>
+                </div>
+              </div></div>
 
+            <h6 data-target='neck'>Neck size:</h6>
+                  <input type="hidden" name="neck_size[table]" value="actors">
+            <div class="search_toggle_divs" id='neck'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="neck_size[min]" data-parentdiv='neck'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="neck_size[max]" data-parentdiv='neck'>
+                </div>
+              </div></div>
 
+            <h6 data-target="sleeve">Sleeve size:</h6>
+            <input type="hidden" name="sleeve_size[table]" value="actors">
+            <div class="search_toggle_divs" id='sleeve'><div class="form-row">
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="sleeve_size[min]" data-parentdiv='sleeve'>
+              </div>
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="sleeve_size[max]" data-parentdiv='sleeve'>
+              </div>
+            </div></div>
 
+            <h6 data-target='hat'>Hat size:</h6>
+                  <input type="hidden" name="hat_size[table]" value="actors">
+            <div class="search_toggle_divs" id='hat'>  <div class="form-row">
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="hat_size[min]" data-parentdiv='hat'>
+                </div>
+                <div class="form-group col-md-2">
+                  <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="hat_size[max]" data-parentdiv='hat'>
+                </div>
+              </div></div>
+            <h6 data-target='car_year'>Car Year:</h6>
+                <input type="hidden" name="year[table]" value="cars">
+            <div class="search_toggle_divs" id='car_year'><div class="form-row">
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputFirstName" placeholder="Min" name="year[min]" data-parentdiv='car_year'>
+              </div>
+              <div class="form-group col-md-2">
+                <input type="text" class="form-control" id="inputLastName" placeholder="Max" name="year[max]" data-parentdiv='car_year'>
+              </div>
+            </div></div>
+
+            <h6 data-target='car_make'>Make of Car:</h6>
+            <input type="hidden" name="make[table]" value="cars">
+            <div class="search_toggle_divs" id='car_make'>
+               <input type="text" class="form-control col-md-2"  placeholder="Make of Car" name="make[make]" data-parentdiv='car_make'>
+            </div>
+
+            <h6 data-target='car_color'>Car Color:</h6>
+                 <input type="hidden" name="color[table]" value="cars">
+            <div class="search_toggle_divs" id='car_color'>
+               <input type="text" class="form-control col-md-2"  placeholder="Car Color" name="color[color]" data-parentdiv='car_color'>
+            </div>
+
+              <h3>Others</h3>
+              <div id="others-search">
+                <!-- <input type="hidden" name="skills[table]" value="special_skills">
+                <div class='form-group'><label for='skills'>Skills:</label><input type="text" class='form-control'  id='skills' name="skills[text]"></input></div>
+                <input type="hidden" name="wardrobes[table]" value="wardrobes">
+                <div class='form-group'><label for='wardrobes'>Wardrobes:</label><input type="text" class='form-control'  id='wardrobes' name="wardrobes[text]"></input></div>
+                <input type="hidden" name="sports[table]" value="sports">
+                <div class='form-group'><label for='sports'>Sports:</label><input type="text" class='form-control'  id='sports' name="sports[text]"></input></div>
+                <input type="hidden" name="dances[table]" value="dances">
+                <div class='form-group'><label for='dances'>Dances:</label><input type="text" class='form-control'  id='dances' name="dances[text]"></input></div>
+                <input type="hidden" name="characteristics[table]" value="characteristics">
+                <div class='form-group'><label for='characteristics'>Specific/ Unusual Characteristics:</label><input type="text" class='form-control' rows='1' id='characteristics' name="characteristics[text]"></input></div> -->
+              </div>
+            <button type="submit" id='search-submit-button'class="btn btn-primary">Search</button>
+          </form><br><br>
+        </div>
+        <div class="" style='text-align:center;'>
+          <button type="submit" id='search-submit-button2' name="button" class="btn btn-primary">Search</button>
+        </div>
     </div>
   </div>
 </div>
@@ -360,11 +372,103 @@
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script type="text/javascript">
+var others = [
+               {table:"skills", options:utility.options_field["skills"],label:"Special Skills"},
+               {table:"wardrobes",options:utility.options_field["wardrobes"],label:"Wardrobes"},
+               {table:"sports",options:utility.options_field["sports"],label:"Sports"},
+               {table:"dances",options:utility.options_field["dances"],label:"Dances"},
+               {table:"characteristics",options:utility.options_field["characteristics"],label:"Specific/ Unusual Characteristics"},
+               {table:"musicienship",options:utility.options_field["musicienship"],label:"Musicienship"},
+             ];
+///
+for(var i =0; i<others.length; i++ ){
+  var field_hidden = $("<input type='hidden' name='"+others[i].table+"[table]' value='"+others[i].table+"'>");
+  var field = $("<div class='form-group'></div>");
+  var label = $("<label for='"+others[i].table+"'>"+others[i].label+":</label>");
+  var options = $("<select type='number' class='form-control' > <option value=''>SELECT</option></select>");
+  for(var j =0; j<utility.options_field[others[i].table].length; j++){
+    options.append("<option value='"+utility.options_field[others[i].table][j]+"'>"+utility.options_field[others[i].table][j]+"</option>");
+  }
+  var tools = $("<div style='width:50%;'></div>");
+  var ors = $("<span style='margin-left:10px; cursor:pointer;'>OR</span>");
+  var erase = $("<span style='margin-left:10px; cursor:pointer;' ><i class='fa fa-eraser' aria-hidden='true'></i></span>");
+  var add = $("<span style='margin-left:10px; cursor:pointer;' ><i class='fa fa-plus' aria-hidden='true'></i></span>");
+  tools.append(ors,erase,add,options);
+  var input = $("<input readonly type='text' class='form-control'  id='"+others[i].table+"' name='"+others[i].table+"[text]' style='background-color:inherit; color:white;'>");
+  console.log(input);
+  //input.prop( "disabled", true );
+  ors.click({input:input},function(e){
+    var current_data =$(e.data.input).val().trim().split(" ");
+    var last_word =current_data[current_data.length-1];
+    if(last_word.length>0 && last_word!=="OR"){
+      $(e.data.input).val($(e.data.input).val()+" OR");
+    }
+  });
+  erase.click({input:input},function(e){
+    var current_data =$(e.data.input).val().trim().split(" ");
+    current_data.pop();
+    current_data = current_data.toString().replace(/,/gi," ");
+    $(e.data.input).val(current_data);
+  });
+  options.change({input:input,options:options},function(e){
+    var current_data =$(e.data.input).val().trim().split(" ");
+    var last_word =current_data[current_data.length-1];
+    var option_selected = $(e.data.options).val();
+    if($(e.data.input).val().indexOf(option_selected)===-1){
+      if (option_selected.length>0 && ($(e.data.input).val().length<=0 || last_word ==="OR")){
+        $(e.data.input).val($(e.data.input).val()+($(e.data.input).val().length>0?" ":"")+option_selected);
+      }
+    }
+  });
+  options.change({input:input,options:options},function(e){
+    var current_data =$(e.data.input).val().trim().split(" ");
+    var last_word =current_data[current_data.length-1];
+    var option_selected = $(e.data.options).val();
+    if($(e.data.input).val().indexOf(option_selected)===-1){
+      if (option_selected.length>0 && ($(e.data.input).val().length<=0 || last_word ==="OR")){
+        $(e.data.input).val($(e.data.input).val()+($(e.data.input).val().length>0?" ":"")+option_selected);
+      }
+    }
+  });
+  add.click({input:input,options:options},function(e){
+    var current_data =$(e.data.input).val().trim().split(" ");
+    var last_word =current_data[current_data.length-1];
+    var option_selected = $(e.data.options).val();
+    if($(e.data.input).val().indexOf(option_selected)===-1){
+      if (option_selected.length>0 && ($(e.data.input).val().length<=0 || last_word ==="OR")){
+        $(e.data.input).val($(e.data.input).val()+($(e.data.input).val().length>0?" ":"")+option_selected);
+      }
+    }
+  });
+  field.append(label,tools);
+  $("#others-search").append(field_hidden,field,input);
+}
+
+///
+$("#search_open_link").click(function(){
+  $("#fields").show();
+  $("#history").hide();
+});
+
+$("#history_open_link").click(function(){
+  $("#fields").hide();
+  $("#history").show();
+});
+//
+
+$("#search-submit-button2").click(function(){
+  console.log("readonly triger");
+  $("#search-submit-button").trigger("click");//();
+});
 $("#search_container h6").click(function(){
    $("#"+this.dataset.target).toggle("fast");
    $("#"+this.dataset.target+" input").val("");
    $("#"+this.dataset.target+" select").val("");
 });
+function resetAllfield(){
+  $(".search_toggle_divs input").val("");
+  $(".search_toggle_divs select").val("");
+}
   $("#inputState").autocomplete({
   source: utility.states
 });
@@ -374,6 +478,7 @@ utility.giveEtnicityToDropdown("ethnicity_options");
 utility.giveGenderToDropdown("sex_field");
 
 function getHistory(){
+
   $.ajax({
     xhr: function() {
           var xhr = new window.XMLHttpRequest();
@@ -390,34 +495,118 @@ function getHistory(){
       type: 'POST',
       success: function(data){
           if(data.success){
-             console.log(data.success);
              for(var i=0; i< data.success.length; i++){
-               var div = $("<div style='width:100%; font-size:0.7em; cursor:pointer; color:white;'>"+data.success[i].title+"</div>");
-               $("#history").append(div);
-               div.click({target_data:data.success[i].search_query},function(e){
-                  //console.log(JSON.parse(e.data.target_data));
+               var div = $("<div class='search-history-boxes'style='position:relative; width:100%; height:30px; padding-top:10px; padding-left:3px;margin-bottom:7px;font-size:0.7em; color:white; background-color:rgba(100,100,100,0.4);'></div>");
+               var title = $("<span  style=' float:left; font-size: 1.3em;'>"+(data.success[i].title?data.success[i].title:"No Title Specified")+"</span>")
+               var bucket = $("<span style='color:lightblue;'><i class='fa fa-bitbucket search-history-icon' aria-hidden='true' style='position:absolute; top:0px; left:75%; font-size: 1.3em; cursor:pointer;'>Bucket</i></span>");
+               var query = $("<span style='color:lightblue;'><i class='fa fa-repeat search-history-icon' aria-hidden='true' style='position:absolute; top:0px; left:85%; font-size: 1.3em;cursor:pointer;'>Query</i></span>");
+               var del = $("<i class='fa fa-trash-o search-history-icon' style='position:absolute; top:0px; left:95%; font-size: 1.3em;cursor:pointer;'></i>");
+               var status= $("<i  style='padding-left:7px; float:left; '>Status:"+data.success[i].status+"</i>");
+               var message= $("<i  style='padding-left:7px; float:left;cursor:pointer;'>Message</i>");
+               var messages_display=$("<div style='width:100%; border:1px solid yellow; min-height:300px; display:none;'></div>");
+               div.append(title,status,message,query,bucket,del);
+               $("#history").append(div,messages_display);
+               message.click({search_id:data.success[i].id,target_div:messages_display},function(e){
+                 //get messages sent for this user concerning this bucket
+                 $(e.data.target_div).toggle();
+                 $(e.data.target_div).empty();
+                 $.ajax({
+                     url: "/get-sent-emails",
+                     type: 'POST',
+                     data: {search_id:e.data.search_id},
+                     success: function(data){
+                         if(data.success){
+                           console.log(data.success);
+                           for(var d =0; d<data.success.length; d++){
+                             var div = $("<div style='width:100%; '>"+data.success[d].type+" "+data.success[d].subject+"</div>");
+                              $(e.data.target_div).append(div);
+                           }
+                         }else{
+
+                          }
+                     },
+                     error: function(){
+
+                      }
+                });
+               });
+               del.click({search_id:data.success[i].id,title:data.success[i].title},function(e){
+                 var pane_to_get_title = $("<div title='Delete?' style='font-size:0.8em;'>Are you Sure to Delete <span style='color:blue;'>"+e.data.title+"</span> From Your Search History?</div>");
+                 $("body").append(pane_to_get_title);
+                 $(pane_to_get_title).dialog({
+                   resizable: false,
+                   height: "auto",
+                   width: 400,
+                   modal: true,
+                   buttons: {
+                     "Delete": function() {
+                       deleteIt();
+                     },
+                     Cancel: function() {
+                       $( this ).dialog( "close" );
+                     }
+                   }
+                 });
+                  console.log("delete search id ",e.data.search_id);
+                  function deleteIt(){
+                    $.ajax({
+                        url: "/delete_search",
+                        type: 'POST',
+                        data: {search_id:e.data.search_id},
+                        success: function(data){
+                            if(data.success){
+                              console.log(data.success);
+                              alertSuccess();
+                              location.assign("search");
+                            }else{
+
+                             }
+                        },
+                        error: function(){
+
+                         }
+                   });
+                  }
+               });
+               bucket.click({bucket_title:data.success[i].title,bucket_id:data.success[i].id,actors_ids:(data.success[i].bucket!=="undefined"?JSON.parse(data.success[i].bucket):false)},function(e){
+                 console.log("click on bucket id:",e.data.bucket_id);
+                 $("#bucket_container-hidden-input-title").val(e.data.bucket_title);
+                  $("#bucket_container-hidden-input-title")[0].dataset.id=e.data.bucket_id;
+                 if(e.data.actors_ids){
+                    getBucket({actors_ids:e.data.actors_ids},function(data){
+                      showResult(data,false,e.data.bucket_id);
+                    });
+                 }else {
+                   alert("Empty");
+                 }
+               });
+               query.click({target_data:data.success[i].search_query,search_title:data.success[i].title,search_id:data.success[i].id},function(e){
+                 $("#result_container-hidden-input-title").val(e.data.search_title);
+                 $("#result_container-hidden-input-search_id").val(e.data.search_id);
+                 //$("#inputTitle").val("tiltel is here");
+                 resetAllfield();
                   var field_data = JSON.parse(e.data.target_data);
                   for(key in field_data){
                     var field = field_data[key]
                     for(column in field){
                       if(column!=="table" && field[column].length>0){
                         var name = key+"["+column+"]", value = field[column];
-                          console.log(key, " Name",name,"value",value);
-                          var parent_div_id = document.getElementsByName(name)[0].dataset.parentdiv;
-                          $("#"+parent_div_id).show();
                           if(key ==="sex" || key==="height"|| key==="ethnicity"){
                             options = document.getElementsByName(name)[0].options
                             for (var j =0; j<options.length; j++){
                               if(options[j].value ===value){
                                 document.getElementsByName(name)[0].selectedIndex=j;
+                                 littleAnimation(document.getElementsByName(name)[0],4);
                               }
                             }
                           }else {
                              document.getElementsByName(name)[0].value=value;
+                             littleAnimation(document.getElementsByName(name)[0],4);
                           }
                       }
                     }
                   }
+                  $("#search-submit-button").trigger("click");//();
                });
              }
           }else{
@@ -429,9 +618,55 @@ function getHistory(){
        }
  });
 }
+
+function littleAnimation(elt,idx){
+  var colors = ["white","yellow","grey","green"];
+  $(elt).animate({
+    backgroundColor:colors[idx]
+  },300,function(){
+    if(idx ===0){
+      return;
+    }else {
+      littleAnimation(elt,idx-1);
+    }
+  });
+}
 getHistory();
 $('#searchForm').on('submit', function(evt){
   evt.preventDefault();
+  $.ajax({
+    xhr: function() {
+          var xhr = new window.XMLHttpRequest();
+          // Download progress
+          xhr.addEventListener("progress", function(evt){
+              if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+                  // Do something with download progress
+                  console.log(Math.floor(percentComplete*100)+"%");
+                  showProgressBar(Math.floor(percentComplete*100));
+              }
+          }, false);
+
+          return xhr;
+      },
+      url: "/search_database",
+      type: 'POST',
+      data: $(this).serialize(),
+      success: function(data){
+          if(data.success){
+            console.log(data.success,data.query);
+             showResult(data.success,data.query);
+          }else{
+            console.log(' There was a problem. search_database');
+           }
+      },
+      error: function(){
+         console.log("error");
+       }
+ });
+});
+
+function getBucket(data,callback){
   $.ajax({
     xhr: function() {
           var xhr = new window.XMLHttpRequest();
@@ -444,21 +679,21 @@ $('#searchForm').on('submit', function(evt){
          }, false);
          return xhr;
       },
-      url: "/search_database",
+      url: "/get-search-bucket",
       type: 'POST',
-      data: $(this).serialize(),
+      data: data,
       success: function(data){
           if(data.success){
-             showResult(data.success,data.query);
+             callback(data.success);
           }else{
-            console.log(' There was a problem. search_database');
+            console.log(' There was a problem. /get-search-bucket');
            }
       },
       error: function(){
-         console.log("error");
+         console.log("error /get-search-bucket");
        }
  });
-});
+}
 
 function toggleResultAndSearch(view){
   if(view ==="result"){
@@ -469,65 +704,1171 @@ function toggleResultAndSearch(view){
     $("#result_container").hide();
   }
 }
-function showResult(result,query){
-   $("#result_display").empty();
-  var actor_ids =[];
+
+//show result from bucket or after a search
+// function showResult(result,query,bucket){
+//   $("#result_display").empty();
+//   $("#btn_div").empty();
+//   $("#result-title").html((bucket?"Bucket Content":"Search Result"));
+//   var actor_ids ={};
+//   if(result){
+//     var button_save = $("<button type='button' name='button' style='cursor:pointer;'>Save</button>");
+//     var button_send = $("<button type='button' name='button' style='cursor:pointer;'>Send Email</button>");
+//     var center = $("<center></center>");
+//     center.append(button_save,button_send);
+//     $("#btn_div").append(center);
+//   }
+//   for (elt in result){
+//     actor_ids[result[elt].id]=result[elt].id; //save each id
+//     //console.log($("#result_display").clientWidth(),"width",$("#result_display"));
+//     var box = $("<div class='each-profile-box ' style='position:relative; width:200px; height:400px; padding:5px; margin: 3px; float:left;'></div>");
+//     var name = $("<span style='font-size:0.7em;'>"+result[elt].first_name+" "+result[elt].last_name+" "+(result[elt].is_admin?"<small>&#x1f511;</small>":"")+"</span>");
+//     var image = $("<img src='"+(result[elt].first_image?("data:image/png;base64,"+result[elt].first_image):"img/blank.png")+"' alt='' style='width:100%; height:200px; '>");
+//     var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+Math.floor(result[elt].age*0.0027397260273973)+" </span>");
+//     var phone = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Phone</span> "+(result[elt].cell_phone?result[elt].cell_phone:"none")+" </span>");
+//     var email = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>E</span> "+result[elt].email+" </span>");
+//     var union_status = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>U</span> "+(result[elt].union_status?result[elt].union_status:"none")+" </span>");
+//     var profile=$("<span id='profile_in_bucket' style='position:absolute; bottom:0px; left:5px; font-size:0.7em; cursor:pointer;'>Profile</span>");
+//     var delete_profile=$("<span id='delete_in_bucket'style='position:absolute; bottom:0px; left:90%;  cursor:pointer;'>	&#x1F5D1;</span>");
+//     var cars = $("<span data-index="+0+" style='font-size:0.8em; cursor:pointer;'><span  style='background-color:grey; padding:2px;'>"+(result[elt].cars?result[elt].cars.split(",").length:"")+" Cars</span > <span id='name'>"+(result[elt].cars?result[elt].cars.split(",")[0]:"none")+"</span> </span>");
+//     profile.click({user_id:result[elt].id},function(e){
+//       e.stopPropagation();
+//       console.log(e.data.user_id);
+//       buildProfilePanel(e.data.user_id);
+//     });
+//     cars.click({cars:result[elt].cars,index:0},function(e){
+//        var index = parseInt(e.data.index) + 1;
+//        var cars = (e.data.cars?e.data.cars.split(","):false);
+//          if(cars){
+//              if(index>=cars.length){
+//                index= 0;
+//              }
+//              $(this).children("#name").html(cars[index]);
+//              e.data.index = index;
+//          }
+//      });
+//     delete_profile.click({box:box,elt_id:result[elt].id},function(e){
+//        e.data.box.remove();
+//        delete actor_ids[e.data.elt_id];
+//        console.log(Object.keys(actor_ids));
+//      });
+//     box.append(name,image,"<br>",age,"<br>",cars,"<br>",phone,"<br>",email,"<br>", union_status,profile,delete_profile);
+//     $("#result_display").append(box);
+//     box.click({target_name:result[elt].first_name, target_id:result[elt].id,is_admin:result[elt].is_admin,box_title:name},function(e){
+//       console.log("is_admin: ",e.data.is_admin);
+//       var isThisSearchExistWithTitle = ($("#result_container-hidden-input-title").val()).trim();
+//       var target_id = e.data.target_id;
+//       e.preventDefault();
+//       var pane_to_get_title = $("<div title='Options' style='font-size:0.8em; background-color:black; color:white;'></div>");
+//       var option1 = $("<div class='right_click_options' style='width:100%;  cursor:pointer;'>"+(e.data.is_admin?"Remove Admin Privilege from ":"Give Admin Privilege to ")+""+e.data.target_name+"</div>");
+//       var option2 = $("<div class='right_click_options' style='width:100%;  cursor:pointer;'>Add "+e.data.target_name+" to A Bucket</div>");
+//       // if(!e.data.is_admin){
+//       //   pane_to_get_title.append(option1);
+//       // }
+//       pane_to_get_title.append(option1,option2);
+//       $("body").append(pane_to_get_title);
+//       $(pane_to_get_title).dialog({
+//         resizable: false,
+//         height: "auto",
+//         width: "auto",
+//         modal: true,
+//       });
+//       option1.click(function(){
+//         console.log(target_id,e.data.is_admin);
+//         $.ajax({
+//             url: "/give-admin-privilege",
+//             type: 'POST',
+//             data: {user_id:target_id,is_admin:e.data.is_admin},
+//             success: function(data){
+//                 if(data.success){
+//                  //console.log(data.success,"became admin",e.data.is_admin);
+//                  e.data.is_admin=( e.data.is_admin?0:1);
+//                  if(e.data.box_title.children("small").length>0){
+//                    e.data.box_title.children("small").remove();
+//                  }else {
+//                    e.data.box_title.append("<small>&#x1f511;</small>");
+//                  }
+//                 }
+//             },
+//        });
+//         pane_to_get_title.remove();
+//       });
+//       option2.click(function(){
+//         pane_to_get_title.remove();
+//          $.ajax({
+//              url: "/get-history",
+//              type: 'POST',
+//              success: function(data){
+//                  if(data.success){
+//                    console.log("history", data.success);
+//                    var chosenBuckets ={};
+//                    var pane_to_get_title = $("<div  title='Add "+e.data.target_name+" to Another Bucket?' style='font-size:0.8em;'></div>");
+//                    $("body").append(pane_to_get_title);
+//                    for(var i =0; i<data.success.length; i++){
+//                      if(data.success[i].title !==isThisSearchExistWithTitle ){
+//                        var choice = $("<div style='cursor:pointer;' data-title='"+data.success[i].title+"'>Bucket \""+data.success[i].title+"\"</div>");
+//                        choice.click(function(){
+//                          if(chosenBuckets[this.dataset.title]){
+//                             delete chosenBuckets[this.dataset.title];
+//                             $(this).css({"color":"black"});
+//                          }else {
+//                            $(this).css({"color":"green"});
+//                            chosenBuckets[this.dataset.title]=this.dataset.title;
+//                          }
+//                        });
+//                        pane_to_get_title.append(choice);
+//                      }
+//                    }
+//                    $(pane_to_get_title).dialog({
+//                      resizable: false,
+//                      height: "auto",
+//                      width: 400,
+//                      modal: true,
+//                      buttons: {
+//                        "Add": function() {
+//                          console.log("chosen buckets ",chosenBuckets);
+//                          //get Buckets from the Database
+//                          var self = this;
+//                          $.ajax({
+//                              url: "/get-buckets",
+//                              type: 'POST',
+//                              data: {search_titles:chosenBuckets},
+//                              success: function(data){
+//                                  if(data.success){
+//                                    // console.log('response bucket get: ',data.success);
+//                                    console.log("id### ",target_id);
+//                                     for(b in data.success){
+//                                       var this_bucket = (JSON.parse(data.success[b].bucket));
+//                                       this_bucket.push(target_id);
+//                                       $.ajax({
+//                                           url: "/save-bucket",
+//                                           type: 'POST',
+//                                           data: {changed_bucket:this_bucket,bucket_id:data.success[b].id},
+//                                           success: function(data){
+//                                               if(data.success){
+//                                                console.log(data.success);
+//                                               }
+//                                           },
+//                                      });
+//                                     }
+//                                     $( self ).dialog( "close" );
+//                                  }
+//                              },
+//                         });
+//                        },
+//                        cancel: function() {
+//                          $( this ).dialog( "close" );
+//                        }
+//                      }
+//                    });
+//                  }
+//              },
+//         });
+//        });
+//       //......
+//
+//         //alert( "Handler for .contextmenu() called." );
+//     });
+//   }
+//
+//   toggleResultAndSearch("result");
+//   button_save.click(function(){
+//     var isThisSearchExistWithTitle = ($("#result_container-hidden-input-title").val()).trim();
+//     var existing_search_id = ($("#result_container-hidden-input-search_id").val()).trim();
+//     console.log("this search title",isThisSearchExistWithTitle,isThisSearchExistWithTitle.length,"search id",existing_search_id);
+//     $( "#pane_to_get_title" ).remove();
+//     $( "#pane_to_get_title0" ).remove();
+//     if(!bucket){
+//       if(isThisSearchExistWithTitle.length>0){
+//         var pane_to_get_title = $("<div id='pane_to_get_title0' title='Enter Search Title' style='font-size:0.8em;'>You Run a Query from a Saved Search titled <span style='color:red;'>\""+isThisSearchExistWithTitle+"\"</span>, Do you want to Overwrite it Or Saved new Search?<input id='pane_to_get_title-input0' type='text' name='' value='"+isThisSearchExistWithTitle+"' style='width:100%;'></div>");
+//         $("body").append(pane_to_get_title);
+//         $(pane_to_get_title).dialog({
+//           resizable: false,
+//           height: "auto",
+//           width: 400,
+//           modal: true,
+//           buttons: {
+//             "Save New": function() {
+//              // enterTitleDialog();
+//              // $( this ).dialog( "close" );
+//              var self = this;
+//              var input_value = ($("#pane_to_get_title-input0").val()).trim();
+//              if(input_value.length<=0){
+//                alert("Please Enter a Title");
+//              }else {
+//                saveIt(input_value,false,function(success){
+//                  if(success){
+//                    console.log("saved new search", success);
+//                    $( self ).dialog( "close" );
+//                  }
+//                });
+//              }
+//             },
+//             Overwrite: function() {
+//               $( this ).dialog( "close" );
+//               var input_value = ($("#pane_to_get_title-input0").val()).trim();
+//               console.log("search id",existing_search_id,input_value);
+//               saveIt(input_value,existing_search_id,function(success){
+//                  console.log("result after overwitting",success);
+//               });
+//             }
+//           }
+//         });
+//       }else {
+//           enterTitleDialog();
+//       }
+//     }else {
+//       saveIt(false,false,function(success){
+//         console.log("saved Bucket is ",success);
+//       });
+//     }
+//
+//         function saveIt(title,overwrite,callback){
+//            var data = {actor_ids:actor_ids, message:$("#text_area").val(),title:title,query:query,bucket_id:bucket,overwrite_id:overwrite};
+//            console.log("data to be saved",data);
+//            $.ajax({
+//                url: "/save_search",
+//                type: 'POST',
+//                data: data,
+//                success: function(data){
+//                    if(data.success){
+//                       //console.log('response: ',data.success);
+//                       callback(true);
+//                    }else{
+//                      callback(false);
+//                     }
+//                },
+//                error: function(){
+//                   callback(false);
+//                 }
+//           });
+//         }
+//         function enterTitleDialog(){
+//           var pane_to_get_title = $("<div id='pane_to_get_title' title='Enter Search Title'><input id='pane_to_get_title-input' type='text' name='' value='' style='width:100%;'></div>");
+//           $("body").append(pane_to_get_title);
+//            $( "#pane_to_get_title" ).dialog({
+//              show: { effect: "blind", duration: 800 },
+//              resizable: false,
+//              height: "auto",
+//              width: 400,
+//              modal: true,
+//              buttons: {
+//                "Save": function() {
+//                  var self = this;
+//                  var input_value = ($("#pane_to_get_title-input").val()).trim();
+//                  if(input_value.length<=0){
+//                    alert("Please Enter a Title");
+//                  }else {
+//                    saveIt(input_value,false,function(success){
+//                      if(success){
+//                        $( self ).dialog( "close" );
+//                      }
+//                    });
+//                  }
+//                },
+//                Cancel: function() {
+//                  $( this ).dialog( "close" );
+//                }
+//              }
+//            });
+//         }
+//   });
+//
+//
+// function getBucketEmails(){}
+//  button_send.click(function(e){
+//    var destination_emails =[];
+//    $.ajax({
+//        url: "/get-emails",
+//        type: 'POST',
+//        data: {actors_ids:Object.keys(actor_ids)},
+//        success: function(data){
+//            if(data.success){
+//              //console.log("emails ",data.success);
+//              for(var i=0; i<data.success.length; i++){
+//                destination_emails.push(data.success[i].email);
+//              }
+//              //console.log("sending",Object.keys(actor_ids));
+//              var pane_to_get_title = $("<div id='pane_to_send_email' title='Send Email' style='font-size:0.8em;'> </div>");
+//              var sender =$("<div class='form-group'><label for='sender'>From:</label><input type='email' class='form-control' id='sender' name='sender' value='lkonatpointpark@gmail.com'></div>");
+//              var to =$("<div class='form-group'><label for='email-targets'>To:</label><input type='email' class='form-control' id='email-targets' name='to' value='"+destination_emails+"'></div>");
+//              var subject =$("<div class='form-group'><label for='email-subject'>Subject:</label><input type='text' class='form-control' id='email-subject' name='subject'></div>");
+//              var text =$("<div class='form-group'><label for='email-text'>Subject:</label><textarea class='form-control' rows='20' id='email-text' name='text'></textarea></div>");
+//              pane_to_get_title.append(sender,to,subject,text);
+//              $("body").append(pane_to_get_title);
+//              $(pane_to_get_title).dialog({
+//                resizable: false,
+//                height: "auto",
+//                width: "80%",
+//                modal: true,
+//                buttons: {
+//                  "Send": function() {  //send-emails
+//                    $.ajax({
+//                        url: "/send-emails",
+//                        type: 'POST',
+//                        data: {
+//                          sender:$("#sender").val(),
+//                          to: $("#email-targets").val(),
+//                          subject: $("#email-subject").val(),
+//                          text: $("#email-text").val(),
+//                        },
+//                        success: function(data){
+//                            if(data.success){
+//                              console.log(data.success);
+//                            }else{
+//
+//                             }
+//                        },
+//                        error: function(){
+//
+//                         }
+//                   });
+//                  },
+//                  Cancel: function() {
+//                    $( this ).dialog( "close" );
+//                  }
+//                }
+//              });
+//            }
+//        },
+//        error: function(){
+//
+//         }
+//   });
+//  });
+//  console.log("actors id ",actor_ids);
+// }
+
+
+function showResult(result,query,bucket){
+  var select_groupe_mode = false; //when user want to select group of user
+  var groupe_selected_bucket=[];
+  $("#result_display").empty();
+  $("#btn_div").empty();
+  $("#result-title").html((bucket?"Bucket Content":"Search Result"));
+  var actor_ids ={};
   if(result){
-    var button_save = $("<button type='button' name='button' style='cursor:pointer;'>Save</button>");
-    var button_send = $("<button type='button' name='button' style='cursor:pointer;'>Send Email</button>");
-    $("#btn_div").append(button_save,button_send);
+    var button_save = $("<input type='submit'  style='cursor:pointer;' value='Save'>");
+    var button_send = $("<input type='submit'  style='cursor:pointer;' value='Send Email to Selected Actors'>");
+    var button_share = $("<input type='submit'  style='cursor:pointer;' value='Share Result'>");
+    var center = $("<center></center>");
+    center.append(button_save,button_send,button_share);
+    $("#btn_div").append(center);
+    var tools = $("<div  style='width:90%; height:30px; margin-bottom:7px; margin:0 auto; position:relative;'></div>");
+    var select = $("<span style='float:right; cursor:pointer; margin:3px;'>Select</span>");
+    var add =$("<span style='float:right;cursor:pointer;margin:3px;display:none;'>Add</span>")
+    $(tools).append(select,add);
+    select.click(function(){
+      if(select_groupe_mode){
+        select_groupe_mode=false;
+        $("#check-circle").remove();
+        $(".each-profile-box").css({"background-color":"rgba(100,100,100,0.4)"});
+        groupe_selected_bucket=[];
+        add.hide();
+      }else {
+        select_groupe_mode=true;
+         $(this).append("<i id='check-circle' class='fa fa-check-circle' aria-hidden='true' style='color:green; margin-left:3px;'></i>");
+      }
+      console.log(select_groupe_mode);
+    });
+    var displays_result_area = $("<div class='col-lg-12' style='width:90%; margin:0 auto; position:relative; '></div>");
+    var pagination = $("<div class='container' style='width:100%; clear:both; padding-top:30px;'></div>");
+    var pagination_ul = $("<ul class='pagination justify-content-center' ></ul>");
+    pagination.append(pagination_ul);
+    $("#result_display").append(tools,displays_result_area,pagination);
   }
-  //$("#heading_title").html("Title: "+ title);
+
+  var limit_per_page =5;
+  var list =[
+    [],
+  ];
+
+  for(var i =0; i< result.length; i++){
+    //console.log(result[i].id);
+    if(list.length>0 && list[list.length-(list.length<=0?0:1)].length>=limit_per_page){
+      list.push([result[i].id]);
+    }else {
+      list[list.length-(list.length===0?0:1)].push(result[i].id);
+    }
+     actor_ids[result[i].id]=result[i].id;
+  }
+  function displayList(){
+
+    if((list[0] && list[0].length<=0)){
+      console.log("no result found");
+      $("#result_display").append("<center><h1>NO Result Found!</h1></center>");
+      $("#btn_div").hide();
+    }else if (!list[0]) {
+       if($("#bucket_container-hidden-input-title").val().trim().length>0){
+         $("#result_display").empty();
+         $("#btn_div").hide();
+         $("#result_display").append("<center><h1>Deleted All Actors From Bucket "+$("#bucket_container-hidden-input-title").val().trim()+"!</h1></center>");
+       }else {
+         $("#result_display").empty();
+         $("#result_display").append("<center><h1>Deleted All Actors!</h1></center>");
+         $("#btn_div").hide();
+       }
+    }else {
+      $("#btn_div").show();
+      pagination_ul.empty();
+      for(var p =0; p<list.length; p++){
+        var li = $("<li class='page-item'><a class='page-link "+(p===0?"active":"")+"' href='#'>"+(p+1)+"</a></li>");
+        pagination_ul.append(li);
+        li.click({index:p},function(e){
+          console.log(list[e.data.index]);
+          var page_number = e.data.index;
+          if(list[e.data.index] && list[e.data.index].length>0){
+            $.ajax({
+              xhr: function() {
+                    var xhr = new window.XMLHttpRequest();
+                    // Download progress
+                    xhr.addEventListener("progress", function(evt){
+                        if (evt.lengthComputable) {
+                            var percentComplete = evt.loaded / evt.total;
+                            showProgressBar(Math.floor(percentComplete*100));
+                        }
+                    }, false);
+                   return xhr;
+                },
+                url: "/get-user-info-search",
+                type: 'POST',
+                data: {users_id:list[e.data.index]},
+                success: function(data){
+                    if(data.success){
+                       // console.log(data.success);
+                       $(displays_result_area).empty();
+                       showTheseUSers(data.success,displays_result_area,actor_ids,page_number);
+                    }
+                },
+           });
+          }
+          $(".pagination li").removeClass("active");
+          $(this).addClass("active");
+        });
+        (p===0?li.trigger("click"):"");
+      }
+    }
+  }
+  displayList();
+  toggleResultAndSearch("result");
+  function showTheseUSers(result,body,actor_ids,page_number){
+    add.click(function(){
+      console.log("add groupe user",groupe_selected_bucket);
+      addToBucket({message_title:"Add Selected Users? ",isThisSearchExistWithTitle:false,target_id:groupe_selected_bucket});
+    });
     for (elt in result){
-      actor_ids.push(result[elt].id); //save each id
-       var box = $("<div style='display:inline-block; width:200px; height:300px;padding:5px; margin: 3px; background-color:rgba(100,100,100,0.4); '></div>");
-       var name = $("<span style='font-size:0.7em;'>"+result[elt].first_name+" "+result[elt].last_name+"</span>");
-       var image = $("<img src='"+(result[elt].first_image?("data:image/png;base64,"+result[elt].first_image):"img/blank.png")+"' alt='' style='width:100%; height:200px; '>");
-        var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+Math.floor(result[elt].age*0.0027397260273973)+" </span>");
-        var cars = $("<span data-index="+0+" style='font-size:0.8em; cursor:pointer;'><span  style='background-color:grey; padding:2px;'>"+(result[elt].cars?result[elt].cars.split(",").length:"")+" Cars</span > <span id='name'>"+(result[elt].cars?result[elt].cars.split(",")[0]:"none")+"</span> </span>");
-       cars.click({cars:result[elt].cars,index:0},function(e){
+      var box = $("<div class='each-profile-box ' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
+      var centered_name =$("<center></center>");
+      var name = $("<span style='font-size:1.2em; clear:both;'>"+result[elt].first_name+" "+result[elt].last_name+" "+(result[elt].is_admin?"<small>&#x1f511;</small>":"")+"</span>");
+      centered_name.append(name);
+      var centered_image =$("<center></center>");
+      var image = $("<img src='"+(result[elt].first_image?("data:image/png;base64,"+result[elt].first_image):"img/blank.png")+"' alt='' style='width:200px; height:200px;'>");
+      centered_image.append(image);
+      var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+(result[elt].age?Math.floor(result[elt].age*0.0027397260273973):"")+" </span>");
+      var phone = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Phone</span> "+(result[elt].cell_phone?result[elt].cell_phone:"")+" </span>");
+      var email = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>E</span> "+result[elt].email+" </span>");
+      var union_status = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>U</span> "+(result[elt].union_status?result[elt].union_status:"")+" </span>");
+      var profile=$("<span id='profile_in_bucket' style='position:absolute; bottom:0px; left:5px; font-size:0.9em; cursor:pointer;'>Profile</span>");
+      var delete_profile=$("<span id='delete_in_bucket'style='position:absolute; bottom:0px; left:90%;  cursor:pointer;'>	&#x1F5D1;</span>");
+      var cars = $("<span data-index="+0+" style='font-size:0.8em; cursor:pointer;'><span  style='background-color:grey; padding:2px;'>"+(result[elt].cars?result[elt].cars.split(",").length:"")+" Cars</span > <span id='name'>"+(result[elt].cars?result[elt].cars.split(",")[0]:"")+"</span> </span>");
+      profile.click({user_id:result[elt].id},function(e){
+        e.stopPropagation();
+        console.log(e.data.user_id);
+        buildProfilePanel(e.data.user_id);
+      });
+      cars.click({cars:result[elt].cars,index:0},function(e){
+        e.stopPropagation();
          var index = parseInt(e.data.index) + 1;
          var cars = (e.data.cars?e.data.cars.split(","):false);
-         if(cars){
-           if(index>=cars.length){
-             index= 0;
+           if(cars){
+               if(index>=cars.length){
+                 index= 0;
+               }
+               $(this).children("#name").html(cars[index]);
+               e.data.index = index;
            }
-           $(this).children("#name").html(cars[index]);
-            e.data.index = index;
-         }
        });
-       box.append(name,image,"<br>",age,"<br>",cars);
-         $("#result_display").append(box);
-         //console.log("cars:", result[elt].cars.split(","));
-    }
-
-     toggleResultAndSearch("result");
-     button_save.click(function(){
-       var data = {actor_ids:actor_ids, message:$("#text_area").val(),title:$("#inputTitle").val(),query:query};
-       console.log(data);
-       $.ajax({
-           url: "/save_search",
-           type: 'POST',
-           data: data,
-           success: function(data){
-               if(data.success){
-                  console.log('response: ',data.success);
-               }else{
-                 console.log(' There was a problem.');
+      delete_profile.click({box:box,elt_id:result[elt].id,elt:result[elt] },function(e){
+          e.stopPropagation();
+          console.log("deleteing", page_number, list[page_number]);
+          if(select_groupe_mode){
+            confirmDelete({title:"Confirm Action", message:"Are you Sure to Delete Selected Actors From your Search?"},function(panel){
+            //  e.data.box.remove(); //remove selected box
+              for(var i =0; i<groupe_selected_bucket.length; i++){
+                if(list[page_number]){
+                  var index_deleted = list[page_number].indexOf(groupe_selected_bucket[i]);
+                  list[page_number].splice(index_deleted, 1); //delete the index from that page list
+                  if(list[page_number].length<=0){ // if the page list is empty, delete that page and recalculate
+                    list.splice(page_number,1);
+                  }
+                  delete actor_ids[groupe_selected_bucket[i]];
+                  console.log("Actors ids after deleting",Object.keys(actor_ids));
+                  console.log("list ids after deleting",list);
                 }
-           },
-           error: function(){
-              //$ container.html(' There was a problem.');
-              console.log("error");
-            }
-      });
-     });
+              }
+              displayList(); //recalculate, and display them;
+              $(panel).dialog( "close" );
+              alertSuccess();
+               if($("#bucket_container-hidden-input-title").val().trim().length>0){//if it was a bucket save it
+                 button_save.trigger("click"); //to save changes
+               }
+            });
 
-     button_send.click(function(e){
-        console.log("sending");
-     });
+          }else {
+            confirmDelete({title:"Confirm Action", message:"Are you Sure to Delete "+e.data.elt.last_name+" "+e.data.elt.first_name+" From your Search?"},function(panel){
+              e.data.box.remove();
+              console.log("deleting from list ",list[page_number],"idx: ",list[page_number].indexOf(e.data.elt_id),list);
+              var index_deleted = list[page_number].indexOf(e.data.elt_id);
+              list[page_number].splice(index_deleted, 1); //delete the index from that page list
+              if(list[page_number].length<=0){ // if the page list is empty, delete that page and recalculate
+                list.splice(page_number,1);
+                displayList(); //recalculate, and display them;
+              }
+              delete actor_ids[e.data.elt_id];
+              console.log(Object.keys(actor_ids));
+              $(panel).dialog( "close" );
+              alertSuccess();
+              if($("#bucket_container-hidden-input-title").val().trim().length>0){//if it was a bucket save it
+                button_save.trigger("click"); //to save changes
+              }
+            });
+          }
+       });
+      box.append(centered_name,"<br>",centered_image,"<br>",age,"<br>",cars,"<br>",phone,"<br>",email,"<br>", union_status,profile,delete_profile);
+      $(body).append(box);
+
+      box.click({target_name:result[elt].first_name, target_id:result[elt].id,is_admin:result[elt].is_admin,box_title:name,phone:result[elt].cell_phone,email:result[elt].email},function(e){
+        if(select_groupe_mode){
+          var index_id = groupe_selected_bucket.indexOf(e.data.target_id);
+          if(index_id!==-1){
+             groupe_selected_bucket.splice(index_id,1);
+             if(groupe_selected_bucket.length<=0){
+               add.hide("fast");
+             }
+             $(this).css({"background-color":"rgba(100,100,100,0.4)"});
+          }else {
+              groupe_selected_bucket.push(e.data.target_id);
+              add.show("fast");
+              add.effect("shake");
+              $(this).css({"background-color":"rgba(100,200,100,0.4)"});
+          }
+          console.log("Groupe selected ",groupe_selected_bucket);
+          return;
+        }
+        console.log("is_admin: ",e.data.is_admin);
+        var isThisSearchExistWithTitle = ($("#result_container-hidden-input-title").val()).trim();
+        var target_id = e.data.target_id;
+        e.preventDefault();
+        var pane_to_get_title = $("<div title='Options' style='font-size:0.8em; background-color:black; color:white;'></div>");
+        var option1 = $("<div class='right_click_options' style='width:100%;  cursor:pointer;'>"+(e.data.is_admin?"Remove Admin Privilege from ":"Give Admin Privilege to ")+""+e.data.target_name+"</div>");
+        var option2 = $("<div class='right_click_options' style='width:100%;  cursor:pointer;'>Add "+e.data.target_name+" to A Bucket</div>");
+        var option3 = $("<div class='right_click_options' style='width:100%;  cursor:pointer;'>Send A Text to "+e.data.target_name+"</div>");
+        var option4 = $("<div class='right_click_options' style='width:100%;  cursor:pointer;'>Send An Email to "+e.data.target_name+"</div>");
+        pane_to_get_title.append(option1,option2,option4);
+        if(e.data.phone){
+          console.log("yes, there is a number phone");
+          pane_to_get_title.append(option3);
+        }
+        $("body").append(pane_to_get_title);
+        $(pane_to_get_title).dialog({
+          resizable: false,
+          height: "auto",
+          width: "auto",
+          modal: true,
+        });
+
+        function sendTextOrEmail(data0){
+          var pane_to_send_text = $("<div  title='Sending "+(data0.isText?"Text":"Email")+" to "+data0.who+"' style='font-size:0.8em;'></div>");
+          var senderLabels =$("<div class='form-group'><label for='sender'>From:</label></div>");
+          var sender = $("<input type='email' class='form-control' id='sender' name='sender' value='lkonatpointpark@gmail.com'>");
+          senderLabels.append(sender);
+          var toLabels =$("<div class='form-group'><label for='email-targets'>To:</label></div>");
+          var to =$("<input type='email' class='form-control' id='email-targets' name='to' value='"+(data0.email?data0.email:"")+"'>");
+          toLabels.append(to);
+          var subjectLabels =$("<div class='form-group'><label for='email-subject'>Subject:</label></div>");
+          var subject = $("<input type='text' class='form-control' id='email-subject' name='subject' value=''>");
+          subjectLabels.append(subject);
+          var input_textLabels =$("<div class='form-group'><label for='text'>Message:</label></div>");
+          var input_text = $("<textarea class='form-control' rows='3' id='text' name='text' style='clear:both; width:100%; '></textarea>");
+          input_textLabels.append(input_text);
+          if(data0.isText){
+            pane_to_send_text.append(input_textLabels);
+          }else {
+            pane_to_send_text.append(senderLabels,toLabels,subjectLabels,input_textLabels);
+          }
+          $("body").append(pane_to_send_text);
+          $(pane_to_send_text).dialog({
+            resizable: false,
+            height: "auto",
+            width: 400,
+            modal: true,
+            buttons: {
+              "Send Text": function() {
+                var self = this;
+                console.log("input ",$(input_text).val().trim(),$(input_text).val().trim().length);
+                if(($(input_text).val().trim().length < 16 && $(input_text).val().trim().length >0) || !data0.isText){
+                  //console.log(data0);
+                  if(data0.isText){
+                    var url="/send-message";
+                    var data={ phone:data0.phone,message:$(input_text).val().trim()};
+                  }else {
+                    var url="/send-emails";
+                    var data={ sender:$(sender).val().trim(),text:$(input_text).val().trim(), to:$(to).val().trim(),subject:$(subject).val().trim()};
+                  }
+                  if(url && data){
+                    $.ajax({
+                        url: url,
+                        type: 'POST',
+                        data: data,
+                        success: function(data){
+                            if(data.success){
+                              $(self).dialog( "close" );
+                              alertSuccess();
+                            }
+                        },
+                   });
+                  }
+                }else {
+                  console.log("message too long");
+                  alert("message too long or empty");
+                }
+              },
+              Cancel: function() {
+                $( this ).dialog( "close" );
+
+              }
+            }
+          });
+        }
+        option3.click({phone:e.data.phone,who:e.data.target_name},function(e){
+          $(pane_to_get_title).remove();
+          if(e.data.phone){
+            sendTextOrEmail({isText:true, phone:e.data.phone,who:e.data.who});
+          }
+        });
+        option4.click({phone:e.data.phone,who:e.data.target_name,email:e.data.email},function(e){
+            $(pane_to_get_title).remove();
+            sendTextOrEmail({isText:false, email:e.data.email,who:e.data.who});
+
+        });
+        option1.click(function(){
+          console.log(target_id,e.data.is_admin);
+          $.ajax({
+              url: "/give-admin-privilege",
+              type: 'POST',
+              data: {user_id:target_id,is_admin:e.data.is_admin},
+              success: function(data){
+                  if(data.success){
+                   e.data.is_admin=( e.data.is_admin?0:1);
+                   if(e.data.box_title.children("small").length>0){
+                     e.data.box_title.children("small").remove();
+                   }else {
+                     e.data.box_title.append("<small>&#x1f511;</small>");
+                   }
+                  }
+              },
+         });
+          pane_to_get_title.remove();
+        });
+        option2.click(function(){ //add to bucket
+          pane_to_get_title.remove();
+           addToBucket({message_title:e.data.target_name,isThisSearchExistWithTitle:isThisSearchExistWithTitle,target_id:target_id});
+         });
+      });
+    } //end loop
+
+    button_save.click(function(){
+      var isThisSearchExistWithTitle = ($("#result_container-hidden-input-title").val()).trim();
+      var existing_search_id = ($("#result_container-hidden-input-search_id").val()).trim();
+      console.log("this search title",isThisSearchExistWithTitle,isThisSearchExistWithTitle.length,"search id",existing_search_id);
+      $( "#pane_to_get_title" ).remove();
+      $( "#pane_to_get_title0" ).remove();
+      if(!bucket){
+        if(isThisSearchExistWithTitle.length>0){
+          var pane_to_get_title = $("<div id='pane_to_get_title0' title='Save Result?' style='font-size:0.8em;'>You Run a Query from a Saved Search titled <span style='color:red;'>\""+isThisSearchExistWithTitle+"\"</span>, Do you want to Overwrite it Or Saved new Search?<input id='pane_to_get_title-input0' type='text' name='' value='"+isThisSearchExistWithTitle+"' style='width:100%;'></div>");
+          $("body").append(pane_to_get_title);
+          $(pane_to_get_title).dialog({
+            resizable: false,
+            height: "auto",
+            width: 400,
+            modal: true,
+            buttons: {
+              "Save New": function() {
+               var self = this;
+               var input_value = ($("#pane_to_get_title-input0").val()).trim();
+               if(input_value.length<=0){
+                 alert("Please Enter a Title");
+               }else {
+                 saveIt(input_value,false,function(success){
+                   if(success){
+                     console.log("saved new search", success);
+                     $( self ).dialog( "close" );
+                     alertSuccess();
+                   }
+                 });
+               }
+              },
+              Overwrite: function() {
+                $( this ).dialog( "close" );
+                var input_value = ($("#pane_to_get_title-input0").val()).trim();
+                console.log("search id",existing_search_id,input_value);
+                saveIt(input_value,existing_search_id,function(success){
+                   console.log("result after overwitting",success);
+
+                });
+              }
+            }
+          });
+        }else {
+            enterTitleDialog();
+        }
+      }else {
+        saveIt(false,false,function(success){
+          console.log("saved Bucket is ",success);
+        });
+      }
+
+          function saveIt(title,overwrite,callback){
+             var data = {actor_ids:actor_ids, message:$("#text_area").val(),title:title,query:query,bucket_id:bucket,overwrite_id:overwrite};
+             console.log("data to be saved",data);
+             $.ajax({
+                 url: "/save_search",
+                 type: 'POST',
+                 data: data,
+                 success: function(data){
+                     if(data.success){
+                        //console.log('response: ',data.success);
+                        alertSuccess();
+                        callback(true);
+                     }else{
+                       callback(false);
+                      }
+                 },
+                 error: function(){
+                    callback(false);
+                  }
+            });
+          }
+          function enterTitleDialog(){
+            var pane_to_get_title = $("<div id='pane_to_get_title' title='Enter Search Title'><input id='pane_to_get_title-input' type='text' name='' value='' style='width:100%;'></div>");
+            $("body").append(pane_to_get_title);
+             $( "#pane_to_get_title" ).dialog({
+               resizable: false,
+               height: "auto",
+               width: 400,
+               modal: true,
+               buttons: {
+                 "Save": function() {
+                   var self = this;
+                   var input_value = ($("#pane_to_get_title-input").val()).trim();
+                   if(input_value.length<=0){
+                     alert("Please Enter a Title");
+                   }else {
+                     saveIt(input_value,false,function(success){
+                       if(success){
+                         $( self ).dialog( "close" );
+                       }
+                     });
+                   }
+                 },
+                 Cancel: function() {
+                   $( this ).dialog( "close" );
+                 }
+               }
+             });
+          }
+    });
+
+    button_share.click(function(){
+       console.log("sahring this result with");
+       postEmailSend({ data:{shared_actors_ids:Object.keys(actor_ids)},url:"/get-emails",  });
+    });
+
+
+    button_send.click(function(e){
+      var destination_emails =[];
+      postEmailSend({data:{actors_ids:Object.keys(actor_ids)}, url:"/get-emails", destination_emails:destination_emails });
+    });
+  }
+
+
+ console.log("actors id ",actor_ids);
 }
 
+
+
+
+function buildProfilePanel(user_id){
+ $(".each-profile-Panel").remove();
+ var div_carousel = $("<div class ='' style='width:100%;  margin:0 auto; display:flex; justify-content:center;'></div>");
+ var carousel = $("<div id='carouselExampleControls' class='carousel slide' data-ride='carousel' data-interval='false' style='width:600px; height:350px;'></div>");
+ var carousel_control = $("<div class='carousel-inner' role='listbox'><div>");
+ var prev = $("<a class='carousel-control-prev' href='#carouselExampleControls' role='button' data-slide='prev'><span class='carousel-control-prev-icon' aria-hidden='true'></span> <span class='sr-only'>Previous</span></a>");
+ var next = $("<a class='carousel-control-next' href='#carouselExampleControls' role='button' data-slide='next'><span class='carousel-control-next-icon' aria-hidden='true'></span><span class='sr-only'>Next</span></a>");
+ carousel.append(carousel_control,prev,next);
+ div_carousel.append(carousel);
+
+ var box = $("<div class='each-profile-Panel' style='z-index:10; position:absolute; width:80%; height:500px; padding:5px; background: linear-gradient(to left, rgb(20,20,20) , black); overflow:hidden; border:3px solid lightgrey;'></div>");
+ var close = $("<i class='fa fa-window-close-o' aria-hidden='true' style='z-index:10,position:absolute; top:0px; left:0px; color:lightgrey; cursor:pointer; font-size:1.5em;'></i>");
+ var centered = $("<center></center>");
+ var navigation_view_controler = $("<ul id='pagination_profile' class='pagination  justify-content-center' style='width:100%; '></ul>");
+ centered.append(navigation_view_controler);
+ //var show_images_view = $("<span style='padding:30px; cursor:pointer;'>Images</span>");
+ var  show_images_view = $("<li class='page-item active'><span class='page-link' >Images</span></li>");
+ var  show_info_view = $("<li class='page-item'><span class='page-link'>Info</span></li>");
+ //var show_info_view = $("<span style='padding:30px; cursor:pointer;'>Info</span>");
+ navigation_view_controler.append(show_images_view,show_info_view);
+var progress_bar = $("<div id='progress_bar'style='position:absolute; top:50%; left:0px; width:100%; height:20px; background-color:rgba(100,100,100,0.5);'><div id ='progress_download' style='width:10px; height:20px; background-color:green;'></div><div id='progress_text' style='position:absolute; top:0px; left:50%;'>0%</div></div>");
+box.append(close,centered,progress_bar);
+close.click(function(){
+     $(".each-profile-Panel").remove();
+});
+ $("body").append(box);
+ box.draggable();
+ var width = box.width(), height=box.height();
+ var top= (window.innerHeight/2)+$(document).scrollTop()-(height/2) ;
+ var left = (window.innerWidth/2)+$(document).scrollLeft() -(width/2);
+ box.css({"top":top+"px" ,"left":left+"px"});
+ var info = $("<div style='width:100%; min-width:300px; display:none; height:450px; overflow-y:scroll; overflow-x:hidden; margin:0 auto; margin-top:0px;'></div>");
+ // var row = $(" <div class='row'></div>");
+ // row.append(div_carousel,info);
+ box.append(div_carousel,info);
+ show_info_view.click(function(){
+   $("#pagination_profile li").removeClass("active");
+   $(this).addClass("active");
+   info.show();
+   div_carousel.hide();
+ });
+ show_images_view.click(function(){
+   $("#pagination_profile li").removeClass("active");
+   $(this).addClass("active");
+   info.hide();
+   div_carousel.show();
+ });
+  $.ajax({
+    xhr: function() {
+          var xhr = new window.XMLHttpRequest();
+          // Download progress
+          xhr.addEventListener("progress", function(evt){
+              if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+                  // Do something with download progress
+                  $("#progress_download").css({"width":""+percentComplete*100+"%"});
+                  $("#progress_text").html(Math.floor(percentComplete*100)+"%");
+                  if(percentComplete===1){
+                     $("#progress_bar").hide();
+                  }
+              }
+          }, false);
+
+          return xhr;
+      },
+      url: "/get-profile",
+      type: 'POST',
+      data: {user_id:user_id},
+      success: function(data){
+          if(data.success){
+          //  console.log("PROFILE",data.success.images );
+            for(var i =0; i< data.success.images.length; i++){
+            //  console.log()
+              carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"'> <img class='d-block img-fluid' src='"+(data.success.images[i].image?("data:image/png;base64,"+data.success.images[i].image):"img/blank.png")+"' style='width:300px; height:350px; margin:0 auto;' alt='"+i+" slide'></div>");
+              carousel_control.append(carousel_itme);
+            }
+
+            //console.log(data.success.info);
+            var table =$("<table style='width:100%;'></table>");
+            info.append(table);
+            for(key in data.success.info[0]){
+              table.append("<tr style='font-size:0.8em;'><td style='color:grey;'>"+upperCaseFirstLetter(key)+"</td><td>"+(key==="height"? getHeightInFeet((data.success.info[0][key]===null?"":data.success.info[0][key])):(data.success.info[0][key]===null?"":data.success.info[0][key]))+"</td></tr>");
+            }
+          }
+      },
+ });
+}
+
+function upperCaseIt(word){
+  return word[0].toUpperCase()+word.substring(1,word.length);
+}
+function upperCaseFirstLetter(word0){
+  var word = word0.split("_");
+  var new_Word=false;
+  for(var i =0; i<word.length; i++){
+    if(!new_Word){
+      new_Word = upperCaseIt(word[i]);
+    }else {
+        new_Word+=" "+upperCaseIt(word[i]);
+    }
+  }
+  return new_Word;
+}
+
+function showProgressBar(percent){
+  if(percent >=100){
+    $("#progress-bar-download").remove();
+    return;
+  }
+  if($("#progress-bar-download").length>0 ){
+    $("#progress-bar-download").remove();
+    if(percent >=100){
+      return;
+    }
+  }
+  var pane_to_get_title = $("<div id='progress-bar-download' title=''></div>");
+  var bar = $("<div class='progress'><div class='progress-bar progress-bar-striped active' role='progressbar'aria-valuenow='"+percent+"' aria-valuemin='0' aria-valuemax='100' style='width:"+percent+"%'>"+percent+"%</div></div>");
+  pane_to_get_title.append(bar);
+  $("body").append(pane_to_get_title);
+   $(pane_to_get_title).dialog({
+     classes: {
+       "ui-dialog-titlebar": "hideTitle",
+     },
+     resizable: false,
+     height: "auto",
+     width: 400,
+     modal: true,
+   });
+}
+
+function postEmailSend(email_data){
+  var isBucket = ($("#bucket_container-hidden-input-title").val().trim().length>0?true:false);
+  var bucket_id = $("#bucket_container-hidden-input-title")[0].dataset.id;
+  console.log("is Bucket?",isBucket,"id: ",bucket_id);
+  //return;
+  console.log("email-data: ",email_data.data);
+  if((email_data.data.shared_actors_ids && email_data.data.shared_actors_ids.length<=0) || (email_data.data.actors_ids && email_data.data.actors_ids.length<=0) ){
+    alert("Empty");
+    return;
+  }
+  $.ajax({
+      url: email_data.url,
+      type: 'POST',
+      data: email_data.data,
+      success: function(data){
+          if(data.success){
+            if(data.success!=="pass"){
+              for(var i=0; i<data.success.length; i++){
+                email_data.destination_emails.push(data.success[i].email);
+              }
+            }
+            //console.log("sending",Object.keys(actor_ids));
+            var pane_to_get_title = $("<div id='pane_to_send_email' title='Send Email' style='font-size:0.8em;'> </div>");
+            var sender =$("<div class='form-group'><label for='sender'>From:</label><input type='email' class='form-control' id='sender' name='sender' value='lkonatpointpark@gmail.com'></div>");
+            var to =$("<div class='form-group'><label for='email-targets'>To:</label><input type='email' class='form-control' id='email-targets' name='to' value='"+(email_data.destination_emails?email_data.destination_emails:"")+"'></div>");
+            var subject =$("<div class='form-group'><label for='email-subject'>Subject:</label><input type='text' class='form-control' id='email-subject' name='subject' value='"+(email_data.data.shared_actors_ids?"Share Search Result":"No Subject?")+"'></div>");
+            var text =$("<div class='form-group'><label for='email-text'>Message:</label><textarea class='form-control' rows='20' id='email-text' name='text'></textarea></div>");
+            pane_to_get_title.append(sender,to,subject,text);
+            $("body").append(pane_to_get_title);
+            if(email_data.data.actors_ids){
+              $(pane_to_get_title).dialog({
+                resizable: false,
+                height: "auto",
+                width: "80%",
+                modal: true,
+                buttons: {
+                  "Send": function() {  //send-emails
+                    $.ajax({
+                        url: "/send-emails",
+                        type: 'POST',
+                        data: {
+                          sender:$("#sender").val(),
+                          to: $("#email-targets").val(),
+                          subject: $("#email-subject").val(),
+                          text: $("#email-text").val(),
+                          bucket_id:(bucket_id.trim().length>0?bucket_id.trim():false),
+                        },
+                        success: function(data){
+                            if(data.success){
+                              console.log(data.success);
+                              if(data.success){
+                                //$( this ).dialog( "close" );
+                                pane_to_get_title.remove();
+                                alertSuccess();
+                              }
+                            }
+                        },
+                   });
+                  },
+                  Cancel: function() {
+                    $( this ).dialog( "close" );
+                  }
+                }
+              });
+            }else {
+              $(pane_to_get_title).dialog({
+                resizable: false,
+                height: "auto",
+                width: "80%",
+                modal: true,
+                buttons: {
+                  "Share My result": function() {  //send-emails
+                    $.ajax({
+                        url: "/send-emails",
+                        type: 'POST',
+                        data: {
+                          sender:$("#sender").val(),
+                          to: $("#email-targets").val(),
+                          subject: $("#email-subject").val(),
+                          text: $("#email-text").val(),
+                          data_tobe_shared:email_data.data.shared_actors_ids,
+                          bucket_id:(bucket_id.trim().length>0?bucket_id.trim():false),
+                        },
+                        success: function(data){
+                            if(data.success){
+                              console.log(data.success);
+                              if(data.success){
+                                //$( this ).dialog( "close" );
+                                pane_to_get_title.remove();
+                                alertSuccess();
+                              }
+                            }
+                        },
+                   });
+                  },
+                  Cancel: function() {
+                    $( this ).dialog( "close" );
+                  }
+                }
+              });
+            }
+          }
+      },
+      error: function(){
+
+       }
+ });
+}
+
+function confirmDelete(data0,callback){
+  var pane_to_get_title = $("<div title='"+data0.title+"'>"+data0.message+"</div>");
+  $("body").append(pane_to_get_title);
+   $(pane_to_get_title).dialog({
+     resizable: false,
+     height: "auto",
+     width: 400,
+     modal: true,
+     buttons: {
+       "Yes": function() {
+         var self = this;
+         callback(self);
+       },
+       No: function() {
+         $( this ).dialog( "close" );
+       }
+     }
+   });
+}
+
+function alertSuccess(){
+  var pane_to_get_title = $("<div title='Success' style='text-align:center;'><i class='fa fa-check' aria-hidden='true' style='font-size:3.5em; color:green;'></i></div>");
+  $("body").append(pane_to_get_title);
+   $(pane_to_get_title).dialog({
+     resizable: false,
+     height: "auto",
+     width: 100,
+     modal: true,
+   });
+   setTimeout(function(){
+     pane_to_get_title.remove();
+   }, 1000);
+}
+function getHeightInFeet(value){
+  console.log("calculating height in ",value);
+  var height = utility.heights;
+  console.log(height);
+  for(var i =0; i< height.length; i++ ){
+    if(height[i].cm===value){
+      return height[i].feet;
+    }
+  }
+  return "";
+}
+
+function addToBucket(data0){
+  $.ajax({
+      url: "/get-history",
+      type: 'POST',
+      success: function(data){
+          if(data.success){
+            console.log("history", data.success);
+            var chosenBuckets ={};
+            var pane_to_get_title = $("<div  title='"+data0.message_title+"' style='font-size:0.8em;'></div>");
+            $("body").append(pane_to_get_title);
+            for(var i =0; i<data.success.length; i++){
+              if(data.success[i].title !==data0.isThisSearchExistWithTitle ){
+                var choice = $("<div style='cursor:pointer;' data-title='"+data.success[i].title+"'>Bucket \""+data.success[i].title+"\"</div>");
+                choice.click(function(){
+                  if(chosenBuckets[this.dataset.title]){
+                     delete chosenBuckets[this.dataset.title];
+                     $(this).css({"color":"black"});
+                  }else {
+                    $(this).css({"color":"green"});
+                    chosenBuckets[this.dataset.title]=this.dataset.title;
+                  }
+                });
+                pane_to_get_title.append(choice);
+              }
+            }
+            $(pane_to_get_title).dialog({
+              resizable: false,
+              height: "auto",
+              width: 400,
+              modal: true,
+              buttons: {
+                "Add": function() {
+                  console.log("chosen buckets ",chosenBuckets);
+                  //get Buckets from the Database
+                  if(Object.keys(chosenBuckets).length<=0){
+                    alert("Plesae Select a Bucket");
+                    return;
+                  }
+                  var self = this;
+                  $.ajax({
+                      url: "/get-buckets",
+                      type: 'POST',
+                      data: {search_titles:chosenBuckets},
+                      success: function(data){
+                          if(data.success){
+                            // console.log('response bucket get: ',data.success);
+                             for(b in data.success){
+                               var this_bucket = ((data.success[b].bucket!=="undefined"?JSON.parse(data.success[b].bucket):[]));
+                               if(typeof data0.target_id ==="object"){ //add any id you want to add here
+                                this_bucket = $.merge( this_bucket, data0.target_id );
+                                console.log("merged ",this_bucket);
+                               }else {
+                                 console.log("not merged ",this_bucket);
+                                 if(this_bucket.indexOf(data0.target_id.toString())!==-1){
+                                   console.log("This users already exist in the selected bucket");
+                                 }else {
+                                    this_bucket.push(data0.target_id);
+                                 }
+                               }
+
+                               $.ajax({
+                                   url: "/save-bucket",
+                                   type: 'POST',
+                                   data: {changed_bucket:this_bucket,bucket_id:data.success[b].id},
+                                   success: function(data){
+                                       if(data.success){
+                                        console.log(data.success);
+                                         $( self ).dialog( "close" );
+                                        alertSuccess();
+                                       }
+                                   },
+                              });
+                             }
+
+                          }
+                      },
+                 });
+                },
+                cancel: function() {
+                  $( this ).dialog( "close" );
+                }
+              }
+            });
+          }
+      },
+ });
+}
 </script>
 
   {{else}}

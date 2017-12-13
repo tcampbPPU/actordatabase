@@ -1,0 +1,298 @@
+{{#if valid}}
+{{#if valid_time}}
+<div id="welcome_messsage_sharing">
+  <center><p>You are shown this page because An Admin of this account shared this with you <span style='color:blue; cursor:pointer;' onclick='displaySharedResult()'>Click here to view the page</span></p></center>
+  <input id ='sharedLink'type="hidden" name="" value="{{data}}">
+</div>
+<div id="Shared_result_display_area" style='display:none;'>
+</div>
+<script type="text/javascript">
+function displaySharedResult(){
+  //console.log($("#sharedLink").val());
+
+  $("#welcome_messsage_sharing").hide();
+  $("#Shared_result_display_area").show();
+   getBucket({actors_ids:JSON.parse($("#sharedLink").val())});
+}
+
+function getBucket(data){
+  $.ajax({
+    xhr: function() {
+          var xhr = new window.XMLHttpRequest();
+          // Upload progress
+          xhr.upload.addEventListener("progress", function(evt){
+              if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+                  //console.log(Math.floor(percentComplete*100)+"%");
+              }
+         }, false);
+         return xhr;
+      },
+      url: "/get-shared-bucket",
+      type: 'POST',
+      data: data,
+      success: function(data){
+          if(data.success){
+             //console.log(data.success);
+             showResult(data.success,false,false);
+          }else{
+            console.log(' There was a problem. /get-shared-bucket');
+           }
+      },
+      error: function(){
+         console.log("error /get-search-bucket");
+       }
+ });
+}
+
+function showResult(result,query,bucket){
+  $("#Shared_result_display_area").empty();
+  //$("#btn_div").empty();
+  //$("#result-title").html((bucket?"Bucket Content":"Search Result"));
+  var actor_ids ={};
+  if(result){
+    var button_save = $("<input type='submit'  style='cursor:pointer;' value='Save'>");
+    var button_send = $("<input type='submit'  style='cursor:pointer;' value='Send Email to Selected Actors'>");
+    var button_share = $("<input type='submit'  style='cursor:pointer;' value='Share Result'>");
+    var center = $("<center></center>");
+    center.append(button_save,button_send,button_share);
+    //$("#btn_div").append(center);
+    var displays_result_area = $("<div class='col-lg-12' style='width:100%; '></div>");
+    var pagination = $("<div class='container' style='width:100%; clear:both; padding-top:30px;'></div>");
+    var pagination_ul = $("<ul class='pagination justify-content-center' ></ul>");
+    pagination.append(pagination_ul);
+    $("#Shared_result_display_area").append(displays_result_area,pagination);
+  }
+
+  var limit_per_page =5;
+  var list =[
+    [],
+  ];
+
+  for(var i =0; i< result.length; i++){
+    //console.log(result[i].id);
+    if(list.length>0 && list[list.length-(list.length<=0?0:1)].length>=limit_per_page){
+      list.push([result[i].id]);
+    }else {
+      list[list.length-(list.length===0?0:1)].push(result[i].id);
+    }
+     actor_ids[result[i].id]=result[i].id;
+  }
+  function displayList(){
+    pagination_ul.empty();
+    for(var p =0; p<list.length; p++){
+      var li = $("<li class='page-item'><a class='page-link "+(p===0?"active":"")+"' href='#'>"+(p+1)+"</a></li>");
+      pagination_ul.append(li);
+      li.click({index:p},function(e){
+        //console.log(list[e.data.index]);
+        var page_number = e.data.index;
+        if(list[e.data.index].length>0){
+          $.ajax({
+            xhr: function() {
+                  var xhr = new window.XMLHttpRequest();
+                  // Download progress
+                  xhr.addEventListener("progress", function(evt){
+                      if (evt.lengthComputable) {
+                          var percentComplete = evt.loaded / evt.total;
+                          // Do something with download progress
+                          //console.log(Math.floor(percentComplete*100)+"%");
+                          showProgressBar(Math.floor(percentComplete*100));
+                      }
+                  }, false);
+                 return xhr;
+              },
+              url: "/get-user-info-search",
+              type: 'POST',
+              data: {users_id:list[e.data.index]},
+              success: function(data){
+                  if(data.success){
+                     // console.log(data.success);
+                     $(displays_result_area).empty();
+                     showTheseUSers(data.success,displays_result_area,actor_ids,page_number);
+                  }
+              },
+         });
+        }
+        $(".pagination li").removeClass("active");
+        $(this).addClass("active");
+      });
+      (p===0?li.trigger("click"):"");
+    }
+  }
+  displayList();
+  function showTheseUSers(result,body,actor_ids,page_number){
+    for (elt in result){
+      var box = $("<div class='each-profile-box ' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
+      var centered_name =$("<center></center>");
+      var name = $("<span style='font-size:1.2em; clear:both;'>"+result[elt].first_name+" "+result[elt].last_name+" "+(result[elt].is_admin?"<small>&#x1f511;</small>":"")+"</span>");
+      centered_name.append(name);
+      var centered_image =$("<center></center>");
+      var image = $("<img src='"+(result[elt].first_image?("data:image/png;base64,"+result[elt].first_image):"img/blank.png")+"' alt='' style='width:200px; height:200px;'>");
+      centered_image.append(image);
+      var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+Math.floor(result[elt].age*0.0027397260273973)+" </span>");
+      var phone = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Phone</span> "+(result[elt].cell_phone?result[elt].cell_phone:"none")+" </span>");
+      var email = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>E</span> "+result[elt].email+" </span>");
+      var union_status = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>U</span> "+(result[elt].union_status?result[elt].union_status:"none")+" </span>");
+      var profile=$("<span id='profile_in_bucket' style='position:absolute; bottom:0px; left:5px; font-size:0.9em; cursor:pointer;'>Profile</span>");
+      var cars = $("<span data-index="+0+" style='font-size:0.8em; cursor:pointer;'><span  style='background-color:grey; padding:2px;'>"+(result[elt].cars?result[elt].cars.split(",").length:"")+" Cars</span > <span id='name'>"+(result[elt].cars?result[elt].cars.split(",")[0]:"none")+"</span> </span>");
+      profile.click({user_id:result[elt].id},function(e){
+        e.stopPropagation();
+        //console.log("profile",e.data.user_id);
+        buildProfilePanel(e.data.user_id);
+      });
+      cars.click({cars:result[elt].cars,index:0},function(e){
+        e.stopPropagation();
+         var index = parseInt(e.data.index) + 1;
+         var cars = (e.data.cars?e.data.cars.split(","):false);
+           if(cars){
+               if(index>=cars.length){
+                 index= 0;
+               }
+               $(this).children("#name").html(cars[index]);
+               e.data.index = index;
+           }
+       });
+      box.append(centered_name,"<br>",centered_image,"<br>",age,"<br>",cars,"<br>",phone,"<br>",email,"<br>", union_status,profile);
+      $(body).append(box);
+      box.click({target_name:result[elt].first_name, target_id:result[elt].id,is_admin:result[elt].is_admin,box_title:name},function(e){
+
+      });
+    } //end loop
+  }
+}
+
+function showProgressBar(percent){
+  if(percent >=100){
+    $("#progress-bar-download").remove();
+    return;
+  }
+  if($("#progress-bar-download").length>0 ){
+    $("#progress-bar-download").remove();
+    if(percent >=100){
+      return;
+    }
+  }
+  var pane_to_get_title = $("<div id='progress-bar-download' title=''></div>");
+  var bar = $("<div class='progress'><div class='progress-bar progress-bar-striped active' role='progressbar'aria-valuenow='"+percent+"' aria-valuemin='0' aria-valuemax='100' style='width:"+percent+"%'>"+percent+"%</div></div>");
+  pane_to_get_title.append(bar);
+  $("body").append(pane_to_get_title);
+   $(pane_to_get_title).dialog({
+     classes: {
+       "ui-dialog-titlebar": "hideTitle",
+     },
+     resizable: false,
+     height: "auto",
+     width: 400,
+     modal: true,
+   });
+}
+
+function buildProfilePanel(user_id){
+ $(".each-profile-Panel").remove();
+ var div_carousel = $("<div class ='' style='width:300px;  margin:0 auto;'></div>");
+ var carousel = $("<div id='carouselExampleControls' class='carousel slide' data-ride='carousel' style='height:350px;'></div>");
+ var carousel_control = $("<div class='carousel-inner' role='listbox'><div>");
+ var prev = $("<a class='carousel-control-prev' href='#carouselExampleControls' role='button' data-slide='prev'><span class='carousel-control-prev-icon' aria-hidden='true'></span> <span class='sr-only'>Previous</span></a>");
+ var next = $("<a class='carousel-control-next' href='#carouselExampleControls' role='button' data-slide='next'><span class='carousel-control-next-icon' aria-hidden='true'></span><span class='sr-only'>Next</span></a>");
+ carousel.append(carousel_control,prev,next);
+ div_carousel.append(carousel);
+
+ var box = $("<div class='each-profile-Panel' style='z-index:10; position:absolute; width:80%; height:500px; padding:5px; background: linear-gradient(to left, rgb(20,20,20) , black); overflow:hidden; border:3px solid lightgrey;'></div>");
+ var close = $("<i class='fa fa-window-close-o' aria-hidden='true' style='z-index:10,position:absolute; top:0px; left:0px; color:lightgrey; cursor:pointer; font-size:1.5em;'></i>");
+ var centered = $("<center></center>");
+ var navigation_view_controler = $("<ul id='pagination_profile' class='pagination  justify-content-center' style='width:100%; '></ul>");
+ centered.append(navigation_view_controler);
+ //var show_images_view = $("<span style='padding:30px; cursor:pointer;'>Images</span>");
+ var  show_images_view = $("<li class='page-item active'><span class='page-link' >Images</span></li>");
+ var  show_info_view = $("<li class='page-item'><span class='page-link'>Info</span></li>");
+ //var show_info_view = $("<span style='padding:30px; cursor:pointer;'>Info</span>");
+ navigation_view_controler.append(show_images_view,show_info_view);
+var progress_bar = $("<div id='progress_bar'style='position:absolute; top:50%; left:0px; width:100%; height:20px; background-color:rgba(100,100,100,0.5);'><div id ='progress_download' style='width:10px; height:20px; background-color:green;'></div><div id='progress_text' style='position:absolute; top:0px; left:50%;'>0%</div></div>");
+box.append(close,centered,progress_bar);
+close.click(function(){
+     $(".each-profile-Panel").remove();
+});
+ $("body").append(box);
+ box.draggable();
+ var width = box.width(), height=box.height();
+ var top= (window.innerHeight/2)+$(document).scrollTop()-(height/2) ;
+ var left = (window.innerWidth/2)+$(document).scrollLeft() -(width/2);
+ box.css({"top":top+"px" ,"left":left+"px"});
+ var info = $("<div style='width:100%; min-width:300px; display:none; height:450px; overflow-y:scroll; overflow-x:hidden; margin:0 auto; margin-top:0px;'></div>");
+ // var row = $(" <div class='row'></div>");
+ // row.append(div_carousel,info);
+ box.append(div_carousel,info);
+ show_info_view.click(function(){
+   $("#pagination_profile li").removeClass("active");
+   $(this).addClass("active");
+   info.show();
+   div_carousel.hide();
+ });
+ show_images_view.click(function(){
+   $("#pagination_profile li").removeClass("active");
+   $(this).addClass("active");
+   info.hide();
+   div_carousel.show();
+ });
+  $.ajax({
+    xhr: function() {
+          var xhr = new window.XMLHttpRequest();
+          // Download progress
+          xhr.addEventListener("progress", function(evt){
+              if (evt.lengthComputable) {
+                  var percentComplete = evt.loaded / evt.total;
+                  // Do something with download progress
+                  $("#progress_download").css({"width":""+percentComplete*100+"%"});
+                  $("#progress_text").html(Math.floor(percentComplete*100)+"%");
+                  if(percentComplete===1){
+                     $("#progress_bar").hide();
+                  }
+              }
+          }, false);
+
+          return xhr;
+      },
+      url: "/get-profile",
+      type: 'POST',
+      data: {user_id:user_id},
+      success: function(data){
+          if(data.success){
+          //  console.log("PROFILE",data.success.images );
+            for(var i =0; i< data.success.images.length; i++){
+            //  console.log()
+              carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"'> <img class='d-block img-fluid' src='"+(data.success.images[i].image?("data:image/png;base64,"+data.success.images[i].image):"img/blank.png")+"' style='width:300px; height:350px;' alt='"+i+" slide'></div>");
+              carousel_control.append(carousel_itme);
+            }
+
+            //console.log(data.success.info);
+            var table =$("<table style='width:100%;'></table>");
+            info.append(table);
+            for(key in data.success.info[0]){
+              table.append("<tr style='font-size:0.8em;'><td style='color:grey;'>"+upperCaseFirstLetter(key)+"</td><td>"+(data.success.info[0][key]===null?"":data.success.info[0][key])+"</td></tr>");
+            }
+          }
+      },
+ });
+}
+function upperCaseIt(word){
+  return word[0].toUpperCase()+word.substring(1,word.length);
+}
+function upperCaseFirstLetter(word0){
+  var word = word0.split("_");
+  var new_Word=false;
+  for(var i =0; i<word.length; i++){
+    if(!new_Word){
+      new_Word = upperCaseIt(word[i]);
+    }else {
+        new_Word+=" "+upperCaseIt(word[i]);
+    }
+  }
+  return new_Word;
+}
+</script>
+ {{else}}
+   <center><p>You are shown this page because An Admin of this account shared this Link with you. However, this link is <span style='color:red;'>expired</span> </p></center>
+{{/if}}
+{{else}}
+ <center><h1>Welcome To Our Movie Data base</h1></center>
+{{/if}}
