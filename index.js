@@ -1,6 +1,6 @@
 // Add any outside files here...
 var express = require('express');
-var credentials = require('./credentials.js');
+var credentials = require("./credentials.js");
 var expressValidator = require('express-validator');
 var formidable = require('formidable');
 var mysql = require('mysql');
@@ -48,23 +48,13 @@ function connect(cb){
   });
 }
 
-//app.use(express.static(__dirname));
-//app.use(require('sesame')()); // for sessions
-
-//var forgot = require('../../')({
-//    uri : '/resetpassword',
-//    from : 'mdalexa@pointpark.edu',
-//    host : '/forgot', port : 4000,
-//});
-
-//app.use(forgot.middleware);
-
 function getMenu(req){
   var menu =[];
   var isAdmin = req.session.is_admin;
-  menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
+   menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
+
   if(isAdmin){
-    menu.push({"page": "search", "label": "Search"});
+    menu.push({"page": "search", "label": "Search"}, {"page":"edit", "label":"Edit"});
   } else{
     if(req.session.user_id){
 
@@ -120,22 +110,43 @@ app.get("/forgot", function(req,res){
   });
 });
 
-app.get("/resetpassword", function(req,res) {
-  res.render("resetpassword.html", {
-    menu: getMenu(req)
-  });
+app.post("/get_app_info", function(req, res) {
+  sql1="SELECT app_name FROM edits";
+   connect(function(con){
+        con.query(sql1, function(err, results) {
+         if (err) throw err;
+           res.send({success: results});
+      });
+   });
 });
 
-app.get("/search", function(req,res){
+app.get('/edit', function(req, res) {
+  res.render('edit', {
+     menu: getMenu(req)
+   });
+});
+
+app.post("/edit_page", function(req, res) {
+  q="UPDATE edits SET app_name= '" +req.body.name +"' WHERE id =1";
+   connect(function(con){
+        con.query(q, function(err, results) {
+         if (err) throw err;
+           res.redirect("/");
+      });
+   });
+});
+
+
+app.get("/search_fous", function(req,res){
   if(req.session.is_admin){
-    res.render("search",{
+    res.render("search_fous",{
       admin:req.session.is_admin,
       user_name:req.session.user_first_name,
       menu: getMenu(req),
       login:req.session.user_id?req.session.user_id:false,
       });
   }else {
-    res.render("search",{
+    res.render("search_fous",{
       admin:req.session.is_admin,
       user_name:req.session.user_first_name,
       menu: getMenu(req),
@@ -143,6 +154,68 @@ app.get("/search", function(req,res){
     });
   }
 });
+
+app.post('/search-actors', function(req, res) {
+         var height_min= req.body.height_min;
+        var height_max= req.body.height_max;
+         var weight_min = req.body.weight_min;
+        var weight_max = req.body.weight_max;
+         var hair = req.body.hair;
+         var shoe_size_min = req.body.shoe_size_min;
+          var shoe_size_max = req.body.shoe_size_max;
+
+  var property2type = {
+        height: "number",
+        height_min: "number",
+        height_max: "number",
+        weight_min: "number",
+        weight_max: "number",
+        shoe_size_min: "number",
+        shoe_size: "number",
+        shoe_size_max: "number",
+        car_year_min: "number",
+        car_year_max: "number",
+        year: "number",
+        coat_size_min: "number",
+        coat_size_max: "number",
+        jacket_size: "number",
+        dress_size_min: "number",
+        dress_size_max: "number",
+        dress_size: "number",
+        age_min: "number",
+        age_max: "number"
+  };
+
+var sql = "SELECT DISTINCT users.*, FLOOR(DATEDIFF(CURDATE(), actors.birthday ) / 365.25) AS age, actors.*, images.*, cars.* FROM users LEFT OUTER JOIN actors ON users_id= users.id LEFT OUTER JOIN images ON users_id = images.actors_users_id LEFT OUTER JOIN cars ON users_id = cars.actors_users_id WHERE";
+var firstcondition = true;
+  for (var property in req.body) {
+    var value = req.body[property];
+if (value !== "") {
+    if (firstcondition) {
+      firstcondition = false;
+    }else {sql += " AND"}
+        sql += " " + property + (property.endsWith("_min") ? " >= " : property.endsWith("_max") ? " <= " : " = ") + (property2type[property] === undefined ? "'" : "") + value + (property2type[property] === undefined ? "'" : "");
+}
+  }
+sql = sql.replace(/height_max|height_min/gi,"height");
+sql = sql.replace(/weight_max|weight_min/gi,"weight");
+sql = sql.replace(/shoe_size_max|shoe_size_min/gi,"shoe_size");
+sql = sql.replace(/car_year_max|car_year_min/gi,"year");
+sql = sql.replace(/coat_size_max|coat_size_min/gi,"jacket_size");
+sql = sql.replace(/dress_size_max|dress_size_min/gi,"dress_size");
+sql = sql.replace(/fname/gi,"first_name");
+sql = sql.replace(/lname/gi,"last_name");
+sql = sql.replace(/age_max|age_min/gi,"age");
+sql+=" group by users.id";
+console.log(sql);
+  connect(function(con){
+        con.query(sql, function(err, results) {
+         if (err) throw err;
+           res.send({success: results});
+        });
+   });
+});
+
 app.get("/addUser", function(req,res){
   res.render("addUser",{
     menu: getMenu(req),
@@ -253,29 +326,8 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
-function addEmailToMailchimp(email) {
-var request = require("request");
-
-var options = { method: 'POST',
-  url: 'https://us17.api.mailchimp.com/3.0/lists/dbf2982ae5/members',
-  headers: 
-   { 'postman-token': '37f93e37-299e-fc96-5e70-384f255e06ea',
-     'cache-control': 'no-cache',
-     authorization: 'Basic YW55c3RyaW5nOjY3ZGQ1ZjVkOGM2MzkzMTFhOTUyZjI3YWIxZjBkMjI3LXVzMTc=',
-     'content-type': 'application/json' },
-  body: { email_address: email,
-	 status: 'subscribed' },
-  json: true };
-request(options, function (error, response, body) {
-  if (error) throw new Error(error);
-
-  console.log(body);
-});
-}
-
 app.post('/forgotpassword', function (req, res) {
   
-=======
 // To check if the email entered for forgot password exists
 app.post('/forgot_pwd_reset', function(req, res){
   connect(function(con){
