@@ -8,6 +8,7 @@ var fs = require('fs');
 var app = express();
 var handlebars = require('express-handlebars').create({defaultLayout:"main"});
 var mysql = require('mysql');
+var crypto = require('crypto');
 
 app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
@@ -28,31 +29,57 @@ app.use(require('express-session')({
  secret:credentials.cookieSecret
 }));
 
-/* DB Connection
- * USE connect(function(con){}); inside POST to call DB
-*/
-function connect(cb){
-  var con = mysql.createConnection({
-      host : 'fkonat.it.pointpark.edu',
-      user : 'lunamista',
-      password : 'lunamista123',
-      database : 'lunadb'
-  });
-  con.connect(function(err){
-    if (err){
-      console.log('error: ' + err.stack);
-      return;
-    }
-    cb(con);
-    //console.log('Connected!');
-  });
+
+try {
+  /* DB Connection
+   * USE connect(function(con){}); inside POST to call DB
+  */
+  function connect(cb){
+    var con = mysql.createConnection({
+        host : 'fkonat.it.pointpark.edu',
+        user : 'lunamista',
+        password : 'lunamista123',
+        database : 'lunadb'
+    });
+    con.connect(function(err){
+      if (err){
+        console.log('error: ' + err.stack);
+        return;
+      }
+      cb(con);
+      //console.log('Connected!');
+    });
+  }
+}catch(err) {
+    console.log(err, " Error in initial DB Connection function");
 }
+
+// generates random string of characters
+var genRandomString = function(length){
+    return crypto.randomBytes(Math.ceil(length/2))
+            .toString('hex') // converts to hexadecimal format
+            .slice(0,length);   // returns required number of characters
+};
+
+// Need to hash the string-password along with the salt dumbass
+
+var sha512 = function(password, salt){
+    var hash = crypto.createHmac('sha512', salt);
+    hash.update(password);
+    var value = hash.digest('hex');
+    return {
+      password:password,
+      salt:salt,
+      passwordHash:value
+    };
+};
 
 
 function getMenu(req){
   var menu =[];
   var isAdmin = req.session.is_admin;
-  menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
+   menu.push({"page": "/", "label": "Home"},{"page": "about", "label": "About"});
+
   if(isAdmin){
     menu.push({"page": "search", "label": "Search"}, {"page":"edit", "label":"Edit"});
   } else{
@@ -295,24 +322,34 @@ app.post("/login", function(req,res){
       res.redirect(303,'/');
     }else {
       var email=req.body.email;
-        var q  ="SELECT * FROM users WHERE email = '"+email+"' ;"; //"SELECT id, email,FROM users WHERE email = '"+email+"' "
-        con.query(q, function (err, result, fields) {
-          if (err) throw err;
-            if(result[0]){
-              if(result[0].password === req.body.password){
-                 req.session.user_id = result[0].id;
-                 req.session.is_admin = result[0].is_admin;
-                 req.session.user_first_name = result[0].first_name;
-                 req.session.cookie.maxAge = 9000000;
-                 res.redirect(303,'/user');
+      var password=req.body.password;
+        var q  ="SELECT * FROM users WHERE email = '"+email+"'";
+        try {
+          con.query(q, function (err, result, fields) {
+            if (err) throw err;
+              if(result[0]){
+                var salt = result[0].salt;
+                var passwordData = sha512(req.body.password, salt);
+                if(result[0].password === passwordData.passwordHash){
+                   req.session.user_id = result[0].id;
+                   req.session.is_admin = result[0].is_admin;
+                   req.session.user_first_name = result[0].first_name;
+                   req.session.cookie.maxAge = 9000000;
+                   res.send({success:true});
+                }else {
+                    // res.redirect(303,'/error-page');
+                    res.send({password:password,email:email});
+                }
               }else {
-                  res.redirect(303,'/error-page');
+                res.send({password:password,email:email});
+                 // res.redirect(303,'/error-page');
               }
-            }else {
-               res.redirect(303,'/');
-            }
-        });
+          });
+        }catch (err) {
+          console.log(err, " Error in login.post function");
+        }
     }
+    con.end();
   });
 });
 
@@ -321,15 +358,21 @@ app.post('/check_email', function(req, res){
   connect(function(con){
     var email = req.body.email;
     var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
-    con.query(sql, function(err, results, field) {
-      if (err) throw err;
-      if(results[0]["COUNT(id)"] <  1) {
-        // Email is valid not in DB yet
-        res.send("");
-      }else{
-        res.send("Email Already Used.");
-      }
-    });
+    try {
+      con.query(sql, function(err, results, field) {
+        if (err) throw err;
+        if(results[0]["COUNT(id)"] <  1) {
+          // Email is valid not in DB yet
+          res.send("");
+        }else{
+          //console.log("Existing Email is attempted to be entered");
+          res.send("Email Already Used.");
+        }
+      });
+    }catch (err) {
+      console.log(err, " Error in check_email.post function");
+    }
+    con.end();
   });
 });
 
@@ -337,16 +380,20 @@ app.post('/check_email', function(req, res){
 // To add new user
 app.post('/addUser', function(req, res){
   connect(function(con){
-    var sql = "INSERT INTO users (first_name, last_name, email, password, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?);";
-    var values = [req.body.first_name, req.body.last_name, req.body.email, req.body.password, 0, req.body.sex];
+    req.assert('first_name', 'Name is required').notEmpty();
+    var salt = genRandomString(16);
+    var passwordData = sha512(req.body.password, salt);
+    var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    var values = [req.body.first_name, req.body.last_name, req.body.email, passwordData.passwordHash, passwordData.salt, 0, req.body.sex];
+    // console.log(sql, values);
     con.query(sql, values, function(err, results) {
-      console.log(results.insertId);
+      //console.log(results.insertId);
         if (err){
           res.redirect(303,'/error-page');
         }else{
           if (results.insertId) {
             // Redirects new user to their own page
-            console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+            //console.log("New record created successfully. Last inserted ID is: " + results.insertId);
             req.session.user_id = results.insertId;
             req.session.user_first_name = req.body.first_name;
             req.session.cookie.maxAge = 9000000;
@@ -361,79 +408,114 @@ app.post('/addUser', function(req, res){
   });
 });
 
-
 app.post('/delete-in-database', function(req, res){
   var table = req.body.table;
   var id = req.body.table_id;
     console.log("delete-in-database ",table, id, table ==="cars");
    if(table ==="cars"){
-    connect(function(con){
-        var sql = "DELETE FROM cars WHERE id ='"+id+"'";
-       con.query(sql,function(err, result) {
-           if (err) throw err;
-           if(result){
-                res.send({success:{deleted_id:id} });
-           }
+     try {
+      connect(function(con){
+          var sql = "DELETE FROM cars WHERE id ='"+id+"'";
+         con.query(sql,function(err, result) {
+             if (err) throw err;
+             if(result){
+                  res.send({success:{deleted_id:id} });
+             }
+         });
        });
-     });
+     }catch (err) {
+       console.log(err, " Error in delete-in-database.post function");
+     }
    }
 });
 
-// To check if the email entered for forgot password exists
-app.post('/forgot_pwd_reset', function(req, res){
-  connect(function(con){
-    var email = req.body.email;
-    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
-    con.query(sql, function(err, results, field) {
-      if (err) throw err;
-      if(results[0]["COUNT(id)"] >=  1) {
-        // Email Exist, Good to send Password reset link to
-        res.send("");
-      }else{
-        res.send("Email Not Found.");
-      }
+// To check if the email entered for forgot password and home-login exists
+app.post('/validate_email', function(req, res){
+  try{
+    connect(function(con){
+      var email = req.body.email;
+      var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
+      con.query(sql, function(err, results, field) {
+        // console.log(results);
+        if (err) throw err;
+        if(results[0]["COUNT(id)"] >=  1) {
+          // Email Exist, Good to send Password reset link to
+          res.send("");
+        }else{
+          res.send("Email Not Found.");
+        }
+      });
+      con.end();
     });
-  });
+  }
+  catch (err) {
+    console.log(err, " Error in validate_email.post function");
+  }
 });
 
+//Matt Code
 
+function addEmailToMailchimp(email) {
+var request = require("request");
 
-app.post('/forgot', function (req, res) {
-  var email = req.body.email;
+var options = { method: 'POST',
+  url: 'https://us17.api.mailchimp.com/3.0/lists/dbf2982ae5/members',
+  headers:
+   { 'postman-token': '37f93e37-299e-fc96-5e70-384f255e06ea',
+     'cache-control': 'no-cache',
+     authorization: 'Basic YW55c3RyaW5nOjY3ZGQ1ZjVkOGM2MzkzMTFhOTUyZjI3YWIxZjBkMjI3LXVzMTc=',
+     'content-type': 'application/json' },
+  body: { email_address: email,
+	 status: 'subscribed' },
+  json: true };
+request(options, function (error, response, body) {
+  if (error) throw new Error(error);
+
+  console.log(body);
+});
+}
+
+app.post('/forgotpassword', function (req, res) {
+
   var reset = forgot(email, function (err) {
       if (err) res.end('Error sending message: ' + err)
       else res.end('Check your inbox for a password reset message.')
   });
-    
+
   reset.on('request', function (req_, res_) {
-      req_.session.reset = { email : email, id : reset.id };
-      fs.createReadStream(__dirname + '/forgot.html').pipe(res_);
+      addEmailToMailchimp(req.body.email);
+      fs.createReadStream(__dirname + '/forgot.handlebars').pipe(res_);
   });
 });
 
 app.post('/resetpassword', function (req, res) {
   if (!req.session.reset) return res.end('reset token not set');
-    
+
   var password = req.body.password;
   var confirm = req.body.confirm;
   if (password !== confirm) return res.end('passwords do not match');
-    
-  // update the user db here    
+
+  // update the user db here
 
   forgot.expire(req.session.reset.id);
   delete req.session.reset;
   res.end('password reset');
 });
 
+
 app.post('/process-search', function(req, res) {
   var search = req.body.search;
   var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
-  connect(function(con){
-    con.query(q, function(err, results) {
-     if (err) throw err;
-       res.send({success: results});
-  	});
-  });
+  try{
+    connect(function(con){
+      con.query(q, function(err, results) {
+       if (err) throw err;
+         res.send({success: results});
+    	});
+    });
+  }catch(err){
+    console.log(err, "Error in process-search.post function");
+  }
 });
 
 app.post("/update-user-info", function(req,res){
@@ -746,19 +828,24 @@ app.post("/upload_image",function(req,res){
                var dataDir = __dirname+'/public/img';
                var oldPhoto_name = files.photo.name;
                var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
-
                var buf = fs.readFileSync(files.photo.path).toString("base64");
                //console.log("new fileName: ",buf);
                //fs.renameSync(files.photo.path,dataDir+'/'+newPhoto_name);
                connect(function(con){
-                 var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
-                 var values = [buf,req.session.user_id];
-                 con.query(query, values, function(err, result,fields){
-                   if(err) throw err;
-                   if(result){
-                   }else {
+                 try {
+                   for (var i = 0; i < buf.length; i++) {
+                     var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
+                     var values = [buf[i],req.session.user_id];
+                     con.query(query, values, function(err, result,fields){
+                       if(err) throw err;
+                       if(result){
+                       }else {
+                       }
+                     });
                    }
-                 });
+                 }catch (err) {
+                   console.log(err, "for loop did not work for uploading multiply pictures");
+                 }
                });
               res.redirect(303,'/user');
                //res.send({success:true});
