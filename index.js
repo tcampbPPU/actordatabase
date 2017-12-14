@@ -86,12 +86,6 @@ app.get('/home-login', function(req, res) {
   });
 });
 
-app.get("/forgot", function(req,res){
-  res.render("forgot", {
-    menu: getMenu(req)
-  });
-});
-
 app.get('/about', function(req, res) {
   res.render('about',{
     menu: getMenu(req),
@@ -102,12 +96,6 @@ app.get('/about', function(req, res) {
 
 app.get('/error-page', function(req, res) {
   res.render('error-page');
-});
-
-app.get("/forgot", function(req,res){
-  res.render("forgot", {
-    menu: getMenu(req)
-  });
 });
 
 app.post("/get_app_info", function(req, res) {
@@ -298,6 +286,8 @@ app.post('/addUser', function(req, res){
             req.session.user_first_name = req.body.first_name;
             req.session.cookie.maxAge = 9000000;
             res.redirect(303, '/user');
+	    var emailThankYou = require('./lib/emailThankYou.js')(credentials);
+		emailService.send(req.body.email);
           } else {
               console.log("Error Redirecting pages");
               res.redirect(303, '/error-page');
@@ -326,10 +316,16 @@ app.post('/delete-in-database', function(req, res){
    }
 });
 
+app.get("/forgot", function(req,res){
+  res.render("forgot", {
+    menu: getMenu(req)
+  });
+});
+
 app.post('/forgotpassword', function (req, res) {
   
 // To check if the email entered for forgot password exists
-app.post('/forgot_pwd_reset', function(req, res){
+app.post('/forgot', function(req, res){
   connect(function(con){
     var email = req.body.email;
     var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
@@ -337,21 +333,12 @@ app.post('/forgot_pwd_reset', function(req, res){
       if (err) throw err;
       if(results[0]["COUNT(id)"] >=  1) {
         // Email Exist, Good to send Password reset link to
-        res.send("");
+        var emailResetPassword = require('./lib/emailResetPassword.js)(credentials);
+	emailResetPassword.send(req.body.email);
       }else{
         res.send("Email Not Found.");
       }
     });
-  });
-});
-
-
-
-app.post('/forgot', function (req, res) {
-  var email = req.body.email;
-    
-  });
-});
 
 app.post('/resetpassword', function (req, res) {
   if (!req.session.reset) return res.end('reset token not set');
@@ -595,6 +582,8 @@ app.post("/save_search",function(req,res){
       res.send({success:false});
   }
 });
+
+
 
 app.post("/update-user-status-to-actor",function(req,res){
   if(req.session.user_id){
