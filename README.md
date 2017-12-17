@@ -7,20 +7,13 @@ Movie Database can do the following, so far:
 <li>Enter profile, along with secure password </li>
 <li>In a profile, a user can enter 5 pictures </li>
 <li>A director can then use the internal search to set parameters on such things as height, skills, and location </li>
-<li>A director, which can be an admin and an actor, can then email the list to each user which then sends a link, </li>
-<li>   to the user to view the information the director is looking for, such as for a movie project </li>
+<li>A director, which can be an admin and an actor, can then email the list to each user which then sends a link, to the user to view the information the director is looking for, such as for a movie project </li>
 <li>Texting and phone use for profiles is also available </li>
 <li>Administrators can make other users administrators, users don't have the option to make themselves administrators </li>
-<li> </li>
+<li>The ability to customize the site by customizing the name, the background picture, and even the about page </li>
 
 <center><h1>Usage</h1> </center> 
-Robot helper is a work in progress. Consequently, it is not that easy for others developers to sinply add new feature to it unless they understand the logic of its Algorithm. We are still working on that!
-However, developers can easily add new conversations by modifying a file called process.js.
-Example: to add a conversation when users say hi Yuma or hi Angela, the developer needs to add this line to the questions object inside process.js
-"hi&yuma,angela":{
-   func:"speak",param:"Hello, how are you?",
-},
-<li><b>&</b><li> meaning that both word are require
+<li>meaning that both word are require
 <li><b>,</b></li> meaning either one is require
 <li><b>func</b></li> let you specify which function you want to use. Here we are using the function speak because we want the system to speak back to us.
 <li><b>param</b></li> is a parameter for the chosen function. Here we want the function speak to say "Hello, how are you?" when we say "hi Yuma or hi Angela" 
