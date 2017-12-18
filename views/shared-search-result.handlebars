@@ -1,3 +1,12 @@
+<style media="screen">
+.b {
+ border: 1px solid black;
+ background: rgba(13,13,13,.6);
+ box-shadow: 0px 10px 50px black;
+ width: 600px;
+ padding-top:5px;
+}
+</style>
 {{#if valid}}
 {{#if valid_time}}
 <div id="welcome_messsage_sharing">
@@ -28,7 +37,7 @@ function getBucket(data){
          }, false);
          return xhr;
       },
-      url: "/get-shared-bucket",
+      url: "get-shared-bucket",
       type: 'POST',
       data: data,
       success: function(data){
@@ -64,78 +73,147 @@ function showResult(result,query,bucket){
     $("#Shared_result_display_area").append(displays_result_area,pagination);
   }
 
-  var limit_per_page =5;
-  var list =[
-    [],
-  ];
-
+  var list =[[]];
+  var allIds = [];
+  //fill each list with 5 actors
   for(var i =0; i< result.length; i++){
-    //console.log(result[i].id);
-    if(list.length>0 && list[list.length-(list.length<=0?0:1)].length>=limit_per_page){
-      list.push([result[i].id]);
-    }else {
-      list[list.length-(list.length===0?0:1)].push(result[i].id);
-    }
+     allIds.push(result[i].id);
      actor_ids[result[i].id]=result[i].id;
   }
+  //display the list pagination
   function displayList(){
-    pagination_ul.empty();
-    for(var p =0; p<list.length; p++){
-      var li = $("<li class='page-item'><a class='page-link "+(p===0?"active":"")+"' href='#'>"+(p+1)+"</a></li>");
-      pagination_ul.append(li);
-      li.click({index:p},function(e){
-        //console.log(list[e.data.index]);
-        var page_number = e.data.index;
-        if(list[e.data.index].length>0){
-          $.ajax({
-            xhr: function() {
-                  var xhr = new window.XMLHttpRequest();
-                  // Download progress
-                  xhr.addEventListener("progress", function(evt){
-                      if (evt.lengthComputable) {
-                          var percentComplete = evt.loaded / evt.total;
-                          // Do something with download progress
-                          //console.log(Math.floor(percentComplete*100)+"%");
-                          showProgressBar(Math.floor(percentComplete*100));
-                      }
-                  }, false);
-                 return xhr;
-              },
-              url: "/get-user-info-search",
-              type: 'POST',
-              data: {users_id:list[e.data.index]},
-              success: function(data){
-                  if(data.success){
-                     // console.log(data.success);
-                     $(displays_result_area).empty();
-                     showTheseUSers(data.success,displays_result_area,actor_ids,page_number);
+    list =[[]];
+    var limit_per_page =10; //limit of how many actors should be displayed in each page
+    //how many pagination item should be display i.e 1 2 3 4 5
+    var number_of_pagination_item_based_on_n_of_actors = Math.ceil(allIds.length/limit_per_page);
+    //if the number of pagination item is to large to be displayed on the screen, display only 10
+    var len =(number_of_pagination_item_based_on_n_of_actors>7?7:number_of_pagination_item_based_on_n_of_actors);
+    for(var i =0; i< allIds.length; i++){
+      if(list.length>0 && list[list.length-(list.length<=0?0:1)].length>=limit_per_page){
+        list.push([allIds[i]]);
+      }else {
+        list[list.length-(list.length===0?0:1)].push(allIds[i]);
+      }
+    }
+
+    if((list[0] && list[0].length<=0)){ //if there not actors
+      $("#result_display").empty();
+      $("#result_display").append("<center><h1>No Result!</h1></center>");
+      $("#btn_div").hide();
+    }else if (!list[0]) { // if all actors were deleted by the usre
+       if($("#bucket_container-hidden-input-title").val().trim().length>0){
+         $("#result_display").empty();
+         $("#btn_div").hide();
+         $("#result_display").append("<center><h1>Deleted All Actors From Bucket "+$("#bucket_container-hidden-input-title").val().trim()+"!</h1></center>");
+       }else {
+         $("#result_display").empty();
+         $("#result_display").append("<center><h1>Deleted All Actors!</h1></center>");
+         $("#btn_div").hide();
+       }
+    }else { //there are some actors to be displayed
+
+      function displayPaginationNumbers(info){
+        $("#btn_div").show();
+        pagination_ul.empty();
+        //console.log(Object.keys(actor_ids),"Empty pagination");
+        for(var p =info.from; p<info.to; p++){ //append the list pagination  //list.length
+          var li = $("<li class='page-item'><a class='page-link' href='#'>"+(p+1)+"</a></li>");
+          if(p===info.current){
+            li.addClass("active");
+          }
+          if(info.to<list.length){
+            if(p===info.to-1){
+                li.find("a").append("...");
+            }
+          }
+          if(info.from>0){
+            if(p===info.from){
+                li.find("a").prepend("...");
+            }
+          }
+          pagination_ul.append(li);
+          li.click({index:p,lastNumber:(p===info.to-1?true:false),firstNumber:(p===info.from?true:false)},function(e){ //display that list
+            var page_number = e.data.index;
+            $(".pagination li").removeClass("active");
+            $(this).addClass("active");
+            if(list[e.data.index] && list[e.data.index].length>0){
+              if(e.data.lastNumber){
+                if(e.data.index===list.length-1){
+                  var from = list.length-len, to =list.length ;
+
+                }else {
+                  if(e.data.index+len>list.length){
+                    var from = (list.length)-len, to =list.length ;
+                  }else {
+                    var from = e.data.index, to =e.data.index+len ;
                   }
-              },
-         });
+                }
+                displayPaginationNumbers({from:from,to:to,current:page_number});
+              }
+              if(e.data.firstNumber){
+                if(e.data.index ===0){
+                  var from =0, to = from+len;
+                }else {
+                  if(e.data.index - len<0){
+                     var from =0, to = from+len;
+                  }else {
+                    var from = (e.data.index+1) - len, to = e.data.index+1;
+                  }
+                }
+                displayPaginationNumbers({from:from,to:to,current:page_number});
+              }
+                //displayPaginationNumbers({from:e.data.index,to:list.length});
+              displayThisPage({page_number:page_number});
+            }
+          });
         }
-        $(".pagination li").removeClass("active");
-        $(this).addClass("active");
-      });
-      (p===0?li.trigger("click"):"");
+      }
+      function displayThisPage(page_info){
+        $.ajax({
+          xhr: function() {
+                var xhr = new window.XMLHttpRequest();
+                // Download progress
+                xhr.addEventListener("progress", function(evt){
+                    if (evt.lengthComputable) {
+                        var percentComplete = evt.loaded / evt.total;
+                        showProgressBar(Math.floor(percentComplete*100));
+                    }
+                }, false);
+               return xhr;
+            },
+            url: "get-user-info-search",
+            type: 'POST',
+            data: {users_id:list[page_info.page_number]},
+            success: function(data){
+                if(data.success){
+                   $(displays_result_area).empty();
+                   showTheseUSers(data.success,displays_result_area,actor_ids,page_info.page_number);
+                }
+            },
+       });
+      }
+      displayPaginationNumbers({from:0, to:len,current:0});//to:list.length
+      //show the first page of the search
+      displayThisPage({page_number:0});
     }
   }
   displayList();
   function showTheseUSers(result,body,actor_ids,page_number){
     for (elt in result){
-      var box = $("<div class='each-profile-box ' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
+      var box = $("<div class='each-profile-box b' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
       var centered_name =$("<center></center>");
       var name = $("<span style='font-size:1.2em; clear:both;'>"+result[elt].first_name+" "+result[elt].last_name+" "+(result[elt].is_admin?"<small>&#x1f511;</small>":"")+"</span>");
       centered_name.append(name);
       var centered_image =$("<center></center>");
-      var image = $("<img src='"+(result[elt].first_image?("data:image/png;base64,"+result[elt].first_image):"img/blank.png")+"' alt='' style='width:200px; height:200px;'>");
+      var image = $("<img src='"+(result[elt].first_thumbnail?(result[elt].first_thumbnail):"img/blank.png")+"' alt='' style='width:200px; height:200px;'>");
       centered_image.append(image);
       var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+Math.floor(result[elt].age*0.0027397260273973)+" </span>");
       var phone = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Phone</span> "+(result[elt].cell_phone?result[elt].cell_phone:"none")+" </span>");
       var email = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>E</span> "+result[elt].email+" </span>");
       var union_status = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>U</span> "+(result[elt].union_status?result[elt].union_status:"none")+" </span>");
-      var profile=$("<span id='profile_in_bucket' style='position:absolute; bottom:0px; left:5px; font-size:0.9em; cursor:pointer;'>Profile</span>");
+      //var profile=$("<span id='profile_in_bucket' style='position:absolute; bottom:0px; left:5px; font-size:0.9em; cursor:pointer;'>Options</span>");
       var cars = $("<span data-index="+0+" style='font-size:0.8em; cursor:pointer;'><span  style='background-color:grey; padding:2px;'>"+(result[elt].cars?result[elt].cars.split(",").length:"")+" Cars</span > <span id='name'>"+(result[elt].cars?result[elt].cars.split(",")[0]:"none")+"</span> </span>");
-      profile.click({user_id:result[elt].id},function(e){
+      box.click({user_id:result[elt].id},function(e){
         e.stopPropagation();
         //console.log("profile",e.data.user_id);
         buildProfilePanel(e.data.user_id);
@@ -152,7 +230,7 @@ function showResult(result,query,bucket){
                e.data.index = index;
            }
        });
-      box.append(centered_name,"<br>",centered_image,"<br>",age,"<br>",cars,"<br>",phone,"<br>",email,"<br>", union_status,profile);
+      box.append(centered_name,"<br>",centered_image,"<br>",age,"<br>",cars,"<br>",phone,"<br>",email,"<br>", union_status);
       $(body).append(box);
       box.click({target_name:result[elt].first_name, target_id:result[elt].id,is_admin:result[elt].is_admin,box_title:name},function(e){
 
@@ -187,10 +265,11 @@ function showProgressBar(percent){
    });
 }
 
+
 function buildProfilePanel(user_id){
  $(".each-profile-Panel").remove();
- var div_carousel = $("<div class ='' style='width:300px;  margin:0 auto;'></div>");
- var carousel = $("<div id='carouselExampleControls' class='carousel slide' data-ride='carousel' style='height:350px;'></div>");
+ var div_carousel = $("<div class ='' style='width:100%;  margin:0 auto; display:flex; justify-content:center;'></div>");
+ var carousel = $("<div id='carouselExampleControls' class='carousel slide' data-ride='carousel' data-interval='false' style='width:600px; height:350px;'></div>");
  var carousel_control = $("<div class='carousel-inner' role='listbox'><div>");
  var prev = $("<a class='carousel-control-prev' href='#carouselExampleControls' role='button' data-slide='prev'><span class='carousel-control-prev-icon' aria-hidden='true'></span> <span class='sr-only'>Previous</span></a>");
  var next = $("<a class='carousel-control-next' href='#carouselExampleControls' role='button' data-slide='next'><span class='carousel-control-next-icon' aria-hidden='true'></span><span class='sr-only'>Next</span></a>");
@@ -252,15 +331,15 @@ close.click(function(){
 
           return xhr;
       },
-      url: "/get-profile",
+      url: "get-profile",
       type: 'POST',
       data: {user_id:user_id},
       success: function(data){
           if(data.success){
           //  console.log("PROFILE",data.success.images );
-            for(var i =0; i< data.success.images.length; i++){
+            for(var i =0; i< data.success.thumbnails.length; i++){
             //  console.log()
-              carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"'> <img class='d-block img-fluid' src='"+(data.success.images[i].image?("data:image/png;base64,"+data.success.images[i].image):"img/blank.png")+"' style='width:300px; height:350px;' alt='"+i+" slide'></div>");
+              carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"'> <img class='d-block img-fluid' src='"+(data.success.thumbnails[i].thumbnail?(data.success.thumbnails[i].thumbnail):"img/blank.png")+"' style='width:300px; height:350px; margin:0 auto;' alt='"+i+" slide'></div>");
               carousel_control.append(carousel_itme);
             }
 
@@ -268,7 +347,7 @@ close.click(function(){
             var table =$("<table style='width:100%;'></table>");
             info.append(table);
             for(key in data.success.info[0]){
-              table.append("<tr style='font-size:0.8em;'><td style='color:grey;'>"+upperCaseFirstLetter(key)+"</td><td>"+(data.success.info[0][key]===null?"":data.success.info[0][key])+"</td></tr>");
+              table.append("<tr style='font-size:0.8em;'><td style='color:grey;'>"+upperCaseFirstLetter(key)+"</td><td>"+(key==="height"? getHeightInFeet((data.success.info[0][key]===null?"":data.success.info[0][key])):(data.success.info[0][key]===null?"":data.success.info[0][key]))+"</td></tr>");
             }
           }
       },
@@ -289,6 +368,19 @@ function upperCaseFirstLetter(word0){
   }
   return new_Word;
 }
+
+function getHeightInFeet(value){
+  console.log("calculating height in ",value);
+  var height = utility.heights;
+  console.log(height);
+  for(var i =0; i< height.length; i++ ){
+    if(height[i].cm===value){
+      return height[i].feet;
+    }
+  }
+  return "";
+}
+
 </script>
  {{else}}
    <center><p>You are shown this page because An Admin of this account shared this Link with you. However, this link is <span style='color:red;'>expired</span> </p></center>

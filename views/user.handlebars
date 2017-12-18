@@ -1,5 +1,19 @@
+<style>
+body {
+  background-repeat: no-repeat;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+}
+.b {
+ border: 1px solid black;
+ background: rgba(13,13,13,.6);
+ box-shadow: 0px 10px 50px black;
+}
+</style>
 {{#if login}}
-<div id="main_content" data-id ='{{login}}' style="width:100%; padding:10px;">
+<div id="main_content" class="container b" data-id ='{{login}}' style="width:100%; padding:10px; ">
      {{#if users_id}}
      <div class="photoDiv" style="width:100%; height:auto; margin:0 auto; padding-bottom:30px; border-bottom:1px solid grey; margin-bottom:30px;">
         <div class="imageDiv" id='images_area' style="width:100%; height:auto; margin:0 auto; padding-top:30px; overflow-x:hidden;  display:flex; justify-content:center;  ">
@@ -36,14 +50,13 @@
 
          {{#if users_id}}
            <div id="actor_info" style=' clear:both; padding-top:30px; '>
-             <div class="row">
+             <div class="row" style="width:100%;">
             {{else}}
-               <br>
-               <span id='file_profile' onclick="becomeActor();" style="clear:both;float:left; color:white; font-size:0.8em; cursor:pointer;"><span style="font-size:1.2em; color:darkred;">&#9432; </span>Please click here to create your actor profile</span>
+               <center><h1  id="file_profile" onclick="becomeActor();" style=" color:white;">Welcome! <br><span style="font-size:0.5em; color:green; cursor:pointer;">Please click here to create your actor profile </span></h1></center>
                <div id="actor_info" style=' clear:both; padding-top:30px; display:none; '>
-                <div class="row">
+               <div class="row" style="border:1px solid green; width:100%;">
          {{/if}}
-         <div id=""  class="col-sm-4">
+         <div  class="col-sm-4" >
            <table class='user_info_table' style="width:100%; font-size:0.8em;">
            <h3>Actor Info</h3>
              {{# each actor_info}}
@@ -66,7 +79,7 @@
             <br>
             <br>
             <div class="col-sm-4" >
-              <h3>Cars Owned <small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value=' ' data-table='cars' style="visibility:visible;">+</small></h3>
+              <h3>Cars Owned <small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value=' ' data-table='cars' style="visibility:visible; font-size:0.7em;">+</small></h3>
               <table class='user_info_table' id='car_owned' style="width:100%; font-size:0.8em;">
                 {{#if cars}}
                 {{#each cars}}
@@ -82,42 +95,42 @@
                    {{else}}
                 {{/if}}
                 </table>
-                <div    >
+                <div>
                   <h3>Skills <small class='add-for-info-section' data-target="skills">+</small></h3>
-                  <div class=""  id='skills-area' style="width:100%; font-size:0.8em;">
+                  <div class="other_info_areas"  id='skills-area' style="width:100%; font-size:0.8em;">
 
                   </div>
                 </div>
-                  <div  >
+                  <div>
                     <h3>Sports <small class='add-for-info-section' data-target="sports">+</small></h3>
-                    <div class=""  id='sports-area' style="width:100%; font-size:0.8em;">
+                    <div class="other_info_areas"  id='sports-area' style="width:100%; font-size:0.8em;">
 
                     </div>
                   </div>
                   <div  >
                     <h3>Dancing <small class='add-for-info-section' data-target="dances">+</small></h3>
-                    <div class=""  id='dances-area' style="width:100%; font-size:0.8em;">
+                    <div class="other_info_areas"  id='dances-area' style="width:100%; font-size:0.8em;">
 
                     </div>
 
                   </div>
                   <div  >
                     <h3>Wardrobes <small class='add-for-info-section' data-target="wardrobes">+</small></h3>
-                    <div class=""  id='wardrobes-area' style="width:100%; font-size:0.8em;">
+                    <div class="other_info_areas"  id='wardrobes-area' style="width:100%; font-size:0.8em;">
 
                     </div>
 
                   </div>
                   <div  >
                     <h3>Characteristics <small class='add-for-info-section' data-target="characteristics">+</small></h3>
-                    <div class=""  id='characteristics-area' style="width:100%; font-size:0.8em;">
+                    <div class="other_info_areas"  id='characteristics-area' style="width:100%; font-size:0.8em;">
 
                     </div>
 
                   </div>
                   <div  >
                     <h3>Musicienship <small class='add-for-info-section' data-target="musicienship">+</small></h3>
-                    <div class=""  id='musicienship-area' style="width:100%; font-size:0.8em;">
+                    <div class="other_info_areas"  id='musicienship-area' style="width:100%; font-size:0.8em;">
 
                     </div>
 
@@ -134,7 +147,7 @@
 
  $("#admin_request_sender").click(function(){
    console.log("sending request");
-   post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:1},function(data){
+   post("update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:1},function(data){
      console.log("success",data);
    });
  });
@@ -148,7 +161,7 @@
       $("#current_user_panel").empty();
 
      $.ajax({
-         url: "/get-all-users",
+         url: "get-all-users",
          type: 'POST',
          success: function(data){
              if(data.success){
@@ -173,21 +186,21 @@
                 accept.click(function(e){
                   e.stopPropagation();
                   console.log(this.dataset.id);
-                  post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:1},function(data){
+                  post("update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:1},function(data){
                     console.log("success",data);
                   });
                   displayAllUsers();
                 });
                 denied.click(function(e){
                   e.stopPropagation();
-                  post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:0},function(data){
+                  post("update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:0},function(data){
                     console.log("success",data);
                   });
                   displayAllUsers();
                 });
                 cancel_privilege.click(function(e){
                   e.stopPropagation();
-                  post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:0},function(data){
+                  post("update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:0},function(data){
                     console.log("success",data);
                   });
                   displayAllUsers();
@@ -231,12 +244,12 @@ function displayIt(){
 }
 function becomeActor(){
   $.ajax({
-      url: "/update-user-status-to-actor",
+      url: "update-user-status-to-actor",
       type: 'POST',
       success: function(data){
           if(data.success){
              console.log('response: ',data.success);
-             location.assign("/user");
+             location.assign("user");
           }else{
             console.log(' There was a problem.');
            }
@@ -255,7 +268,7 @@ function becomeActor(){
            $("#edit_panel").remove();
          }
          var box = $("<div id='edit_panel'style='border:1px solid lightgrey; width:auto; height:auto; position:absolute; top:0px; left:0px; font-size:0.8em;'></div>");
-         var form = $("<form id='update_form'action='/update-user-info' method='post'></form>");
+         var form = $("<form id='update_form'action='update-user-info' method='post'></form>");
          var dialogue = $("<div style='width:100%; text-align:center'></div>");
          box.append(form,dialogue);
          var button_divs =$("<div class='modal-footer'></div>");
@@ -364,7 +377,7 @@ function becomeActor(){
                           }, false);
                           return xhr;
                        },
-                       url: "/update-user-info",
+                       url: "update-user-info",
                        type: 'POST',
                        data: $(this).serialize(),
                        success: function(data){
@@ -457,7 +470,7 @@ $(".user_info_delete_links").click(function(e){
   e.stopPropagation();
   var table_id = this.dataset.tableid, table= this.dataset.table;
   confirmDelete({title:"Confirm Action", message:"Are you Sure to Delete this"},function(panel){
-    post("/delete-in-database",{table:table,table_id:table_id},function(data){
+    post("delete-in-database",{table:table,table_id:table_id},function(data){
       if(data.target==="cars"){
         $("#cars"+data.deleted_id+"_row").remove();
         $(panel).dialog( "close" );
@@ -472,7 +485,7 @@ applyHoverAbility();
 
 function getOthers(name,callback){
   $.ajax({
-      url: "/get_user_others_info",
+      url: "get_user_others_info",
       type: 'POST',
       data:{column:name},
       success: function(data){
@@ -500,7 +513,7 @@ for(var i =0; i<others.length; i++){
              var table = this.dataset.table;
              var table_id =this.dataset.tableid;
              confirmDelete({title:"Confirm Action", message:"Are you Sure to Delete this"},function(panel){
-               post("/delete-in-database",{table:table,table_id:table_id},function(data){
+               post("delete-in-database",{table:table,table_id:table_id},function(data){
                  if(data){
                    $(panel).dialog( "close" );
                    $(target_li).remove();
@@ -537,7 +550,7 @@ $(".add-for-info-section").click(function(){
          var self = this;
          var value_selected = ($(selects).val().trim());
          if(value_selected.length>0){
-           post("/update-other-info",{table:table_name,value:value_selected},function(success){
+           post("update-other-info",{table:table_name,value:value_selected},function(success){
              if(success.insertId){
                $( self ).dialog( "close" );
                alertSuccess();
@@ -551,7 +564,7 @@ $(".add-for-info-section").click(function(){
                del.click({li:li}, function(e){
                  e.stopPropagation();
                  var target_li = e.data.li;
-                 post("/delete-in-database",{table:this.dataset.table,table_id:this.dataset.tableid},function(data){
+                 post("delete-in-database",{table:this.dataset.table,table_id:this.dataset.tableid},function(data){
                    if(data){
                      $(target_li).remove();
                    }
@@ -591,7 +604,7 @@ function getImages(){
 
        return xhr;
     },
-      url: "/get_user_images",
+      url: "get_user_images",
       type: 'POST',
       success: function(data){
           if(data.success){
@@ -607,53 +620,44 @@ function getImages(){
                   $("#images_area").append(div_carousel);
               }
               var atleat_one_picture_exist=false;
-            for(var i =0; i<5; i++){
-              var data_image = (data.success[i]? data.success[i].image: false), this_data = data.success[i];
+            for(var i =0; i<4; i++){
+              var data_image = (data.success[i]? data.success[i].thumbnail: false), this_data = data.success[i];
               if(data_image){
                 atleat_one_picture_exist=true;
               }
               if($(window).width()<1000){
                 carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"' style='"+(this_data && data_image?"cursor:pointer;":"")+ "'></div>");
-                var img_carousel =$("<img class='d-block img-fluid' src='"+(this_data && data_image?("data:image/png;base64,"+data_image):"")+"' style='width:200px; height:200px; position:relative; margin:0 auto;' alt='Picture "+i+"'>");
+                var img_carousel =$("<img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; margin:0 auto;' alt='Picture "+i+"'>");
                 carousel_itme.append(img_carousel);
                 carousel_control.append(carousel_itme);
                 var add = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:40%; cursor:pointer; '><span style='font-size:0.8em;'>Add a Photo</span></div>");
                 var del = $("<div class='image_edit_btn' data-imagename='"+(this_data?this_data.id:"")+"' style='color:red; position:absolute; top:0px; left:70%; cursor:pointer; display:none; '><i class='fa fa-trash-o' aria-hidden='true' style='font-size:1.5em; color:red;'></i></div>");
+
                 carousel_itme.append((this_data && data_image?del:add));
                 carousel_itme.click({target:del},function(e){
                   $(e.data.target).toggle();
                 });
               }else {
-                var img = $("<div class='"+(!data_image && atleat_one_picture_exist?"hidden-profile-picture":"")+"'style='float:left; position:relative; "+(this_data && data_image?"cursor:pointer;":"")+ " margin-left:5px; "+(this_data && data_image?"":"border:1px solid lightgrey;")+"  "+(!data_image && atleat_one_picture_exist?"display:none;":"")+"'> <img class='d-block img-fluid' src='"+(this_data && data_image?("data:image/png;base64,"+data_image):"")+"' style='width:200px; height:200px; position:relative; text-align:center;' alt='Picture "+(i+1)+"'></div>");
+                var img = $("<div class='"+(!data_image && atleat_one_picture_exist?"hidden-profile-picture":"")+"'style='float:left; position:relative; "+(this_data && data_image?"cursor:pointer;":"")+ " margin-left:5px; "+(this_data && data_image?"":"border:1px solid lightgrey;")+"  "+(!data_image && atleat_one_picture_exist?"visibility: hidden;":"")+"'> <img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; text-align:center;' alt='Picture "+(i+1)+"'></div>");
                 $("#images_area").append(img);
                 var add = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:35%; cursor:pointer; '><span style='font-size:0.8em;'>Add a Photo</span></div>");
                 var del = $("<div class='image_edit_btn delete_picture_btn' data-imagename='"+(this_data?this_data.id:"")+"' style='color:red; position:absolute; top:0px; left:90%; cursor:pointer;  display:none; '><i class='fa fa-trash-o' aria-hidden='true' style='font-size:1.5em; color:red;'></i></div>");
+                 
                 img.click(function(e){
                   $(".delete_picture_btn").toggle("fast");
-                  $(".hidden-profile-picture").toggle("fast");
+                  if ( $('.hidden-profile-picture').css('visibility') === 'hidden' ){
+                    $(".hidden-profile-picture").css({"visibility":"visible"});
+                  }else {
+                      $(".hidden-profile-picture").css({"visibility":"hidden"});
+                  }
+                  //$(".hidden-profile-picture").toggle("fast");
                 });
                 img.append((this_data && data_image?del:add));
               }
 
             }
 
-            ///....
-             // console.log('response: ',data.success);
-             // for(var i =0; i<5; i++){
-             //   var image = $("<div class='profile_images' id='profile_image"+i+"' style='float:left; height:170px; width:19%;  margin-right:10px; position:relative; cursor:pointer; border:1px solid grey; display:none; ' ></div>");
-             //   $("#images_area").append(image);
-             //   var x = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:50%; cursor:pointer;display:none; '><span style='font-size:1.5em;'>+</span></div>");
-             //   image.append(x);
-             // }
-             // for(var j =0; j<data.success.length; j++){
-             //   var img = $("<img src='data:image/png;base64,"+data.success[j].image+"'  alt='profile photo'  style='height:100%; width:100%;'>");
-             //   $("#profile_image"+j).append(img);
-             //    $("#profile_image"+j).css({"border":"none","display":"block"});
-             //    $(".imageDiv #addPhotoLink").remove();
-             //    $("#image_edit_btn"+j).remove();
-             //    var x = $("<div class='image_edit_btn' data-imagename='"+data.success[j].id+"' style='color:red; position:absolute; top:0px; left:90%; cursor:pointer; display:none; '>X</div>");
-             //    $("#profile_image"+j).append(x);
-             // }
+
              $(".image_edit_btn").click(function(e){ // when clik on delete  or add button
                e.stopPropagation();
                if(this.dataset.index){//add a photo
@@ -679,7 +683,7 @@ function getImages(){
                  var confirm_delete_panel =$("<div id='confirm_delete_panel' style='border:1px solid lightgrey; width:300px; height: 200px; position:absolute; background-color:lightgrey; color:black;'></div>");
                  $("#main_content").append(confirm_delete_panel);
                  var close_btn =$("<button type='button' class='close' aria-label='Close'><span aria-hidden='true'>&times;</span></button>");
-                 var form = $("<form id='image_delete_form' action='/delete_image' method='POST'><center><h6>Are you sure?</h6></center><input type='hidden' name='image_name' value='"+this.dataset.imagename+"'></form>");
+                 var form = $("<form id='image_delete_form' action='delete_image' method='POST'><center><h6>Are you sure?</h6></center><input type='hidden' name='image_name' value='"+this.dataset.imagename+"'></form>");
                  var buttons = $("<div style='width:150px; margin:0 auto;'><button id='image_delete_cancel_btn' type='button' style='float:left; cursor:pointer; width:70px;'>No</button><button type='submit' form='image_delete_form' value='Submit' style='float:right; cursor:pointer; width:70px;'>Yes</button></div>");
                  confirm_delete_panel.append(close_btn,"<br></br>",form,"<br></br>",buttons);
                  var width = confirm_delete_panel.width(), height=confirm_delete_panel.height();

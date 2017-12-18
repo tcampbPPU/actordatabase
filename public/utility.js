@@ -165,11 +165,11 @@
 
                options_field:{
                  sports:["Basketball","karate","football","baseball","hockey","soccer","boxing","tennis","golf","racing","swimming","volleyball"],
-                 characteristics:["crazy"],
-                 dances:[],
+                 characteristics:["crazy","Juggle"],
+                 dances:["Ballet","Jazz","Tap"],
                  wardrobes:["Hippie","Military","70s","80s","90s","cocktail Dresses","Formal Gown","Gothic","Halloween Costume"],
-                 musicienship:["Guitar","Piano"],
-                 skills:["Dance"],
+                 musicienship:["Guitar","Piano","flute"],
+                 skills:["Dancing","Singing","Sleeping"],
                },
  };
 
