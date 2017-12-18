@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html>
   <head>
@@ -8,90 +7,155 @@
     <title>Actor Database</title>
       <link rel="stylesheet" href="https://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
       <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css">
+      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     {{#if showTests}}
         <link rel="stylesheet" href="/vendor/mocha.css">
     {{/if}}
     <style media="screen">
     body {
-      background: url("img/cinema4.jpeg");
-
+     /*background: url("img/cinema4.jpeg");*/
       background-position: center;
       background-repeat:no-repeat;
       background-size: cover;
     }
-    html {
-      position: relative;
-      min-height: 100%;
-    }
-    body {
-      /* Margin bottom by footer height */
-      margin-bottom: 30px;
-    }
-    .footer {
-      position: absolute;
-      bottom: 0;
-      width: 100%;
-      /* Set the fixed height of the footer here */
-      height: 30px;
-      line-height: 30px; /* Vertically center the text there */
-      background-color: #f5f5f5;
-    }
-  h3{
-    color:white;
-  }
-  .user_info_titles{
-    color:grey;
 
+  html {
+    position: relative;
+    min-height: 100%;
   }
-  .user_info_values{
-    color:white;
+  body {
+    /* Margin bottom by footer height */
+    margin-bottom: 30px;
   }
-  .user_info_edit_links{
-    cursor: pointer;
-    font-size:1.7em;
-    visibility: hidden;
+  .footer {
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    /* Set the fixed height of the footer here */
+    height: 30px;
+    line-height: 30px; /* Vertically center the text there */
+    background-color: #f5f5f5;
   }
-  .user_info_edit_links:hover{
-    color:darkred;
-  }
-  .search_toggle_divs{
-    display: none;
-  }
-  #search_container h6{
-    cursor: pointer;
-  }
-  #search_container h6:hover{
-    color:grey;
-  }
-  #edit_panel{
-    padding: 10px;
-    background-color: Lightgrey;
-    color: black;
-    z-index: 3;
-  }
-  #result_table_row{
-  font-size: 0.8em;
-  }
-  #result_table_hearding{
-    color:lightgrey;
-  }
-  .viewLinks:hover{
-    color:lightblue;
-  }
-  .remove:hover{
-    color:darkred;
-  }
-  tr:nth-child(odd) {background-color: rgba(100,100,100,0.4)}
-  tr:nth-child(even) {background-color: rgba(10,10,10,0.4)}
-  .info_input{
-    visibility: hidden;
-  }
+h3{
+  color:white;
+}
+.user_info_titles{
+  color:lavender;
+
+}
+.user_info_values{
+  color:white;
+}
+.user_info_edit_links{
+  cursor: pointer;
+  font-size:1.7em;
+  visibility: hidden;
+}
+.user_info_edit_links:hover{
+  color:darkred;
+}
+/*.search_toggle_divs{
+  /display: none;
+}*/
+#profile_in_bucket{
+  color:white;
+}
+#delete_in_bucket{
+  color:white;
+}
+#profile_in_bucket:hover{
+  color:black;
+}
+#delete_in_bucket:hover{
+  color:red;
+}
+#search_container h6{
+  cursor: pointer;
+}
+#search_container h6:hover{
+  color:grey;
+}
+#edit_panel{
+  padding: 10px;
+  background-color: Lightgrey;
+  color: black;
+  z-index: 3;
+}
+#result_table_row{
+font-size: 0.8em;
+}
+#result_table_hearding{
+  color:lightgrey;
+}
+.viewLinks:hover{
+  color:lightblue;
+}
+.remove:hover{
+  color:darkred;
+}
+tr:nth-child(odd) {background-color: rgba(100,100,100,0.4)}
+tr:nth-child(even) {background-color: rgba(10,10,10,0.4)}
+.info_input{
+  visibility: hidden;
+}
+.search-history-boxes:hover .search-history-icon{
+  display: block;
+}
+.search-history-icon{
+  color:white;
+  display:none;
+}
+.search-history-icon:hover{
+  color:pink;
+}
+.right_click_options{
+  color:white;
+  background-color: inherit;
+}
+.right_click_options:hover{
+  color:black;
+  background-color: lightgrey;
+}
+.each-profile-box{
+  cursor:pointer;
+  background-color:rgba(100,100,100,0.4);
+}
+.each-profile-box:hover{
+  background-color:rgb(100,100,100);
+}
+.ui-dialog{
+ /*background-color: rgba(100,100,100,0.4);*/
+}
+.ui-dialog-titlebar{
+  /*background-color: rgba(100,100,100,0.4);*/
+}
+.hideTitle{
+  display:none;
+}
+h1 {
+      font-family: 'Cinzel', serif;
+}
+.t {
+      font-family: 'Contrail One', cursive;
+}
+.add-for-info-section{
+  cursor: pointer;
+  color:lightgrey;
+}
+.add-for-info-section:hover{
+  color:green;
+}
+.other_info_areas{
+  list-style-type: none;
+}
+.other_info_areas li:nth-child(odd) {background-color: rgba(100,100,100,0.4)}
+.other_info_areas li:nth-child(even) {background-color: rgba(10,10,10,0.4)}
     </style>
     <script type="text/javascript" src="utility.js"></script>
   </head>
   <body style='background-color:black; color:white;'>
     <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-           <a class="navbar-brand" href="/"><span id="project_name"></span></a>
+           <a class="navbar-brand" href=""><span id="project_name"></span></a>
            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
              <span class="navbar-toggler-icon"></span>
            </button>
@@ -123,51 +187,42 @@
      {{{body}}}
     <footer class="footer">
      <div class="container">
-       <span class="text-muted">Work in Progress</span>
+       <center><span class="text-muted">Developed by Point Park IT Students</span></center>
      </div>
    </footer>
-        {{#if showTests}}
-              <div id="mocha"></div>
-              <script src="/vendor/mocha.js"></script>
-              <script src="/vendor/chai.js"></script>
-              <script>
-                 mocha.ui('tdd');
-                 var assert = chai.assert;
-             </script>
-             <script src="/qa/test-global.js"></script>
-             {{#if pageTestScript}}
-                <script src="{{pageTestScript}}"></script>
-             {{/if}}
-             <script>mocha.run();</script>
-      {{/if}}
 <script
   src="https://code.jquery.com/jquery-3.2.1.js"
   integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE="
   crossorigin="anonymous"></script>
 	<script type="text/javascript">
-
 	$(document).ready(function(){
-                $.ajax({
-                        url: "/get_app_info",
-                        type: "POST",
-                        success: function(data){
-                        if (data.success) {
-                           console.log(data.success);
-                           var result = data.success;
-                           $("#project_name").html(result[0].app_name);
-			   $("#project_name2").html(result[0].app_name);
-                        } else {
-                            console.log("error");
-                        }
-                    },
-                    error: function(){
-                        console.log("There was a problem.");
-                    }
-                });
-                return false;
-            });
+       // $("body").css("background-image", "url('img/cinema3.jpg')");
+        $.ajax({
+          url: "get_app_info",
+          type: "POST",
+          success: function(data){
+          if (data.success) {
+             var result = data.success;
+             $("#project_name").html(result[0].app_name);
+             $("#project_name2").html(result[0].app_name);
+             $("#project_name3").html(result[0].app_name);
+             $("#project_intro").html(result[0].app_intro);
+             $("#project_about").html(result[0].app_about);
+             $("#app_name").val(result[0].app_name);
+             $("#app_intro").val(result[0].app_intro);
+             $("#app_about").val(result[0].app_about);
+             $("body").css("background-image",'url("data:image/png;base64,' + result[0].photo + '" )');
+            	} else {
+                	console.log("error");
+            	}
+            },
+            error: function(){
+                console.log("There was a problem.");
+            }
+        });
 
-	</script>      
+ 	});
+	</script>
 
       <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.11.0/umd/popper.min.js"></script>
       <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/js/bootstrap.min.js"></script>

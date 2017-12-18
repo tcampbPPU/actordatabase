@@ -1,21 +1,25 @@
+<style>
+body {
+  background-repeat: no-repeat;
+  background-size: cover;
+  -webkit-background-size: cover;
+  -moz-background-size: cover;
+  -o-background-size: cover;
+}
+.b {
+ border: 1px solid black;
+ background: rgba(13,13,13,.6);
+ box-shadow: 0px 10px 50px black;
+}
+</style>
 {{#if login}}
-<div id="main_content" data-id ='{{login}}' style="width:100%; padding:10px;">
-   {{#if is_admin }}
-   <div id="user_view_div" style="width:100%; height:auto; margin:0 auto;  border-bottom:1px solid lightgrey; margin-bottom:30px; font-size:0.7em;">
-     <div id="user_view_div_image" style="width:30%; height:200px;  overflow-y:scroll; overflow-x:hide;  margin-bottom:30px; font-size:0.7em;float:left; display:none;">
-
-     </div>
-     <div id="user_view_div_info" style="width:60%; height:200px;  overflow-y:scroll; overflow-x:hide;  margin-bottom:30px; font-size:0.7em;float:right; display:none;">
-
-     </div>
-   </div>
-     {{else}}
+<div id="main_content" class="container b" data-id ='{{login}}' style="width:100%; padding:10px; ">
      {{#if users_id}}
-     <div class="photoDiv" style="width:100%; height:230px; margin:0 auto; overflow-y:scroll; overflow-x:hide; border-bottom:1px solid grey; margin-bottom:30px;">
-        <div class="imageDiv" id='images_area' style="width:100%; height:200px; margin:0 auto; padding-top:30px;">
-          <div id="addPhotoLink" style='width:100%; margin:0 auto; color:grey; height:30px; text-align:center; cursor:pointer;'>
+     <div class="photoDiv" style="width:100%; height:auto; margin:0 auto; padding-bottom:30px; border-bottom:1px solid grey; margin-bottom:30px;">
+        <div class="imageDiv" id='images_area' style="width:100%; height:auto; margin:0 auto; padding-top:30px; overflow-x:hidden;  display:flex; justify-content:center;  ">
+          <!-- <div id="addPhotoLink" style='width:100%; margin:0 auto; color:grey; height:30px; text-align:center; cursor:pointer;'>
             Click here to Add Photo
-          </div>
+          </div> -->
             <div id="progressBarDiv" style='position:relative; width:100%; margin:0 auto; color:grey; height:30px;  background-color:grey;'>
               <div id="progressBar" style="width:10px; height:30px; background-color:green; line-height:30px;"></div>
               <span id="progressText" style="position:absolute; top:0px; left:50%; color:white;">  </span>
@@ -23,7 +27,7 @@
         </div>
      </div>
      {{/if}}
-   {{/if}}
+
 
   <div class="" style="float:left; border-bottom:1px solid grey;width:100%; font-size:0.8em; ">
     <h3>Basic Info</h3>
@@ -36,33 +40,23 @@
     {{/if}}
     <table class='user_info_table' style="width:100%;">
       {{# each user_info}}
-           <tr><td class="user_info_titles">{{label}}</td><td class="user_info_values" id='{{name}}'> {{value}}  </td><td><small class='user_info_edit_links' data-name='{{name}}' data-label='{{label}}' data-value='{{value}}' data-table='users'>&#x270E;</small></td></tr>
+           <tr><td class="user_info_titles">{{label}}</td><td class="user_info_values" id='{{name}}'> {{value}}  </td><td><small class='user_info_edit_links' data-name='{{name}}'  data-label='{{label}}' data-value='{{value}}' data-table='users'>&#x270E;</small></td></tr>
       {{/each}}
       <!--For the password -->
-      <tr><td class="user_info_titles">Password:</td><td class="user_info_values">	&#x1f512;</td><td><small class='user_info_edit_links' data-name='password' data-table='users'>&#x270E;</small></td></tr>
+      <tr><td class="user_info_titles">Password:</td><td class="user_info_values">	&#x1f512;</td><td><small class='user_info_edit_links' data-name='password'  data-table='users'>&#x270E;</small></td></tr>
     </table>
 
     </div>
-    {{#if is_admin }}
-        <!-- <div class="" style="float:right; background:linear-gradient(#000, #999 10%, #000); padding:10px; ">
-          <center><h5 style='color:grey;'>Current Admin Request</h5></center>
-          <div class="" id='admin_request_panel' style="    min-height:30px;  max-height:300px; overflow:scroll; border-bottom:1px solid grey;">
-          </div>
-          <center><h5 style='color:grey;'>Accepted Request </h5></center>
-          <div class="" id='current_user_panel' style="    min-height:30px;  max-height:300px; overflow:scroll;">
-          </div>
-        </div> -->
-    {{else}}
+
          {{#if users_id}}
            <div id="actor_info" style=' clear:both; padding-top:30px; '>
-             <div class="row">
+             <div class="row" style="width:100%;">
             {{else}}
-               <br>
-               <span id='file_profile' onclick="becomeActor();" style="clear:both;float:left; color:white; font-size:0.8em; cursor:pointer;"><span style="font-size:1.2em; color:darkred;">&#9432; </span>Please click here to create your actor profile</span>
+               <center><h1  id="file_profile" onclick="becomeActor();" style=" color:white;">Welcome! <br><span style="font-size:0.5em; color:green; cursor:pointer;">Please click here to create your actor profile </span></h1></center>
                <div id="actor_info" style=' clear:both; padding-top:30px; display:none; '>
-                <div class="row">
+               <div class="row" style="border:1px solid green; width:100%;">
          {{/if}}
-         <div id=""  class="col-sm-4">
+         <div  class="col-sm-4" >
            <table class='user_info_table' style="width:100%; font-size:0.8em;">
            <h3>Actor Info</h3>
              {{# each actor_info}}
@@ -78,22 +72,16 @@
                <h3>Measurements</h3>
                <table class='user_info_table' style="width:100%; font-size:0.8em;">
                  {{# each actors_measurement}}
-                    <tr><td class="user_info_titles">{{label}}</td><td class="user_info_values" id='{{name}}'> {{value}}  </td><td><small class='user_info_edit_links' data-name='{{name}}' data-label='{{label}}' data-value='{{value}}' data-table='actors'>&#x270E;</small></td></tr>
+                    <tr><td class="user_info_titles">{{label}}</td><td class="user_info_values" id='{{name}}'> {{value}}  </td><td><small class='user_info_edit_links' data-name='{{name}}' data-label='{{label}}' data-value='{{value}}' data-table='actors' data-type='int'>&#x270E;</small></td></tr>
                  {{/each}}
                </table>
              </div>
             <br>
             <br>
-            <div class=""  class="col-sm-4">
-              <!-- <h3>Emergency Contact</h3>
-              <table class='user_info_table' style="width:100%; font-size:0.8em;">
-                 <tr><td class="user_info_titles">Name:</td><td class="user_info_values"> {{  emergency_name}} </td><td><small class='user_info_edit_links' data-name='emergency_name' data-label='emergency name' data-value='{{emergency_name}}' data-table='actors'>&#x270E;</small></td></tr>
-                 <tr><td class="user_info_titles">Phone:</td><td class="user_info_values"> {{  emergency_number }} </td><td><small class='user_info_edit_links' data-name='emergency_number' data-label='Emergency Number' data-value='{{emergency_number }}' data-table='actors'>&#x270E;</small></td></tr>
-              </table>
-              <br> -->
-              <h3>Cars Owned</h3>
+            <div class="col-sm-4" >
+              <h3>Cars Owned <small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value=' ' data-table='cars' style="visibility:visible; font-size:0.7em;">+</small></h3>
+              <table class='user_info_table' id='car_owned' style="width:100%; font-size:0.8em;">
                 {{#if cars}}
-                  <table class='user_info_table' id='car_owned' style="width:100%; font-size:0.8em;">
                 {{#each cars}}
                  <tr id ="cars{{this.id}}_row">
                    <td class="user_info_titles" style='color:black;'>&#x1F698;</td>
@@ -103,13 +91,53 @@
                    <td><small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value='cars' data-table='cars' data-tableid="{{this.id}}">&#x270E; <span class='user_info_delete_links' data-tableid="{{this.id}}" data-table="cars" >&#x1F5D1;</span> </small></td>
                    </tr>
                    {{/each}}
-                     </table>
+
                    {{else}}
                 {{/if}}
-                <small class='user_info_edit_links' data-name='cars' data-label='Cars Info' data-value=' ' data-table='cars' style="visibility:visible;">+</small>
+                </table>
+                <div>
+                  <h3>Skills <small class='add-for-info-section' data-target="skills">+</small></h3>
+                  <div class="other_info_areas"  id='skills-area' style="width:100%; font-size:0.8em;">
+
+                  </div>
+                </div>
+                  <div>
+                    <h3>Sports <small class='add-for-info-section' data-target="sports">+</small></h3>
+                    <div class="other_info_areas"  id='sports-area' style="width:100%; font-size:0.8em;">
+
+                    </div>
+                  </div>
+                  <div  >
+                    <h3>Dancing <small class='add-for-info-section' data-target="dances">+</small></h3>
+                    <div class="other_info_areas"  id='dances-area' style="width:100%; font-size:0.8em;">
+
+                    </div>
+
+                  </div>
+                  <div  >
+                    <h3>Wardrobes <small class='add-for-info-section' data-target="wardrobes">+</small></h3>
+                    <div class="other_info_areas"  id='wardrobes-area' style="width:100%; font-size:0.8em;">
+
+                    </div>
+
+                  </div>
+                  <div  >
+                    <h3>Characteristics <small class='add-for-info-section' data-target="characteristics">+</small></h3>
+                    <div class="other_info_areas"  id='characteristics-area' style="width:100%; font-size:0.8em;">
+
+                    </div>
+
+                  </div>
+                  <div  >
+                    <h3>Musicienship <small class='add-for-info-section' data-target="musicienship">+</small></h3>
+                    <div class="other_info_areas"  id='musicienship-area' style="width:100%; font-size:0.8em;">
+
+                    </div>
+
+                  </div>
             </div>
           </div>
-    {{/if}}
+
 
   </div>
 </div>
@@ -119,7 +147,7 @@
 
  $("#admin_request_sender").click(function(){
    console.log("sending request");
-   post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:1},function(data){
+   post("update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:1},function(data){
      console.log("success",data);
    });
  });
@@ -133,7 +161,7 @@
       $("#current_user_panel").empty();
 
      $.ajax({
-         url: "/get-all-users",
+         url: "get-all-users",
          type: 'POST',
          success: function(data){
              if(data.success){
@@ -158,21 +186,21 @@
                 accept.click(function(e){
                   e.stopPropagation();
                   console.log(this.dataset.id);
-                  post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:1},function(data){
+                  post("update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:1},function(data){
                     console.log("success",data);
                   });
                   displayAllUsers();
                 });
                 denied.click(function(e){
                   e.stopPropagation();
-                  post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:0},function(data){
+                  post("update-user-info",{request_type:'admin_request',table_name:"users",target:"admin_request",id:this.dataset.id,value:0},function(data){
                     console.log("success",data);
                   });
                   displayAllUsers();
                 });
                 cancel_privilege.click(function(e){
                   e.stopPropagation();
-                  post("/update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:0},function(data){
+                  post("update-user-info",{request_type:'admin_request',table_name:"users",target:"is_admin",id:this.dataset.id,value:0},function(data){
                     console.log("success",data);
                   });
                   displayAllUsers();
@@ -216,12 +244,12 @@ function displayIt(){
 }
 function becomeActor(){
   $.ajax({
-      url: "/update-user-status-to-actor",
+      url: "update-user-status-to-actor",
       type: 'POST',
       success: function(data){
           if(data.success){
              console.log('response: ',data.success);
-             location.assign("/user");
+             location.assign("user");
           }else{
             console.log(' There was a problem.');
            }
@@ -233,37 +261,45 @@ function becomeActor(){
 }
 
   $("body").on('click','.user_info_edit_links',function(){
-     var name_ = this.dataset.name, value = $("#"+name_).html(),label =this.dataset.label, table_name = this.dataset.table, car_id = this.dataset.tableid;
+     var name_ = this.dataset.name, value_type =this.dataset.type, value = ($("#"+name_).html()?$("#"+name_).html().trim():$("#"+name_).html()),label =this.dataset.label, table_name = this.dataset.table, table_id = this.dataset.tableid;
      //console.log("name: ",name_,"label: ",label, "value: ",value,car_id);
      //create the frame
          if($("#edit_panel").length>0){
            $("#edit_panel").remove();
          }
          var box = $("<div id='edit_panel'style='border:1px solid lightgrey; width:auto; height:auto; position:absolute; top:0px; left:0px; font-size:0.8em;'></div>");
-         var form = $("<form id='update_form'action='/update-user-info' method='post'></form>");
-         box.append(form);
+         var form = $("<form id='update_form'action='update-user-info' method='post'></form>");
+         var dialogue = $("<div style='width:100%; text-align:center'></div>");
+         box.append(form,dialogue);
          var button_divs =$("<div class='modal-footer'></div>");
          var row1 = $("<div class='form-group col-md-6'></div>");
          var button_cancel = $("<button type='button' class='btn btn-secondary' data-dismiss='modal'>Cancel</button>");
          row1.append(button_cancel);
          var row2 = $("<div class='form-group col-md-6'></div>");
          var button_save = $("<button type='submit' class='btn btn-primary'>Save changes</button>");
+
          row2.append(button_save);
          button_divs.append(row1,row2);
          if(name_ ==="password"){
-           var input_div =$("<div class='form-group'><label for='inputPassword0' class='col-form-label'>Password</label><input type='password' class='form-control' id='inputPassword0' placeholder='Password' name='password[current_password]'></div><div class='form-group'><label for='inputPassword' class='col-form-label'>New Password</label><input type='password' class='form-control' id='inputPassword' placeholder='Password' name='password[new_password]'></div><div class='form-group'><label for='input_confirmPass' class='col-form-label'>Confirm Password</label><input type='password' class='form-control' id='input_confirmPass' placeholder='Confirm New password' name='password[confirm_password]'><input type='hidden' name='table_name' value="+table_name+"></div>");
+           var input_div =$("<div class='form-group'><label for='inputPassword0' class='col-form-label'>Password</label><input type='password' class='form-control' id='inputPassword0' placeholder='Password' name='password[current_password]'></div><div class='form-group'><label for='inputPassword' class='col-form-label'>New Password</label><input type='password' class='form-control' id='inputPassword' placeholder='Password'  data-minLength='6'name='password[new_password]'></div><div class='form-group'><label for='input_confirmPass' class='col-form-label'>Confirm Password</label><input type='password' class='form-control' data-minLength='6' id='input_confirmPass' placeholder='Confirm New password' name='password[confirm_password]'><input type='hidden' name='table_name' value="+table_name+"></div>");
          }else if (name_ ==="cars") {
-            var input_div =$("<div class='form-group'><label for='inputPassword0' class='col-form-label'>Make</label><input type='text' class='form-control' id='inputPassword0' placeholder='Make' name='cars[make]'></div><div class='form-group'><label for='inputPassword' class='col-form-label'>Color</label><input type='text' class='form-control' id='inputPassword' placeholder='Color' name='cars[color]'></div><div class='form-group'><label for='input_confirmPass' class='col-form-label'>Year</label><input type='text' class='form-control' id='input_confirmPass' placeholder='Year' name='cars[year]'><input type='hidden' name='cars[id]' value="+car_id+"><input type='hidden' name='table_name' value="+table_name+"></div>");
-         }else if (name_ ==="ethnicity" || name_ ==="height" || name_ ==="sex" || name_ ==="us_citizen" ) {
+            var input_div =$("<div class='form-group'><label for='inputPassword0' class='col-form-label'>Make</label><input type='text' class='form-control' id='inputPassword0' value='"+($("#cars"+table_id+"_make").html()?$("#cars"+table_id+"_make").html().trim():"")+"' name='cars[make]'></div><div class='form-group'><label for='inputPassword' class='col-form-label'>Color</label><input type='text' class='form-control' id='inputPassword' value='"+($("#cars"+table_id+"_color").html()?$("#cars"+table_id+"_color").html().trim():"")+"' name='cars[color]'></div><div class='form-group'><label for='input_confirmPass' class='col-form-label'>Year</label><input type='text' class='form-control' id='input_confirmPass' data-type='int' data-length='4' value='"+($("#cars"+table_id+"_year").html()?$("#cars"+table_id+"_year").html().trim():"")+"' name='cars[year]'><input type='hidden' name='cars[id]' value="+table_id+"><input type='hidden' name='table_name' value="+table_name+"></div>");
+         }else if (name_ ==="skills") {
+            var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputEdit'>New "+label+"</label><br><input type='text' class='form-control' id='inputEdit' "+(value_type?"data-type='"+value_type+"'":"")+" value='"+($("#skills"+table_id).html()?$("#skills"+table_id).html().trim():"")+"' name='skills[name]'><input type='hidden' name='table_name' value="+table_name+"><input type='hidden' name='skills[id]' value="+table_id+"></div>");
+         }
+         else if (name_ ==="ethnicity" || name_ ==="height" || name_ ==="sex" || name_ ==="us_citizen" ) {
              var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='ethnicity_options'>New "+label+"</label><br><select class='custom-select mb-2 mr-sm-2 mb-sm-0' id='"+name_+"_options' name='"+name_+"'><option selected></option></select><input type='hidden' name='table_name' value="+table_name+"></div>");
+
          }
          else if (name_ ==="state") {
-             var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputState'>New "+label+"</label><br><input type='text' id='inputState'  class='form-control'  placeholder='state' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
+             var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputState'>New "+label+"</label><br><input type='text' id='inputState'  class='form-control'  value='"+value+"' data-minlength='3' data-type='string' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
+
          }else if (name_ ==="birthday") {
-             var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputDate'>New "+label+"</label><br><input type='date' id='inputDate'  class='form-control'  placeholder='state' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
+
+             var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputDate'>New "+label+"</label><br><input type='date' id='inputDate'  class='form-control'   name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
          }
          else {
-           var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputEdit'>New "+label+"</label><br><input type='text' class='form-control' id='inputEdit' value='"+value+"' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
+           var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputEdit'>New "+label+"</label><br><input type='text' class='form-control' id='inputEdit' "+(value_type?"data-type='"+value_type+"'":"")+" value='"+value+"' name='"+name_+"'><input type='hidden' name='table_name' value="+table_name+"></div>");
          }
          var title =$("<div class='modal-header'><h5 class='modal-title'><center><h6>Editing</h6></center></h5>  </div>");
          var title_close =$("<button type='button' class='close' data-dismiss='modal' aria-label='Close' ><span aria-hidden='true'>&times;</span>  </button>");
@@ -271,6 +307,7 @@ function becomeActor(){
         //  form.append("<center><h6>Editing</h6></center>",input_div,"<br>",button_divs);
         form.append(title,input_div,"<br>",button_divs);
          $("#main_content").append(box);
+
          box.draggable();
          var width = box.width(), height=box.height();
          var top= (window.innerHeight/2)+$(document).scrollTop()-(height/2) ;
@@ -283,13 +320,50 @@ function becomeActor(){
             $("#edit_panel").remove();
           });
 
-          button_save.click(function(e){
-            //$("#edit_panel").remove();
-          });
+          // button_save.click(function(e){
+          //   //$("#edit_panel").remove();
+          // });
           //submit form
 
           $('#update_form').on('submit', function(evt){
                    evt.preventDefault();
+                   //see if all value are  good
+                   var all_input = $("#update_form").find("input");
+                   $(all_input).css("border","none");
+                   for(var i=0; i<all_input.length; i++){
+                      if($(all_input[i]).prop("type") ==="text" || $(all_input[i]).prop("type") ==="password"){
+                        if(($(all_input[i]).val().trim().length<=0)
+                        || (all_input[i].dataset.type==="string" && Number($(all_input[i]).val()))
+                        ||(all_input[i].dataset.type==="int" && !Number($(all_input[i]).val()))
+                        ||(all_input[i].dataset.length!==undefined && $(all_input[i]).val().length !== Number(all_input[i].dataset.length) )
+                        ||(all_input[i].dataset.minlength!==undefined && $(all_input[i]).val().length < Number(all_input[i].dataset.minlength) )  ){
+                            console.log("false&&&&&&&");
+
+                            if(($(all_input[i]).val().trim().length<=0)){
+                              message ="Empty Field";
+                            }else if ((all_input[i].dataset.type==="string" && Number($(all_input[i]).val()))) {
+                              message ="Expecting a String";
+                            }
+                            else if ((all_input[i].dataset.type==="int" && !Number($(all_input[i]).val()))) {
+                              message ="Please Enter a Number";
+                            }
+                            else if ((all_input[i].dataset.length!==undefined && $(all_input[i]).val().length !== Number(all_input[i].dataset.length) )) {
+                              message ="Please Enter Exactly"+all_input[i].dataset.length+" Digits";
+                            }
+                            else if ((all_input[i].dataset.minlength!==undefined && $(all_input[i]).val().length < Number(all_input[i].dataset.minlength) ) ) {
+                              message ="Value too Short";
+                            }
+                             $(all_input[i]).css("border","1px solid red");
+                             dialogue.css("color","red");
+                             dialogue.html(message);
+                            return;
+                        }
+                      }
+                   }
+
+                   //////......
+                   console.log($(this).serialize());
+
                    $.ajax({
                      xhr: function() {
                            var xhr = new window.XMLHttpRequest();
@@ -303,7 +377,7 @@ function becomeActor(){
                           }, false);
                           return xhr;
                        },
-                       url: "/update-user-info",
+                       url: "update-user-info",
                        type: 'POST',
                        data: $(this).serialize(),
                        success: function(data){
@@ -313,8 +387,8 @@ function becomeActor(){
                                 if(data.success.new_record){
                                   //location.assign("/user");
 
-                                  //append new row to table
-                                  var row = $("<tr id ='cars"+data.success.new_insertedId+"_row'></tr>");
+                                  //append new row to table car
+                                    var row = $("<tr id ='cars"+data.success.new_insertedId+"_row'></tr>");
                                     var td1 = $("<td class='user_info_titles' style='color:black;'>&#x1F698;</td>");
                                     var td2 = $("<td class='user_info_values' id='cars"+data.success.new_insertedId+"_make'> "+data.success.data.make+" </td>");
                                     var td3 = $("<td class='user_info_values' id='cars"+data.success.new_insertedId+"_color'>"+data.success.data.color+" </td>");
@@ -332,14 +406,34 @@ function becomeActor(){
                               }
                               if(data.success.column_changed ==="height"){
                                   $("#"+data.success.column_changed).html(getHeightInFeet(data.success.value));
-                              }else {
-                                  $("#"+data.success.column_changed).html(data.success.value);
+                              }else if (data.success.column_changed==="skills") {
+                                if(data.success.new_insertedId){
+                                  var row = $("<tr id ='skills"+data.success.new_insertedId+"_row'></tr>");
+                                  var td1 = $("<td class='user_info_values' id='skills"+data.success.new_insertedId+"'> "+data.success.value+" </td>");
+                                  var td2 =$("<td><small class='user_info_edit_links' data-name='skills' data-label='Skills Info' data-value='skills' data-table='special_skills' data-tableid="+data.success.new_insertedId+">&#x270E; <span class='user_info_delete_links' data-tableid="+data.success.new_insertedId+" data-table='special_skills' >&#x1F5D1;</span> </small></td>");
+                                  row.append(td1,td2);
+                                  $("#skills_table").append(row);
+                                  applyHoverAbility();
+                                }else {
+                                  $("#skills"+data.success.changed_id).html(data.success.value);
+                                }
+                              }
+                              else {
+
+                                var new_value = data.success.value;
+                                if(data.success.column_changed ==='birthday'){ //rearange date format
+                                  var new_value0 = data.success.value.split("-");
+                                   new_value = new_value0[1]+"-"+new_value0[2]+"-"+new_value0[0];
+                                }
+                                  $("#"+data.success.column_changed).html(new_value);
                               }
                               //console.log($("#"+data.success.column_changed).siblings(".user_info_edit_links") );
                              $("#edit_panel_success").remove();
                              $("#edit_panel").prepend("<center id='edit_panel_success'><span style='color:green;'>success</span></center>");
                               //location.assign("/user");
                               $("#edit_panel").remove();
+
+                              alertSuccess();
                            }else{
                              console.log(' There was a problem.');
                              $("#edit_panel_success").remove();
@@ -374,31 +468,127 @@ function applyHoverAbility(){
 
 $(".user_info_delete_links").click(function(e){
   e.stopPropagation();
-  console.log(this.dataset.tableid, this.dataset.table);
-  post("/delete-in-database",{table:this.dataset.table,table_id:this.dataset.tableid},function(data){
-    //console.log("success deleted cars",data.deleted_id);
-    $("#cars"+data.deleted_id+"_row").remove();
+  var table_id = this.dataset.tableid, table= this.dataset.table;
+  confirmDelete({title:"Confirm Action", message:"Are you Sure to Delete this"},function(panel){
+    post("delete-in-database",{table:table,table_id:table_id},function(data){
+      if(data.target==="cars"){
+        $("#cars"+data.deleted_id+"_row").remove();
+        $(panel).dialog( "close" );
+        alertSuccess();
+      }
+
+    });
   });
 });
 }
 applyHoverAbility();
 
+function getOthers(name,callback){
+  $.ajax({
+      url: "get_user_others_info",
+      type: 'POST',
+      data:{column:name},
+      success: function(data){
+          callback(data.success, data.target_table);
+      },
+ });
+}
 
+var others =["skills","wardrobes","dances","characteristics","sports","musicienship"];
+for(var i =0; i<others.length; i++){
+  getOthers(others[i],function(results, table){
+     if(results){
+       for(var i =0; i<results.length; i++){
+         if(results[i].id){
+           var li = $("<li data-id='"+results[i].id+"' data-table='"+table+"' style='position:relative; width:100%; cursor:pointer;'>"+results[i][table]+" </li>");
+           var del = $("<span class='others-del'style='position:absolute; display:none; top:0px; left:80%;' data-table='"+table+"' data-tableid='"+results[i].id+"' >&#x1F5D1;</span>");
+           li.append(del);
+           li.click({del:del},function(e){
+             $(".others-del").not(e.data.del).hide();
+             $(e.data.del).toggle();
+           });
+           del.click({li:li}, function(e){
+             e.stopPropagation();
+             var target_li = e.data.li;
+             var table = this.dataset.table;
+             var table_id =this.dataset.tableid;
+             confirmDelete({title:"Confirm Action", message:"Are you Sure to Delete this"},function(panel){
+               post("delete-in-database",{table:table,table_id:table_id},function(data){
+                 if(data){
+                   $(panel).dialog( "close" );
+                   $(target_li).remove();
+                   alertSuccess();
+                 }
+               });
+             });
+           });
+           $("#"+table+"-area").append(li); //delete-in-database
+         }
+
+       }
+     }
+  });
+}
+
+$(".add-for-info-section").click(function(){
+   var table_name = this.dataset.target;
+   var pane_to_get_title = $("<div  title='Add New Record' style='font-size:0.8em;'></div>");
+   var selects = $("<select type='number' class='form-control'  name=newValue> <option value=''>SELECT</option></select>");
+   pane_to_get_title.append(selects);
+   for(var i =0; i<utility.options_field[table_name].length; i++){
+     var option = $("<option value='"+utility.options_field[table_name][i]+"'>"+utility.options_field[table_name][i]+"</option>");
+     selects.append(option);
+   }
+   $("body").append(pane_to_get_title);
+   $(pane_to_get_title).dialog({
+     resizable: false,
+     height: "auto",
+     width: 400,
+     modal: true,
+     buttons: {
+       "Add": function() {
+         var self = this;
+         var value_selected = ($(selects).val().trim());
+         if(value_selected.length>0){
+           post("update-other-info",{table:table_name,value:value_selected},function(success){
+             if(success.insertId){
+               $( self ).dialog( "close" );
+               alertSuccess();
+               var li = $("<li data-id='"+success.insertId+"' data-table='"+table_name+"' style='position:relative; width:100%; cursor:pointer;'>"+success.insertedValue+" </li>");
+               var del = $("<span class='others-del'style='position:absolute; display:none; top:0px; left:80%;' data-table='"+table_name+"' data-tableid='"+success.insertId+"' >&#x1F5D1;</span>");
+               li.append(del);
+               li.click({del:del},function(e){
+                 $(".others-del").not(e.data.del).hide();
+                 $(e.data.del).toggle();
+               });
+               del.click({li:li}, function(e){
+                 e.stopPropagation();
+                 var target_li = e.data.li;
+                 post("delete-in-database",{table:this.dataset.table,table_id:this.dataset.tableid},function(data){
+                   if(data){
+                     $(target_li).remove();
+                   }
+                 });
+               });
+               $("#"+table_name+"-area").append(li); //delete-in-database
+             }
+          });
+         }else {
+           alert("Please Select a Value");
+         }
+
+       },
+       cancel: function() {
+         $( this ).dialog( "close" );
+       }
+     }
+   });
+});
 
 function getImages(){
   $.ajax({
     xhr: function() {
         var xhr = new window.XMLHttpRequest();
-
-       //  // Upload progress
-       //  xhr.upload.addEventListener("progress", function(evt){
-       //      if (evt.lengthComputable) {
-       //          var percentComplete = evt.loaded / evt.total;
-       //          //Do something with upload progress
-       //          console.log(percentComplete);
-       //      }
-       // }, false);
-
        // Download progress
        xhr.addEventListener("progress", function(evt){
            if (evt.lengthComputable) {
@@ -414,26 +604,60 @@ function getImages(){
 
        return xhr;
     },
-      url: "/get_user_images",
+      url: "get_user_images",
       type: 'POST',
       success: function(data){
           if(data.success){
-             console.log('response: ',data.success);
-             for(var i =0; i<5; i++){
-               var image = $("<div class='profile_images' id='profile_image"+i+"' style='float:left; height:170px; width:19%;  margin-right:10px; position:relative; cursor:pointer; border:1px solid grey; display:none; ' ></div>");
-               $("#images_area").append(image);
-               var x = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:50%; cursor:pointer;display:none; '><span style='font-size:1.5em;'>+</span></div>");
-               image.append(x);
-             }
-             for(var j =0; j<data.success.length; j++){
-               var img = $("<img src='data:image/png;base64,"+data.success[j].image+"'  alt='profile photo'  style='height:100%; width:100%;'>");
-               $("#profile_image"+j).append(img);
-                $("#profile_image"+j).css({"border":"none","display":"block"});
-                $(".imageDiv #addPhotoLink").remove();
-                $("#image_edit_btn"+j).remove();
-                var x = $("<div class='image_edit_btn' data-imagename='"+data.success[j].id+"' style='color:red; position:absolute; top:0px; left:90%; cursor:pointer; display:none; '>X</div>");
-                $("#profile_image"+j).append(x);
-             }
+
+            var div_carousel = $("<div class ='' style='width:100%;  margin:0 auto;  display:flex; justify-content:center;' ></div>");
+            var carousel = $("<div id='carouselExampleControls' class='carousel slide' data-ride='carousel' data-interval='false' style='width:400px; height:200px;'></div>");
+            var carousel_control = $("<div class='carousel-inner' role='listbox'><div>");
+            var prev = $("<a class='carousel-control-prev' href='#carouselExampleControls' role='button' data-slide='prev'><span class='carousel-control-prev-icon' aria-hidden='true'></span> <span class='sr-only'>Previous</span></a>");
+            var next = $("<a class='carousel-control-next' href='#carouselExampleControls' role='button' data-slide='next'><span class='carousel-control-next-icon' aria-hidden='true'></span><span class='sr-only'>Next</span></a>");
+            carousel.append(carousel_control,prev,next);
+            div_carousel.append(carousel);
+              if($(window).width()<1000){
+                  $("#images_area").append(div_carousel);
+              }
+              var atleat_one_picture_exist=false;
+            for(var i =0; i<4; i++){
+              var data_image = (data.success[i]? data.success[i].thumbnail: false), this_data = data.success[i];
+              if(data_image){
+                atleat_one_picture_exist=true;
+              }
+              if($(window).width()<1000){
+                carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"' style='"+(this_data && data_image?"cursor:pointer;":"")+ "'></div>");
+                var img_carousel =$("<img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; margin:0 auto;' alt='Picture "+i+"'>");
+                carousel_itme.append(img_carousel);
+                carousel_control.append(carousel_itme);
+                var add = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:40%; cursor:pointer; '><span style='font-size:0.8em;'>Add a Photo</span></div>");
+                var del = $("<div class='image_edit_btn' data-imagename='"+(this_data?this_data.id:"")+"' style='color:red; position:absolute; top:0px; left:70%; cursor:pointer; display:none; '><i class='fa fa-trash-o' aria-hidden='true' style='font-size:1.5em; color:red;'></i></div>");
+
+                carousel_itme.append((this_data && data_image?del:add));
+                carousel_itme.click({target:del},function(e){
+                  $(e.data.target).toggle();
+                });
+              }else {
+                var img = $("<div class='"+(!data_image && atleat_one_picture_exist?"hidden-profile-picture":"")+"'style='float:left; position:relative; "+(this_data && data_image?"cursor:pointer;":"")+ " margin-left:5px; "+(this_data && data_image?"":"border:1px solid lightgrey;")+"  "+(!data_image && atleat_one_picture_exist?"visibility: hidden;":"")+"'> <img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; text-align:center;' alt='Picture "+(i+1)+"'></div>");
+                $("#images_area").append(img);
+                var add = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:35%; cursor:pointer; '><span style='font-size:0.8em;'>Add a Photo</span></div>");
+                var del = $("<div class='image_edit_btn delete_picture_btn' data-imagename='"+(this_data?this_data.id:"")+"' style='color:red; position:absolute; top:0px; left:90%; cursor:pointer;  display:none; '><i class='fa fa-trash-o' aria-hidden='true' style='font-size:1.5em; color:red;'></i></div>");
+                 
+                img.click(function(e){
+                  $(".delete_picture_btn").toggle("fast");
+                  if ( $('.hidden-profile-picture').css('visibility') === 'hidden' ){
+                    $(".hidden-profile-picture").css({"visibility":"visible"});
+                  }else {
+                      $(".hidden-profile-picture").css({"visibility":"hidden"});
+                  }
+                  //$(".hidden-profile-picture").toggle("fast");
+                });
+                img.append((this_data && data_image?del:add));
+              }
+
+            }
+
+
              $(".image_edit_btn").click(function(e){ // when clik on delete  or add button
                e.stopPropagation();
                if(this.dataset.index){//add a photo
@@ -459,7 +683,7 @@ function getImages(){
                  var confirm_delete_panel =$("<div id='confirm_delete_panel' style='border:1px solid lightgrey; width:300px; height: 200px; position:absolute; background-color:lightgrey; color:black;'></div>");
                  $("#main_content").append(confirm_delete_panel);
                  var close_btn =$("<button type='button' class='close' aria-label='Close'><span aria-hidden='true'>&times;</span></button>");
-                 var form = $("<form id='image_delete_form' action='/delete_image' method='POST'><center><h6>Are you sure?</h6></center><input type='hidden' name='image_name' value='"+this.dataset.imagename+"'></form>");
+                 var form = $("<form id='image_delete_form' action='delete_image' method='POST'><center><h6>Are you sure?</h6></center><input type='hidden' name='image_name' value='"+this.dataset.imagename+"'></form>");
                  var buttons = $("<div style='width:150px; margin:0 auto;'><button id='image_delete_cancel_btn' type='button' style='float:left; cursor:pointer; width:70px;'>No</button><button type='submit' form='image_delete_form' value='Submit' style='float:right; cursor:pointer; width:70px;'>Yes</button></div>");
                  confirm_delete_panel.append(close_btn,"<br></br>",form,"<br></br>",buttons);
                  var width = confirm_delete_panel.width(), height=confirm_delete_panel.height();
@@ -550,6 +774,39 @@ function getHeightInFeet(value){
     }
   }
   return false;
+}
+function alertSuccess(){
+  var pane_to_get_title = $("<div title='Success' style='text-align:center;'><i class='fa fa-check' aria-hidden='true' style='font-size:3.5em; color:green;'></i></div>");
+  $("body").append(pane_to_get_title);
+   $(pane_to_get_title).dialog({
+     resizable: false,
+     height: "auto",
+     width: 100,
+     modal: true,
+   });
+   setTimeout(function(){
+     pane_to_get_title.remove();
+   }, 1000);
+}
+
+function confirmDelete(data0,callback){
+  var pane_to_get_title = $("<div title='"+data0.title+"'>"+data0.message+"</div>");
+  $("body").append(pane_to_get_title);
+   $(pane_to_get_title).dialog({
+     resizable: false,
+     height: "auto",
+     width: 400,
+     modal: true,
+     buttons: {
+       "Yes": function() {
+         var self = this;
+         callback(self);
+       },
+       No: function() {
+         $( this ).dialog( "close" );
+       }
+     }
+   });
 }
 </script>
 
