@@ -1,5 +1,5 @@
 #ignore packages installed by npm
-node_modules
+ #node_modules
 #for mac os
 .DS_Store
 # ignore my  secrets
