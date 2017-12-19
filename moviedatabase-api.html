@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title style="text-align:center">Movie Database</title>
+  <link rel="stylesheet" type="text/css" href="api.css">
+</head>
+<body background="public/img/cinema4.jpeg">
+  <h1 id="title">Movie Database</h1>
+  <h3><p id="desc">This program is a helpful tool to help actors and directors to collaborate for projects and future projects. Each actor should make a profile, with the options of measurements and adding 5 profile pictures. Directors can search profiles, make a list, and then save, email, or text the list to anyone they choose. Each user will log in with their email and have a password, with the option to reset their password if forgotten.</p><h3>
+
+    <h4><table id="table">
+      <tr> <th>Function</th><th>Parameters</th> <th>Return Value</th> <th>Description</th> </tr>
+
+      <tr> <td><b>getMenu()</b></td> <td>req</td> <td>menu</td> <td>Provides the menu of each page, displaying on each page throughout the website. Also is used to provide sections given by authority level.</td> </tr>
+
+      <tr> <td><b>/home-login</b></td> <td>req</td> <td>res.render('home-login')</td> <td>The initial login page for logging in when an account has already been made.</td> </tr>
+
+      <tr> <td><b>/edit_page</b> </td> <td>req.body.name</td> <td>res.redirect</td> <td>Allows someone to open the function for changing the web page aesthetic look.</td> </tr>
+
+      <tr> <td><b>/search_fous</b> </td> <td>req.session.user_first_name</td> <td>res.render</td> <td>Determines if someone has administrator priveleges.</td> </tr>
+
+      <tr> <td><b>/search-actors</b> </td> <td>req.body.[property]</td> <td>res.send({success: results})</td> <td>Determines search criteria for administrator search</td> </tr>
+
+      <tr> <td><b>/check_email</b> </td> <td>re.body.email</td> <td>res.send()</td> <td>Checks database for valid email to send to.</td> </tr>
+
+      <tr> <td><b>/addUser</b> </td> <td>req.body.(value)</td> <td>res.redirect</td> <td>Takes input value for a profile creation and adds the info to the database.</td> </tr>
+
+      <tr> <td><b>/forgot</b> </td> <td>req.body.email</td> <td>res.end</td> <td>Uses input email to generate a reset password email with 48 hour token, to reset the user's password. It uses a link to follow back to the website.</td> </tr>
+
+      <tr> <td><b>/resetpassword</b> </td> <td>req.session.reset</td> <td>res.end</td> <td>This is the page, which is only accessed by email link and token, to reset the password in the database with a confirmation line to ensure the password matches.</td> </tr>
+
+      <tr> <td><b>/update-user-info</b> </td> <td>req.body.table_name</td> <td>res.send</td> <td>This updates all info in a profile.</td> </tr>
+
+      <tr> <td><b>/search_database</b> </td> <td>req.body</td> <td>res.send</td> <td>This is the algorithm that searches the database using data keys matched on the table in the database.</td> </tr>
+    </table></h4>
+</body>
+</html>

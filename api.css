@@ -1,0 +1,52 @@
+body {
+    background: "green.jpeg";
+    background-size: 100% 100%
+}
+
+#desc {
+  color: white;
+  text-shadow: 2px 2px black;
+  font-weight: bold;
+  text-align: center;
+}
+
+#title {
+  color: white;
+  text-shadow: 1px 1px black;
+  margin: 2em auto 1em;
+  text-align: center;
+  letter-spacing: 5px;
+  font-weight: bold;
+}
+
+#table {
+  color: white;
+  text-shadow: 1px 1px black;
+  margin-left: 65px;
+  margin-top: 50px;
+  font-weight: bold;
+  font-size: larger;
+}
+
+#td, th{
+  width: 300px;
+}
+
+#table, th, td  {
+  vertical-align: middle;
+  border: 1px solid white;
+  border-collapse: collapse;
+  text-align: center;
+}
+
+th{
+  background-color: black;
+}
+
+/*tr:nth-child(odd) {
+  background-color: #cc9966;
+}
+
+tr:nth-child(even) {
+  background-color: lightgreen;
+}*/
