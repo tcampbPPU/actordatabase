@@ -29,7 +29,8 @@ In the future, the Movie Database will be able to do the following:
 <li>Improved analytics to help improve the search for suggested roles</li>
 <li>Collaborate with other acting guilds or outside agencies</li>
 <li>Presentation of Trailers for the actors involved in the database</li>
-<li>and more...<li>
+<li>and more...</li>
+
 <center><h1>Contributing</h1> </center> 
 <li>Lassana Konate</li>
 <li>Foussini Konate</li>
