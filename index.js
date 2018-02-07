@@ -97,7 +97,7 @@ var sha512 = function(password, salt){
 var transporter = nodemailer.createTransport({
   service: credentials.emailService,
   auth: {
-    user: credentials.emailUser,,
+    user: credentials.emailUser,
     pass: credentials.emailPassword
   }
 });
