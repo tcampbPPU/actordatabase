@@ -50,10 +50,10 @@ app.use(require('express-session')({
  * USE connect(function(con){}); inside POST to call DB
 */
 var con = mysql.createConnection({
-    host : 'fkonat.it.pointpark.edu',
-    user : 'lunamista',
-    password : 'lunamista123',
-    database : 'lunadb'
+  host: credentials.host,
+  user: credentials.user,
+  password: credentials.password,
+  database: credentials.database
 });
 
 function connect(cb){
@@ -95,10 +95,10 @@ var sha512 = function(password, salt){
 
 
 var transporter = nodemailer.createTransport({
-  service: 'gmail',
+  service: credentials.emailService,
   auth: {
-    user: 'lkonatpointpark@gmail.com',
-    pass: credentials.emailPassword,
+    user: credentials.emailUser,,
+    pass: credentials.emailPassword
   }
 });
 
@@ -1034,7 +1034,7 @@ app.post("/send-password-reset",function(req,res){
           if(err) throw err;
           if(result){
             var mailOptions = {
-              from: "lkonatpointpark@gmail.com",
+              from: credentials.emailUser,
               to: to,
               subject: "Reset your Password",
               html: "<div><p style='color:black'> A request was made from this account to reset password Please click on this link to reset your password <a href='https://lkonat.it.pointpark.edu/actors/reset-password-hidden-page?id0="+id+"&id="+randomString+"'> here </a></p><br><br> </div>", // html bod
