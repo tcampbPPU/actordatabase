@@ -17,7 +17,19 @@ var gm = require('gm');//.subClass({imageMagick: true});;
 
 app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
-app.set('port', process.env.PORT || 4000);
+app.set('port', process.env.PORT || credentials.port || 4000);
+
+app.use(function(req, res, next) {
+  if (req.get("X-Authentication-Key") === credentials.authentication.key) {
+    next();
+  }
+  else {
+    res.status(401);
+    res.setHeader("content-type", "text/plain");
+    res.send("401 Unauthorized");
+  }
+});
+
 app.use(express.static(__dirname +'/public'));
 
 app.use( function( req, res, next){
