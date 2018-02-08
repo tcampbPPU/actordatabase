@@ -105,7 +105,7 @@ var transporter = nodemailer.createTransport({
 function getMenu(req){
   var menu =[];
   var isAdmin = req.session.is_admin;
-   menu.push({"page": "/actors", "label": "Home"},{"page": "about", "label": "About"});
+   menu.push({"page": ".", "label": "Home"},{"page": "about", "label": "About"});
 
   if(isAdmin){
     menu.push({"page": "search", "label": "Search"}, {"page":"edit", "label":"Customize"});
@@ -179,7 +179,7 @@ app.get('/edit', function(req, res) {
        user_name:req.session.user_first_name,
      });
   }else {
-    res.redirect(303,"/actors");
+    res.redirect(303, ".");
   }
 });
 
@@ -216,7 +216,7 @@ app.post("/upload_font-image",function(req,res){
         }
      });
  }else {
-   res.redirect(303,"/actors");
+   res.redirect(303, ".");
  }
 });
 
@@ -239,7 +239,7 @@ console.log(q);
   connect(function(con){
         con.query(q, function(err, results) {
          if (err) throw err;
-           res.redirect(303,"/actors");
+           res.redirect(303, ".");
       });
    });
 });
@@ -355,7 +355,7 @@ app.get("/logout", function(req,res){
   delete req.session.user_id;
   delete req.session.is_admin;
   delete req.session.user_first_name;
-  res.redirect(303,"/actors");
+  res.redirect(303, ".");
 });
 
 app.get('/shared-search-result', function(req, res){
@@ -427,7 +427,7 @@ app.post("/login", function(req,res){
     var errors = req.validationErrors();
     if( errors){
       req.session.errors = errors;
-      res.redirect(303,"/actors");
+      res.redirect(303, ".");
     }else {
       var email=req.body.email;
       var password=req.body.password;
@@ -772,7 +772,7 @@ app.get("/user", function(req,res){
       })
       });
   }else {
-    res.redirect(303,"/actors");
+    res.redirect(303, ".");
   }
 });
 
@@ -964,7 +964,7 @@ app.post("/send-emails",function(req,res){
                 bcc: to,
                 subject: subject,
                 text: text,
-                html: "<div><p style='color:red;'>"+req.session.user_first_name+" from LunaMISTA Movie Data Base want to share a  search result with you <a href='https://lkonat.it.pointpark.edu/actors/shared-search-result?id="+randomString+"'>click here to see it</a></p><br><br> <p>"+text+"</p></div>", // html bod
+                html: "<div><p style='color:red;'>"+req.session.user_first_name+" from LunaMISTA Movie Data Base want to share a  search result with you <a href='https://" + credentials.url + "/shared-search-result?id="+randomString+"'>click here to see it</a></p><br><br> <p>"+text+"</p></div>", // html bod
               }
               transporter.sendMail(mailOptions, function(error, info){
                   if (error) {
@@ -1037,7 +1037,7 @@ app.post("/send-password-reset",function(req,res){
               from: credentials.emailUser,
               to: to,
               subject: "Reset your Password",
-              html: "<div><p style='color:black'> A request was made from this account to reset password Please click on this link to reset your password <a href='https://lkonat.it.pointpark.edu/actors/reset-password-hidden-page?id0="+id+"&id="+randomString+"'> here </a></p><br><br> </div>", // html bod
+              html: "<div><p style='color:black'> A request was made from this account to reset password Please click on this link to reset your password <a href='https://" + credentials.url + "/actors/reset-password-hidden-page?id0="+id+"&id="+randomString+"'> here </a></p><br><br> </div>", // html bod
             }
             transporter.sendMail(mailOptions, function(error, info){
                 if (error) {
