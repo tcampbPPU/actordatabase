@@ -49,28 +49,32 @@ app.use(require('express-session')({
 /* DB Connection
  * USE connect(function(con){}); inside POST to call DB
 */
-var con = mysql.createConnection({
-  host: credentials.host,
-  user: credentials.user,
-  password: credentials.password,
-  database: credentials.database
-});
 
 function connect(cb){
-  if(con.state ==='disconnected'){
-
-    con.connect(function(err){
-      if (err){
-        console.log('error: ' + err.stack);
-        return;
-      }
-      cb(con);
-
+  try {
+    var con = mysql.createConnection({
+      host: credentials.host,
+      user: credentials.user,
+      password: credentials.password,
+      database: credentials.database
     });
-  }else {
-    cb(con);
+    con.connect(function(err) {
+      if (err){
+        console.log("ERROR: connect: con.connect: " + err);
+      }
+      else {
+        try {
+          cb(con);
+        }
+        catch(e) {
+          console.log("ERROR: connect: cb(con): " + e);
+        }
+      }
+    });
   }
-
+  catch (e) {
+    console.log("ERROR: connect: mysql.createConnection: " + e);
+  }
 }
 
 // generates random string of characters
