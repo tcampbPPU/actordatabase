@@ -58,23 +58,32 @@ function connect(cb){
       password: credentials.password,
       database: credentials.database
     });
-    con.connect(function(err) {
-      if (err){
-        console.log("ERROR: connect: con.connect: " + err);
-      }
-      else {
-        try {
-          cb(con);
-        }
-        catch(e) {
-          console.log("ERROR: connect: cb(con): " + e);
-        }
-      }
-    });
   }
   catch (e) {
-    console.log("ERROR: connect: mysql.createConnection: " + e);
+    console.log("ERROR: connect: mysql.createConnection(): " + e);
   }
+  con.connect(function(err) {
+    if (err){
+      console.log("ERROR: connect: con.connect(): " + err);
+    }
+    else {
+      try {
+        cb(con);
+      }
+      catch(e) {
+        console.log("ERROR: connect: cb(con): " + e);
+      }
+      // close connection after 60 seconds
+      setTimeout(function() {
+        try {
+          con.end();
+        }
+        catch (e) {
+          console.log("ERROR: connect: con.end(): " + e);
+        }
+      }, 60*1000);
+    }
+  });
 }
 
 // generates random string of characters
