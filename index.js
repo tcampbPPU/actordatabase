@@ -19,8 +19,12 @@ app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
 app.set('port', process.env.PORT || credentials.port || 4000);
 
+if (!credentials.authentication) {
+  console.log("WARNING: possibly using insecure connection (ignore during development)");
+}
+
 app.use(function(req, res, next) {
-  if (req.get("X-Authentication-Key") === credentials.authentication.key) {
+  if (!credentials.authentication || req.get("X-Authentication-Key") === credentials.authentication.key) {
     next();
   }
   else {
