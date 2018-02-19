@@ -31,9 +31,30 @@ In the future, the Movie Database will be able to do the following:
 <li>Presentation of Trailers for the actors involved in the database</li>
 <li>and more...</li>
 
-<center><h1>Contributing</h1> </center> 
+<center><h1>Contributors</h1> </center> 
 <li>Lassana Konate</li>
 <li>Foussini Konate</li>
 <li>Tanner Campbell</li>
 <li>Alex Schaffer</li>
 <li>Matthew Alexander</li>
+
+<center><h1>Contributing</h1> </center>
+The first step is to fork this repository by clicking the `Fork` button at the top of this [page](https://github.com/markvoortman/actordatabase) on the right. This will allow you to make changes and eventually you can create pull requests from your forked repository back into this one. After forking, make sure you have a projects directory under your home directory in your jail:
+```
+mkdir -p ~/projects
+```
+And change into this directory:
+```
+cd ~/projects
+```
+Then simply clone the forked repository:
+```
+git clone git@github.com:$USERNAME/actordatabase.git
+```
+Make sure to replace $USERNAME with your own GitHub username, since that is where the forked repository should live.
+
+You will need development credentials to run the code. Please email [mvoortman@pointpark.edu](mailto:mvoortman@pointpark.edu) to obtain them. Once received, simply put the `credentials.js` file in the main directory and run:
+```
+node index.js
+```
+If you make some changes and would like to contribute them back, please create a pull request to the original repository. Thank you in advance!
