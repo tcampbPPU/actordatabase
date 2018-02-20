@@ -61,8 +61,8 @@ body {
            <h3>Actor Info</h3>
              {{# each actor_info}}
                 <tr>
-                  <td class="user_info_titles">{{label}}</td>
-                  <td class="user_info_values" id='{{name}}'> {{value}}  </td>
+                  <td class="user_info_titles">{{label}} label</td>
+                  <td class="user_info_values" id='{{name}}'> {{value}} value </td>
                   <td><small class='user_info_edit_links' data-name='{{name}}' data-label='{{label}}' data-value='{{value}}' data-table='actors'>&#x270E;</small></td>
                 </tr>
              {{/each}}
