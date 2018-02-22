@@ -168,7 +168,7 @@
                  characteristics:["Energetic","Imaginative", "Intelligence", "Charisma"],
                  dances:["Ballet","Jazz","Tap"],
                  wardrobes:["Hippie","Military","70s","80s","90s","cocktail Dresses","Formal Gown","Gothic","Halloween Costume"],
-                 musicienship:["Guitar","Piano","flute"],
+                 musicianship:["Guitar","Piano","flute"],
                  skills:["Dancing","Singing","Sleeping", "Juggle"],
                },
  };
