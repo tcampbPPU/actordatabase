@@ -894,14 +894,17 @@ app.post("/get-user-info-search",function(req,res){
   }
 });
 
-app.post("/get-search-bucket",function(req,res){
-  console.log(req.body.actors_ids);
-  var ids = req.body.actors_ids, count =0, query ="SELECT users.*, actors.*,DATEDIFF(CURDATE(),actors.birthday) as age, (SELECT thumbnail FROM images WHERE users.id = actors_users_id LIMIT 1 ) as first_thumbnail, GROUP_CONCAT( cars.year,' ',cars.color,' ',cars.make SEPARATOR ',') as cars FROM users LEFT JOIN actors ON  users.id = actors.users_id LEFT JOIN cars ON  users.id = cars.actors_users_id WHERE ";
-  for(var i =0; i< ids.length; i++ ){
-        query+= (count ===0?"":" OR ")+"users.id = "+ids[i]+"";
-        count++;
+app.post("/get-search-bucket", function(req,res) {
+  var ids = req.body.actors_ids;
+  console.log(JSON.stringify(ids));
+  var query = "SELECT users.*, actors.*,DATEDIFF(CURDATE(),actors.birthday) as age, (SELECT thumbnail FROM images WHERE users.id = actors_users_id LIMIT 1 ) as first_thumbnail, GROUP_CONCAT( cars.year,' ',cars.color,' ',cars.make SEPARATOR ',') as cars FROM users LEFT JOIN actors ON  users.id = actors.users_id LEFT JOIN cars ON  users.id = cars.actors_users_id ";
+  if (ids.length > 0) {
+    query += " WHERE ";
+    for(var i = 0; i < ids.length; i++) {
+      query += (i === 0 ? "" : " OR ") + "users.id=" + ids[i];
+    }
   }
-  query+= " GROUP BY users.id";
+  query += " GROUP BY users.id";
   connect(function(con){
     con.query(query, function (err, result, fields){
        if(err) throw err;
