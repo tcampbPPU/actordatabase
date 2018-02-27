@@ -179,12 +179,17 @@ app.get("/forgotpassword", function(req,res){
 
 app.post("/get_app_info", function(req, res) {
   sql1="SELECT * FROM edits WHERE id = 1";
-   connect(function(con){
-        con.query(sql1, function(err, results) {
-         if (err) throw err;
-           res.send({success: results});
-      });
-   });
+  connect(function(con){
+    con.query(sql1, function(err, results) {
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        res.send({success: results});
+      }
+    });
+  });
 });
 
 app.get('/edit', function(req, res) {
@@ -202,10 +207,14 @@ app.get('/edit', function(req, res) {
 
 //upload font picture.
 app.post("/upload_font-image",function(req,res){
- if(req.session.is_admin){
-   var form = new formidable.IncomingForm();
+  if (req.session.is_admin) {
+    var form = new formidable.IncomingForm();
     form.parse(req,function(err, fields, files) {
-        if(err)throw err;
+      if (err) {
+        console.log(err);
+        res.redirect(303, "error-page");
+      }
+      else {
         if(fields) {
           if(files.photo.type == "image/jpeg" ||files.photo.type == "image/png"||files.photo.type == "image/gif" ) {
             var buf = fs.readFileSync(files.photo.path).toString("base64");
@@ -214,14 +223,14 @@ app.post("/upload_font-image",function(req,res){
               var values = [buf,1];
               con.query(query, values, function(err, result,fields){
                 if(err) {
-                      console.log(err);
-                   res.redirect(303,'edit');
+                  console.log(err);
+                  res.redirect(303,'edit');
                 }
                 if(result) {
-                     console.log("img loaded with success!");
-                    res.redirect(303,'edit');
+                  console.log("img loaded with success!");
+                  res.redirect(303,'edit');
                 }else {
-                     console.log(err);
+                  console.log(err);
                   res.redirect(303,'edit');
                 }
               });
@@ -231,10 +240,12 @@ app.post("/upload_font-image",function(req,res){
              res.redirect(303,'edit');
           }
         }
-     });
- }else {
-   res.redirect(303, ".");
- }
+      }
+    });  
+  }
+  else {
+    res.redirect(303, ".");
+  }
 });
 
 //make changes from edit page
@@ -242,23 +253,31 @@ app.post("/edit_page", function(req, res) {
   q="UPDATE edits SET ";
   var firstcondition= true;
   for (var property in req.body) {
-	var value = req.body[property];
-	if (value !== "") {
-		if (firstcondition) {
-			firstcondition = false;
-		} else {q += ", "}
-	//q +=  property+ " = " + '"'+value+'"';
-	q +=  property+ " = " + mysql.escape(value);
-	}
-}
+    var value = req.body[property];
+    if (value !== "") {
+      if (firstcondition) {
+	firstcondition = false;
+      }
+      else {
+        q += ", ";
+      }
+      //q +=  property+ " = " + '"'+value+'"';
+      q +=  property+ " = " + mysql.escape(value);
+    }
+  }
   q += " WHERE id = 1;";
-console.log(q);
+  console.log(q);
   connect(function(con){
-        con.query(q, function(err, results) {
-         if (err) throw err;
-           res.redirect(303, ".");
-      });
-   });
+    con.query(q, function(err, results) {
+      if (err) {
+        console.log(err);
+        res.redirect(303, "error-page");
+      }
+      else {
+        res.redirect(303, ".");
+      }
+    });
+  });
 });
 
 
@@ -328,35 +347,40 @@ app.post('/search-actors', function(req, res) {
         age_min: "number",
         age_max: "number"
   };
-
-var sql = "SELECT DISTINCT users.*, FLOOR(DATEDIFF(CURDATE(), actors.birthday ) / 365.25) AS age, actors.*, images.*, cars.* FROM users LEFT OUTER JOIN actors ON users_id= users.id LEFT OUTER JOIN images ON users_id = images.actors_users_id LEFT OUTER JOIN cars ON users_id = cars.actors_users_id WHERE";
-var firstcondition = true;
+  
+  var sql = "SELECT DISTINCT users.*, FLOOR(DATEDIFF(CURDATE(), actors.birthday ) / 365.25) AS age, actors.*, images.*, cars.* FROM users LEFT OUTER JOIN actors ON users_id= users.id LEFT OUTER JOIN images ON users_id = images.actors_users_id LEFT OUTER JOIN cars ON users_id = cars.actors_users_id WHERE";
+  var firstcondition = true;
   for (var property in req.body) {
     var value = req.body[property];
-if (value !== "") {
-    if (firstcondition) {
-      firstcondition = false;
-    }else {sql += " AND"}
-        sql += " " + property + (property.endsWith("_min") ? " >= " : property.endsWith("_max") ? " <= " : " = ") + (property2type[property] === undefined ? "'" : "") + value + (property2type[property] === undefined ? "'" : "");
-}
+    if (value !== "") {
+      if (firstcondition) {
+        firstcondition = false;
+      }else {sql += " AND"}
+      sql += " " + property + (property.endsWith("_min") ? " >= " : property.endsWith("_max") ? " <= " : " = ") + (property2type[property] === undefined ? "'" : "") + value + (property2type[property] === undefined ? "'" : "");
+    }
   }
-sql = sql.replace(/height_max|height_min/gi,"height");
-sql = sql.replace(/weight_max|weight_min/gi,"weight");
-sql = sql.replace(/shoe_size_max|shoe_size_min/gi,"shoe_size");
-sql = sql.replace(/car_year_max|car_year_min/gi,"year");
-sql = sql.replace(/coat_size_max|coat_size_min/gi,"jacket_size");
-sql = sql.replace(/dress_size_max|dress_size_min/gi,"dress_size");
-sql = sql.replace(/fname/gi,"first_name");
-sql = sql.replace(/lname/gi,"last_name");
-sql = sql.replace(/age_max|age_min/gi,"age");
-sql+=" group by users.id";
-console.log(sql);
+  sql = sql.replace(/height_max|height_min/gi,"height");
+  sql = sql.replace(/weight_max|weight_min/gi,"weight");
+  sql = sql.replace(/shoe_size_max|shoe_size_min/gi,"shoe_size");
+  sql = sql.replace(/car_year_max|car_year_min/gi,"year");
+  sql = sql.replace(/coat_size_max|coat_size_min/gi,"jacket_size");
+  sql = sql.replace(/dress_size_max|dress_size_min/gi,"dress_size");
+  sql = sql.replace(/fname/gi,"first_name");
+  sql = sql.replace(/lname/gi,"last_name");
+  sql = sql.replace(/age_max|age_min/gi,"age");
+  sql+=" group by users.id";
+  console.log(sql);
   connect(function(con){
-        con.query(sql, function(err, results) {
-         if (err) throw err;
-           res.send({success: results});
-        });
-   });
+    con.query(sql, function(err, results) {
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        res.send({success: results});
+      }
+    });
+  });
 });
 
 app.get("/addUser", function(req,res){
@@ -381,9 +405,13 @@ app.get('/shared-search-result', function(req, res){
     var email = req.body.email;
     var sql = "SELECT *, DATEDIFF(CURDATE(),time) as link_age FROM shared WHERE link = '"+query_link+"';";
     con.query(sql, function(err, results, field) {
-      if (err) throw err;
-        if(results[0]){
-          res.render("shared-search-result",{
+      if (err) {
+        console.log(err);
+        res.redirect(303, "error-page");
+      }
+      else {
+        if (results[0]) {
+          res.render("shared-search-result", {
             menu: getMenu(req),
             valid:true,
             valid_time:(results[0].link_age<=0? true:false),
@@ -392,8 +420,9 @@ app.get('/shared-search-result', function(req, res){
             user_name:req.session.user_first_name,
             data:results[0].data,
           });
-        }else {
-          res.render("shared-search-result",{
+        }
+        else {
+          res.render("shared-search-result", {
             menu: getMenu(req),
             valid:false,
             admin:req.session.is_admin,
@@ -402,6 +431,7 @@ app.get('/shared-search-result', function(req, res){
             shared_link:query_link,
           });
         }
+      }
     });
   });
 });
@@ -411,7 +441,11 @@ app.get('/reset-password-hidden-page', function(req, res){
   connect(function(con){
     var sql = "SELECT *, DATEDIFF(CURDATE(),time) as link_age FROM reset WHERE link = '"+query_link+"';";
     con.query(sql, function(err, results, field) {
-      if (err) throw err;
+      if (err) {
+        console.log(err);
+        res.redirect(303, "error-page");
+      }
+      else {
         if(results[0]){
           console.log("already reset",results[0].reset);
           res.render("reset-password-hidden-page",{
@@ -434,6 +468,7 @@ app.get('/reset-password-hidden-page', function(req, res){
             user_name:req.session.user_first_name,
           });
         }
+      }
     });
   });
 });
@@ -452,7 +487,11 @@ app.post("/login", function(req,res){
         var q  ="SELECT * FROM users WHERE email = ?";
         try {
           con.query(q, [email], function (err, result, fields) {
-            if (err) throw err;
+            if (err) {
+              console.log(err);
+              res.send({success:false});
+            }
+            else {
               if(result[0]){
                 var salt = result[0].salt;
                 // console.log(salt, " match with salt from DB");
@@ -472,8 +511,8 @@ app.post("/login", function(req,res){
               }else {
                 res.send({password:password,email:email});
                  // res.redirect(303,'/error-page');
-
               }
+            }
           });
         }catch (err) {
           console.log(err, " Error in login.post function");
@@ -512,13 +551,18 @@ app.post('/check_email', function(req, res){
     var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
     try {
       con.query(sql, function(err, results, field) {
-        if (err) throw err;
-        if(results[0]["COUNT(id)"] <  1) {
-          // Email is valid not in DB yet
-          res.send("");
-        }else{
-          //console.log("Existing Email is attempted to be entered");
-          res.send("Email Already Used.");
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          if(results[0]["COUNT(id)"] <  1) {
+            // Email is valid not in DB yet
+            res.send("");
+          }else{
+            //console.log("Existing Email is attempted to be entered");
+            res.send("Email Already Used.");
+          }
         }
       });
     }catch (err) {
@@ -539,84 +583,106 @@ app.post('/addUser', function(req, res){
     var values = [req.body.first_name, req.body.last_name, req.body.email, passwordData.passwordHash, passwordData.salt, 0, req.body.sex];
     con.query(sql, values, function(err, results) {
       //console.log(results.insertId);
-        if (err){
-          res.redirect(303,'error-page');
-        }else{
-          if (results.insertId) {
-            // Redirects new user to their own page
-            //console.log("New record created successfully. Last inserted ID is: " + results.insertId);
-            req.session.user_id = results.insertId;
-            req.session.user_first_name = req.body.first_name;
-            req.session.cookie.maxAge = 9000000;
-            res.redirect(303, 'user');
-          } else {
-              console.log("Error Redirecting pages");
-              res.redirect(303, 'error-page');
-          }
+      if (err){
+        console.log(err);
+        res.redirect(303, "error-page");
+      }
+      else {
+        if (results.insertId) {
+          // Redirects new user to their own page
+          //console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+          req.session.user_id = results.insertId;
+          req.session.user_first_name = req.body.first_name;
+          req.session.cookie.maxAge = 9000000;
+          res.redirect(303, 'user');
         }
-      });
+        else {
+          console.log("Error Redirecting pages");
+          res.redirect(303, 'error-page');
+        }
+      }
     });
+  });
 });
 
 app.post('/delete-in-database', function(req, res){
   var table = req.body.table;
   var id = req.body.table_id;
-    connect(function(con){
-        var sql = "DELETE FROM "+table+" WHERE id =?";
-       con.query(sql,[id],function(err, result) {
-           if (err) throw err;
-           if(result){
-                res.send({success:{deleted_id:id,target:table} });
-           }
-       });
-     });
+  connect(function(con){
+    var sql = "DELETE FROM "+table+" WHERE id =?";
+    con.query(sql,[id],function(err, result) {
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        if (result) {
+          res.send({success:{deleted_id:id,target:table} });
+        }
+      }
+    });
+  });
 });
 
 app.post('/update-other-info', function(req, res){
-  if(req.session.user_id){
+  if (req.session.user_id) {
     var table = req.body.table;
     var value = req.body.value;
-      connect(function(con){
-        var query = "INSERT INTO "+table+" ("+table+",actors_users_id) VALUES(?,?)";
-         con.query(query,[value,req.session.user_id],function(err, result) {
-             if (err) {
-               res.send({success:false});
-             }
-             if(result){
-
-                  res.send({success:{insertId:result.insertId,insertedValue:value}});
-             }
-         });
-       });
-  }else {
+    connect(function(con){
+      var query = "INSERT INTO "+table+" ("+table+",actors_users_id) VALUES(?,?)";
+      con.query(query,[value,req.session.user_id],function(err, result) {
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          if (result) {
+            res.send({success:{insertId:result.insertId,insertedValue:value}});
+          }
+        }
+      });
+    });
+  }
+  else {
     res.send({success:false});
   }
 });
 
 app.post('/process-search', function(req, res) {
-        var search = req.body.search;
-        var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
-        connection.query(q, function(err, results) {
-         if (err) throw err;
-           res.send({success: results});
-	});
+  var search = req.body.search;
+  var q = "SELECT * FROM users WHERE first_name LIKE '%" + search +"%'";
+  connection.query(q, function(err, results) {
+    if (err) {
+      console.log(err);
+      res.send({success:false});
+    }
+    else {
+      res.send({success: results});
+    }
+  });
 });
 
 app.post("/update-user-info", function(req,res){
-  if( req.session.user_id){
+  if (req.session.user_id) {
     var table = req.body.table_name;
-    if(req.body.request_type==='admin_request'){
-        var q = "UPDATE "+req.body.table_name+" SET "+req.body.target+"='"+req.body.value+"' WHERE id = '"+ req.body.id+"';"
-        connect(function(con){
-          con.query(q, function (err, result, fields) {
-            if (err) throw err;
-              if(result){
-                res.send({success:result});
-              }else {
-                 res.send({success:false});
-              }
-          });
+    if (req.body.request_type === 'admin_request') {
+      var q = "UPDATE "+req.body.table_name+" SET "+req.body.target+"='"+req.body.value+"' WHERE id = '"+ req.body.id+"';"
+      connect(function(con){
+        con.query(q, function (err, result, fields) {
+          if (err) {
+            console.log(err);
+            res.send({success:false});
+          }
+          else {
+            if (result) {
+              res.send({success:result});
+            }
+            else {
+              res.send({success:false});
+            }
+          }
         });
+      });
     }
     else {
       if(table!=="undefined"){
@@ -626,7 +692,11 @@ app.post("/update-user-info", function(req,res){
                    var current_pass = req.body[key].current_password,new_pass = req.body[key].new_password,confirm_pass=req.body[key].confirm_password;
                    connect(function(con){
                      con.query("SELECT password, salt FROM users WHERE id = ?",[req.session.user_id], function (err, result, fields) {
-                       if (err) throw err;
+                       if (err) {
+                         console.log(err);
+                         res.send({success:false});
+                       }
+                       else {
                          if(result[0]){
                            var password_entered = sha512(current_pass, result[0].salt);
                            if((result[0].password===password_entered.passwordHash) && (confirm_pass===new_pass) && confirm_pass.length>0){
@@ -637,12 +707,17 @@ app.post("/update-user-info", function(req,res){
                              var q = "UPDATE users SET password=?,salt=? WHERE id = ?";
                              connect(function(con){
                                con.query(q, [passwordData.passwordHash, passwordData.salt, req.session.user_id], function (err, result, fields) {
-                                 if (err) throw err;
+                                 if (err) {
+                                   console.log(err);
+                                   res.send({success:false});
+                                 }
+                                 else {
                                    if(result){
                                      res.send({success:"succes"});
                                    }else {
                                       res.send({success:false});
                                    }
+                                 }
                                });
                              });
                            }else {
@@ -652,6 +727,7 @@ app.post("/update-user-info", function(req,res){
                          }else {
                             res.send({success:false});
                          }
+                       }
                      });
                    });
                  }else if (key ==="cars") {
@@ -668,7 +744,11 @@ app.post("/update-user-info", function(req,res){
 
                        connect(function(con){
                          con.query(q, function (err, result, fields) {
-                           if (err) throw err;
+                           if (err) {
+                             console.log(err);
+                             res.send({success:false});
+                           }
+                           else {
                              if(result){
                                console.log("cars info", result.insertId);
                                //res.send({success:"succes"});
@@ -676,6 +756,7 @@ app.post("/update-user-info", function(req,res){
                              }else {
                                 res.send({success:false});
                              }
+                           }
                          });
                        });
                    }else {
@@ -690,14 +771,19 @@ app.post("/update-user-info", function(req,res){
                    //console.log("in table:",table," change",target," to  ",value);
                     connect(function(con){
                           var query = "UPDATE "+table+" SET "+target+"='"+value+"' WHERE "+id+" = '"+ req.session.user_id+"';";
-                          con.query(query, function (err, result, fields) {
-                            if (err) throw err;
-                              if(result){
-                                res.send({success:{column_changed:target, value:value}});
-                              }else {
-                                 res.send({success:false});
-                              }
-                          });
+                      con.query(query, function (err, result, fields) {
+                        if (err) {
+                          console.log(err);
+                          res.send({success:false});
+                        }
+                        else {
+                          if(result){
+                            res.send({success:{column_changed:target, value:value}});
+                          }else {
+                            res.send({success:false});
+                          }
+                        }
+                      });
                     });
                  }
            }
@@ -719,21 +805,25 @@ app.get("/user", function(req,res){
   if(req.session.user_id){
     var qtest ="SELECT u.* ,a.*, c.make as car_make, c.color as car_color, c.year as car_year, c.id as car_id, c.actors_users_id as car_owner_id  FROM users as u LEFT JOIN actors a ON u.id = a.users_id LEFT JOIN cars c on a.users_id = c.actors_users_id  WHERE u.id =?";
     //var query ="SELECT * FROM users LEFT JOIN actors ON users.id = actors.users_id  WHERE id = '"+req.session.user_id+"'  ";
-      connect( function(con){
-        con.query(qtest, [req.session.user_id],function (err, result, fields) {
-        if(err) throw err;
-        //get cars
-        var cars =[];
-        for(var i =0; i<result.length; i++){
-          if(result[i].car_make || result[i].car_year||result[i].car_color || result[i].car_id ){
-             cars.push({
-               make:result[i].car_make,
-               year:result[i].car_year,
-               color:result[i].car_color,
-               id :result[i].car_id,
-             });
-          }
+    connect( function(con){
+      con.query(qtest, [req.session.user_id],function (err, result, fields) {
+        if (err) {
+          console.log(err);
+          res.send({success:false});
         }
+        else {  
+          //get cars
+          var cars =[];
+          for(var i =0; i<result.length; i++){
+            if(result[i].car_make || result[i].car_year||result[i].car_color || result[i].car_id ){
+              cars.push({
+                make:result[i].car_make,
+                year:result[i].car_year,
+                color:result[i].car_color,
+                id :result[i].car_id,
+              });
+            }
+          }
           if(result[0]){
             req.session.is_actor = result[0].users_id;
             var info={
@@ -776,19 +866,26 @@ app.get("/user", function(req,res){
             if(result[0].is_admin){
               info["menu"] = getMenu(req);
               con.query("SELECT first_name,last_name,sex, is_admin, id FROM users", function (err, result, fields){
-                 if(err) throw err;
-                 for(rs in result){
-                   info.all_users.push(result[rs]);
-                 }
+                if (err) {
+                  console.log(err);
+                  res.send({success:false});
+                }
+                else {
+                  for(rs in result) {
+                    info.all_users.push(result[rs]);
+                  }
+                }
              });
            }else {
              info["menu"] = getMenu(req);
            }
             res.render("user",info);
           }
-      })
+        }
       });
-  }else {
+    });
+  }
+  else {
     res.redirect(303, ".");
   }
 });
@@ -857,18 +954,28 @@ app.post("/search_database",function(req,res){
   if(count>0){
     connect(function(con){
       con.query(query,array_data, function (err, result, fields){
-         if(err) throw err;
-         console.log(result);
-         res.send({success:result, query:data});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          console.log(result);
+          res.send({success:result, query:data});
+        }
      });
     });
   }else {
     query ="SELECT users.id FROM users LEFT JOIN actors ON  users.id = actors.users_id LEFT JOIN cars ON  users.id = cars.actors_users_id GROUP BY users.id";
     connect(function(con){
       con.query(query, function (err, result, fields){
-         if(err) throw err;
-         console.log(result);
-         res.send({success:result, query:data});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          console.log(result);
+          res.send({success:result, query:data});
+        }
      });
     });
   }
@@ -885,8 +992,13 @@ app.post("/get-user-info-search",function(req,res){
   if(count>0){
     connect(function(con){
       con.query(query, function (err, result, fields){
-         if(err) throw err;
-         res.send({success:result});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          res.send({success:result});
+        }
      });
     });
   }else {
@@ -907,8 +1019,13 @@ app.post("/get-search-bucket", function(req,res) {
   query += " GROUP BY users.id";
   connect(function(con){
     con.query(query, function (err, result, fields){
-       if(err) throw err;
-       res.send({success:result});
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        res.send({success:result});
+      }
    });
   });
 });
@@ -923,8 +1040,13 @@ app.post("/get-shared-bucket",function(req,res){
   query+= " GROUP BY users.id";
   connect(function(con){
     con.query(query, function (err, result, fields){
-       if(err) throw err;
-       res.send({success:result});
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        res.send({success:result});
+      }
    });
   });
 });
@@ -935,8 +1057,13 @@ app.post("/get-sent-emails",function(req,res){
     var query ="SELECT message,type, sender,subject,recipients,date FROM messages WHERE bucket_id=? AND searches_users_id=?";
     connect(function(con){
       con.query(query, [bucket_id,req.session.user_id],function (err, result, fields){
-         if(err) throw err;
-         res.send({success:result});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          res.send({success:result});
+        }
      });
     });
   }else {
@@ -955,8 +1082,13 @@ app.post("/get-emails",function(req,res){
     query+= " GROUP BY id";
     connect(function(con){
       con.query(query, function (err, result, fields){
-         if(err) throw err;
-         res.send({success:result});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          res.send({success:result});
+        }
      });
     });
   }else if(ids_for_sharing){
@@ -977,16 +1109,20 @@ app.post("/send-emails",function(req,res){
           var query = "INSERT INTO shared(link,data,time,email,users_id) VALUES(?,?,?,?,?)";
           var values = [randomString, JSON.stringify(data_tobe_shared) ,new Date(),to, req.session.user_id];
           con.query(query, values, function(err, result,fields){
-            if(err) throw err;
-            if(result){
-              var mailOptions = {
-                from: sender,
-                bcc: to,
-                subject: subject,
-                text: text,
-                html: "<div><p style='color:red;'>"+req.session.user_first_name+" from LunaMISTA Movie Data Base want to share a  search result with you <a href='https://" + credentials.url + "/shared-search-result?id="+randomString+"'>click here to see it</a></p><br><br> <p>"+text+"</p></div>", // html bod
-              }
-              transporter.sendMail(mailOptions, function(error, info){
+            if (err) {
+              console.log(err);
+              res.send({success:false});
+            }
+            else {
+              if(result){
+                var mailOptions = {
+                  from: sender,
+                  bcc: to,
+                  subject: subject,
+                  text: text,
+                  html: "<div><p style='color:red;'>"+req.session.user_first_name+" from LunaMISTA Movie Data Base want to share a  search result with you <a href='https://" + credentials.url + "/shared-search-result?id="+randomString+"'>click here to see it</a></p><br><br> <p>"+text+"</p></div>", // html bod
+                }
+                transporter.sendMail(mailOptions, function(error, info){
                   if (error) {
                     console.log(error);
                     res.send({success:false});
@@ -996,15 +1132,21 @@ app.post("/send-emails",function(req,res){
                       var qy = "INSERT INTO messages(searches_users_id,bucket_id,message,type,sender,subject,recipients,date) VALUES(?,?,?,?,?,?,?,?)";
                       connect(function(con){
                         con.query(qy,[req.session.user_id,parseInt(bucket_id),text,"shared",sender,subject,to,new Date()] ,function (err, result, fields){
-                           if(err) throw err;
-                           res.send({success:true});
-                       });
+                          if (err) {
+                            console.log(err);
+                            res.send({success:false});
+                          }
+                          else {
+                            res.send({success:true});
+                          }
+                        });
                       });
                     }else {
                       res.send({success:true});
                     }
                   }
-             });
+                });
+              }
             }
           });
         });
@@ -1028,8 +1170,13 @@ app.post("/send-emails",function(req,res){
               var qy = "INSERT INTO messages(searches_users_id,bucket_id,message,type,sender,subject,recipients,date) VALUES(?,?,?,?,?,?,?,?)";
               connect(function(con){
                 con.query(qy,[req.session.user_id,parseInt(bucket_id),text,"no_shared",sender,subject,to,new Date()] ,function (err, result, fields){
-                   if(err) throw err;
-                   res.send({success:true});
+                  if (err) {
+                    console.log(err);
+                    res.send({success:false});
+                  }
+                  else {
+                    res.send({success:true});
+                  }
                });
               });
             }else {
@@ -1051,15 +1198,19 @@ app.post("/send-password-reset",function(req,res){
         var query = "INSERT INTO reset(link,time,email) VALUES(?,?,?)";
         var values = [randomString,new Date(),to];
         con.query(query, values, function(err, result,fields){
-          if(err) throw err;
-          if(result){
-            var mailOptions = {
-              from: credentials.emailUser,
-              to: to,
-              subject: "Reset your Password",
-              html: "<div><p style='color:black'> A request was made from this account to reset password Please click on this link to reset your password <a href='https://" + credentials.url + "/actors/reset-password-hidden-page?id0="+id+"&id="+randomString+"'> here </a></p><br><br> </div>", // html bod
-            }
-            transporter.sendMail(mailOptions, function(error, info){
+          if (err) {
+            console.log(err);
+            res.send({success:false});
+          }
+          else {
+            if(result){
+              var mailOptions = {
+                from: credentials.emailUser,
+                to: to,
+                subject: "Reset your Password",
+                html: "<div><p style='color:black'> A request was made from this account to reset password Please click on this link to reset your password <a href='https://" + credentials.url + "/actors/reset-password-hidden-page?id0="+id+"&id="+randomString+"'> here </a></p><br><br> </div>", // html bod
+              }
+              transporter.sendMail(mailOptions, function(error, info){
                 if (error) {
                   console.log(error);
                   res.send({success:false});
@@ -1067,7 +1218,8 @@ app.post("/send-password-reset",function(req,res){
                   console.log('Email sent: ' + info.response);
                   res.send({success:true});
                 }
-           });
+              });
+            }
           }
         });
       });
@@ -1134,12 +1286,17 @@ app.post("/save_search",function(req,res){
        var query = "UPDATE searches SET bucket=?,users_id=?,title=?,search_query=?', last_update_date=? WHERE id = ?;";
        connect(function(con){
          con.query(query,[JSON.stringify(req.body.actor_ids),req.session.user_id,req.body.title,JSON.stringify(req.body.query),new_date,req.body.overwrite_id],function (err, result, fields){
-            if(err) throw err;
-            if(result){
-              res.send({success:"overwrite an existing search"});
-            }else {
+           if (err) {
+             console.log(err);
+             res.send({success:false});
+           }
+           else {
+             if(result){
+               res.send({success:"overwrite an existing search"});
+             }else {
                res.send({success:false});
-            }
+             }
+           }
          });
        });
     }
@@ -1148,12 +1305,17 @@ app.post("/save_search",function(req,res){
       var query = "UPDATE searches SET bucket=?, last_update_date=? WHERE id = ?;";
       connect(function(con){
         con.query(query,[JSON.stringify(req.body.actor_ids),new Date(),req.body.bucket_id],function (err, result, fields){
-           if(err) throw err;
-           if(result){
-             res.send({success:"saved bucket"});
-           }else {
+          if (err) {
+            console.log(err);
+            res.send({success:false});
+          }
+          else {
+            if(result){
+              res.send({success:"saved bucket"});
+            }else {
               res.send({success:false});
-           }
+            }
+          }
         });
       });
     }else {
@@ -1163,12 +1325,17 @@ app.post("/save_search",function(req,res){
       var values =[req.body.message,'pending', req.session.user_id, req.body.title, JSON.stringify(req.body.query),JSON.stringify(req.body.actor_ids),new Date(),new Date()];
       connect(function(con){
         con.query(query,values, function (err, result, fields){
-           if(err) throw err;
-           if(result){
-             res.send({success:"saved search"});
-           }else {
+          if (err) {
+            console.log(err);
+            res.send({success:false});
+          }
+          else {
+            if(result){
+              res.send({success:"saved search"});
+            }else {
               res.send({success:false});
-           }
+            }
+          }
         });
       });
     }
@@ -1183,12 +1350,17 @@ app.post("/update-user-status-to-actor",function(req,res){
       var query ="INSERT INTO actors (users_id) VALUES (?)";
       var values = [req.session.user_id];
       con.query(query,values, function (err, result, fields) {
-        if (err) throw err;
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
           if(result){
             res.send({success:true});
           }else {
-             res.send({success:false});
+            res.send({success:false});
           }
+        }
       });
     });
   }else {
@@ -1201,8 +1373,13 @@ app.post("/get-all-users",function(req,res){
     var q = "SELECT first_name,last_name,sex, is_admin, id FROM users";
     connect(function(con){
       con.query(query, function (err, result, fields){
-         if(err) throw err;
-         res.send({success:result,admin_id:req.session.user_id});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          res.send({success:result,admin_id:req.session.user_id});
+        }
      });
     });
   }else {
@@ -1233,9 +1410,13 @@ app.post("/get_user_others_info",function(req,res){
     var query = "SELECT  target.id, target."+(name)+"  FROM users as u LEFT JOIN actors a ON u.id = a.users_id  LEFT JOIN "+name+" target on a.users_id = target.actors_users_id  WHERE u.id =? "
     connect(function(con){
       con.query(query, [req.session.user_id],function(err, result,fields){
-          if(err) throw err;
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
           res.send({success:result,target_table:name});
-
+        }
       })
     });
   }else {
@@ -1247,8 +1428,13 @@ app.post("/get-history",function(req,res){
   if(req.session.user_id){
     connect(function(con){
       con.query("SELECT * FROM searches WHERE users_id ='"+req.session.user_id+"' ORDER BY id DESC;", function(err, result,fields){
-        if(err) throw err;
-        res.send({success:result});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          res.send({success:result});
+        }
       })
     });
   }else {
@@ -1268,8 +1454,13 @@ app.post("/get-buckets",function(req,res){
 
     connect(function(con){
       con.query(query, function(err, result,fields){
-        if(err) throw err;
-        res.send({success:result});
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          res.send({success:result});
+        }
       })
     });
   }else {
@@ -1283,13 +1474,23 @@ app.post("/get-profile",function(req,res){
     var query ="SELECT thumbnail FROM images WHERE actors_users_id =?";
     connect(function(con){
       con.query(query, [user_id],function(err, result,fields){
-        if(err) throw err;
-        var thumbnails = result;
-        var query2 ="SELECT u.first_name, u.last_name,u.sex, u.email ,a.height,a.eye_color,	a.weight,	a.hair_color,	a.hair_type,	a.tattoo,	a.piercings,	a.facial_hair,	a.us_citizen,	a.neck_size	,a.sleeve_size	,a.waist_size	,a.inseam_size	,a.dress_size	,a.jacket_size	,a.shoe_size	,a.bust_size	,a.chest_size	,a.hip_size	,a.hat_size	,a.union_status	,a.union_number	,a.emergency_name	,a.emergency_number	,a.ethnicity	,a.state	,a.city	,a.street	,a.zip	,a.home_phone	,a.cell_phone	,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id =?";
-        con.query(query2, [user_id],function(err, result2,fields){
-          if(err) throw err;
-          res.send({success:{info:result2,thumbnails:thumbnails}});
-        });
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          var thumbnails = result;
+          var query2 ="SELECT u.first_name, u.last_name,u.sex, u.email ,a.height,a.eye_color,	a.weight,	a.hair_color,	a.hair_type,	a.tattoo,	a.piercings,	a.facial_hair,	a.us_citizen,	a.neck_size	,a.sleeve_size	,a.waist_size	,a.inseam_size	,a.dress_size	,a.jacket_size	,a.shoe_size	,a.bust_size	,a.chest_size	,a.hip_size	,a.hat_size	,a.union_status	,a.union_number	,a.emergency_name	,a.emergency_number	,a.ethnicity	,a.state	,a.city	,a.street	,a.zip	,a.home_phone	,a.cell_phone	,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id =?";
+          con.query(query2, [user_id],function(err, result2,fields){
+            if (err) {
+              console.log(err);
+              res.send({success:false});
+            }
+            else {
+              res.send({success:{info:result2,thumbnails:thumbnails}});
+            }
+          });
+        }
       })
     });
   // }else {
@@ -1303,8 +1504,13 @@ app.post("/save-bucket",function(req,res){
      var query = "UPDATE searches SET bucket=?,last_update_date=? WHERE id = ?;";
      connect(function(con){
        con.query(query,[JSON.stringify(req.body.changed_bucket),new Date(),req.body.bucket_id], function(err, result,fields){
-         if (err) throw err;
-         res.send({success:result});
+         if (err) {
+           console.log(err);
+           res.send({success:false});
+         }
+         else {
+           res.send({success:result});
+         }
        });
      });
   }else {
@@ -1318,8 +1524,13 @@ app.post("/give-admin-privilege",function(req,res){
      var query = "UPDATE users SET is_admin='"+(req.body.is_admin ==="1"?0:1)+"' WHERE id = '"+ req.body.user_id+"';";
      connect(function(con){
        con.query(query, function(err, result,fields){
-         if (err) throw err;
-         res.send({success:result});
+         if (err) {
+           console.log(err);
+           res.send({success:false});
+         }
+         else {
+           res.send({success:result});
+         }
        });
      });
   }else {
@@ -1334,7 +1545,9 @@ app.post("/delete_image",function(req,res){
       console.log(req.body.image_name,"deleting");
       connect(function(con){
         con.query("DELETE FROM images WHERE id=? ",[req.body.image_name], function(err, result,fields){
-          if (err) throw err;
+          if (err) {
+            console.log(err);
+          }
         });
       });
 
@@ -1354,8 +1567,13 @@ app.post("/delete_search",function(req,res){
     if(req.body.search_id){
       connect(function(con){
         con.query("DELETE FROM searches WHERE id='"+req.body.search_id+"' ", function(err, result,fields){
-          if (err) throw err;
-          res.send({success:true});
+          if (err) {
+            console.log(err);
+            res.send({success:false});
+          }
+          else {
+            res.send({success:true});
+          }
         });
       });
     }else {
@@ -1384,71 +1602,85 @@ app.post("/send-message",function(req,res){
 
 app.post("/upload_image",function(req,res){
   if(req.session.user_id){
-      var form = new formidable.IncomingForm();
-       form.parse(req,function(err, fields, files){
-           if(err)throw err;
-           if(fields){
-             if(files.photo.type == "image/jpeg" ||files.photo.type == "image/png"||files.photo.type == "image/gif" ){
-               var dataDir = __dirname+'/public/img';
-               var oldPhoto_name = files.photo.name;
-               var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
-               var buf = fs.readFileSync(files.photo.path).toString("base64");//real image
-               Jimp.read(files.photo.path, function (err, lenna) {
-                   if (err) throw err;
-                   lenna.resize(200, Jimp.AUTO)
-                   .getBase64( Jimp.AUTO, function(err,thumbnail){
-                        connect(function(con){
-                          var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
-                          var values = [buf,req.session.user_id,thumbnail];
-                          con.query(query, values, function(err, result,fields){
-                            if(err) throw err;
-                            if(result){
-                                    res.redirect(303,'user');
-                            }else {
-                                    res.redirect(303,'user');
-                            }
-                          });
-                        });
-                   });
-               });
-               // var buf = fs.readFileSync(files.photo.path).toString("base64");
-               //    connect(function(con){
-               //      var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
-               //      var values = [buf,req.session.user_id];
-               //      con.query(query, values, function(err, result,fields){
-               //        if(err) throw err;
-               //        if(result){
-               //                res.redirect(303,'user');
-               //        }else {
-               //                res.redirect(303,'user');
-               //        }
-               //      });
-               //    });
-               // var buf = fs.readFileSync(files.photo.path).toString("base64");
-               //    connect(function(con){
-               //      var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
-               //      var values = [buf,req.session.user_id];
-               //      con.query(query, values, function(err, result,fields){
-               //        if(err) throw err;
-               //        if(result){
-               //                res.redirect(303,'user');
-               //        }else {
-               //                res.redirect(303,'user');
-               //        }
-               //      });
-               //    });
-               //console.log("new fileName: ",buf);
-               //fs.renameSync(files.photo.path,dataDir+'/'+newPhoto_name);
-
-
-               //res.send({success:true});
-             } else {
-               var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
-                res.send({success:"Format error"});
-             }
-           }
-        });
-  }else {
+    var form = new formidable.IncomingForm();
+    form.parse(req,function(err, fields, files){
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        if(fields){
+          if(files.photo.type == "image/jpeg" ||files.photo.type == "image/png"||files.photo.type == "image/gif" ){
+            var dataDir = __dirname+'/public/img';
+            var oldPhoto_name = files.photo.name;
+            var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
+            var buf = fs.readFileSync(files.photo.path).toString("base64");//real image
+            Jimp.read(files.photo.path, function (err, lenna) {
+              if (err) {
+                console.log(err);
+                res.send({success:false});
+              }
+              else {
+                lenna.resize(200, Jimp.AUTO)
+                  .getBase64( Jimp.AUTO, function(err,thumbnail){
+                    connect(function(con){
+                      var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
+                      var values = [buf,req.session.user_id,thumbnail];
+                      con.query(query, values, function(err, result,fields){
+                        if (err) {
+                          console.log(err);
+                          res.send({success:false});
+                        }
+                        else {
+                          if(result){
+                            res.redirect(303,'user');
+                          }else {
+                            res.redirect(303,'user');
+                          }
+                        }
+                      });
+                    });
+                  });
+              }
+            });
+            // var buf = fs.readFileSync(files.photo.path).toString("base64");
+            //    connect(function(con){
+            //      var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
+            //      var values = [buf,req.session.user_id];
+            //      con.query(query, values, function(err, result,fields){
+            //        if(err) throw err;
+            //        if(result){
+            //                res.redirect(303,'user');
+            //        }else {
+            //                res.redirect(303,'user');
+            //        }
+            //      });
+            //    });
+            // var buf = fs.readFileSync(files.photo.path).toString("base64");
+            //    connect(function(con){
+            //      var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
+            //      var values = [buf,req.session.user_id];
+            //      con.query(query, values, function(err, result,fields){
+            //        if(err) throw err;
+            //        if(result){
+            //                res.redirect(303,'user');
+            //        }else {
+            //                res.redirect(303,'user');
+            //        }
+            //      });
+            //    });
+            //console.log("new fileName: ",buf);
+            //fs.renameSync(files.photo.path,dataDir+'/'+newPhoto_name);
+            //res.send({success:true});
+          } else {
+            var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
+            res.send({success:"Format error"});
+          }
+        }
+      }
+    });
+  }
+  else {
     res.send({success:false});
   }
 });
