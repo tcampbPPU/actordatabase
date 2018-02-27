@@ -959,7 +959,7 @@ app.post("/search_database",function(req,res){
           res.send({success:false});
         }
         else {
-          console.log(result);
+          //console.log(result);
           res.send({success:result, query:data});
         }
      });
@@ -973,7 +973,7 @@ app.post("/search_database",function(req,res){
           res.send({success:false});
         }
         else {
-          console.log(result);
+          //console.log(result);
           res.send({success:result, query:data});
         }
      });
