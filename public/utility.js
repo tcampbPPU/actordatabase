@@ -164,12 +164,12 @@
                },
 
                options_field:{
-                 sports:["Basketball","karate","football","baseball","hockey","soccer","boxing","tennis","golf","racing","swimming","volleyball"],
-                 characteristics:["crazy","Juggle"],
-                 dances:["Ballet","Jazz","Tap"],
-                 wardrobes:["Hippie","Military","70s","80s","90s","cocktail Dresses","Formal Gown","Gothic","Halloween Costume"],
-                 musicienship:["Guitar","Piano","flute"],
-                 skills:["Dancing","Singing","Sleeping"],
+                 sports: ["Basketball","Karate","Football","Baseball","Hockey","Soccer","Boxing","Tennis","Golf","Racing","Swimming","Volleyball"],
+                 characteristics: ["Juggle"],
+                 dances: ["Ballet","Jazz","Tap"],
+                 wardrobes: ["Hippie","Military","70s","80s","90s","cocktail Dresses","Formal Gown","Gothic","Halloween Costume"],
+                 musicienship: ["Guitar","Piano","Flute"],
+                 skills: ["Dancing","Singing","Sleeping"],
                },
  };
 
