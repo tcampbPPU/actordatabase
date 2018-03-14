@@ -920,7 +920,7 @@ function showResult(result,query,bucket){ //show the result of the search query
       var name = $("<span style='font-size:1.2em; clear:both;'>"+result[elt].first_name+" "+result[elt].last_name+" "+(result[elt].is_admin?"<small>&#x1f511;</small>":"")+"</span>");
       centered_name.append(name);
       var centered_image =$("<center></center>");
-      var image = $("<img src='"+(result[elt].first_thumbnail?(result[elt].first_thumbnail):"img/blank.png")+"' alt='' style='width:200px; height:200px;'>");
+      var image = $("<img src='"+(result[elt].first_thumbnail?(result[elt].first_thumbnail):"img/blank.png")+"' alt='' style='width:200px; height:200px; object-fit:cover;'>");
       centered_image.append(image);
       var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+(result[elt].age?Math.floor(result[elt].age*0.0027397260273973):"")+" </span>");
       var phone = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Phone</span> "+(result[elt].cell_phone?result[elt].cell_phone:"")+" </span>");
@@ -1356,7 +1356,7 @@ close.click(function(){
           //  console.log("PROFILE",data.success.images );
             for(var i =0; i< data.success.thumbnails.length; i++){
             //  console.log()
-              carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"'> <img class='d-block img-fluid' src='"+(data.success.thumbnails[i].thumbnail?(data.success.thumbnails[i].thumbnail):"img/blank.png")+"' style='width:300px; height:350px; margin:0 auto;' alt='"+i+" slide'></div>");
+              carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"'> <img class='d-block img-fluid' src='"+(data.success.thumbnails[i].thumbnail?(data.success.thumbnails[i].thumbnail):"img/blank.png")+"' style='width:350px; height:350px; margin:0 auto; object-fit:cover;' alt='"+i+" slide'></div>");
               carousel_control.append(carousel_itme);
             }
 

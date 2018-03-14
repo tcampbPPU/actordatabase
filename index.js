@@ -1621,7 +1621,23 @@ app.post("/upload_image",function(req,res){
                 res.send({success:false});
               }
               else {
-                lenna.resize(200, Jimp.AUTO)
+                var maxwh = 350;
+                var width = lenna.bitmap.width;
+                var height = lenna.bitmap.height;
+                if (width <= maxwh || height <= maxwh) {
+                  var newwidth = width;
+                  var newheight = height;
+                }
+                else if (width <= height) {
+                  var newwidth = maxwh;
+                  var newheight = Math.round(height / (width / maxwh));
+                }
+                else {
+                  var newwidth = Math.round(width / (height / maxwh));
+                  var newheight = maxwh;
+                }
+                lenna.resize(newwidth, newheight)
+                //lenna.resize(200, Jimp.AUTO)
                   .getBase64( Jimp.AUTO, function(err,thumbnail){
                     connect(function(con){
                       var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
