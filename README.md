@@ -40,7 +40,7 @@ In the future, the Actor Database will be able to do the following:
 * Matthew Alexander
 
 ## Contribute
-The first step is to fork this repository by clicking the `Fork` button at the top of this [page](https://github.com/markvoortman/actordatabase) on the right. This will allow you to make changes and eventually you can create pull requests from your forked repository back into this one. After forking, make sure you have a projects directory under your home directory in your jail:
+The first step is to fork this repository by clicking the `Fork` button at the top of [this page](https://github.com/markvoortman/actordatabase) on the right. This will allow you to make changes and eventually you can create pull requests from your forked repository back into this one. After forking, make sure you have a projects directory under your home directory in your jail:
 ```
 mkdir -p ~/projects
 ```
@@ -58,4 +58,6 @@ You will need development credentials to run the code. Please email [mvoortman@p
 ```
 node index.js
 ```
+Note that not all functionality may work. If `node` is not installed, please follow [this tutorial](https://it.pointpark.edu/tutorials/node/).
+
 If you make some changes and would like to contribute them back, please create a pull request to the original repository. Thank you in advance!

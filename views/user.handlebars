@@ -627,7 +627,8 @@ function getImages(){
               }
               if($(window).width()<1000){
                 carousel_itme = $("<div class='carousel-item "+(i==0?"active":"")+"' style='"+(this_data && data_image?"cursor:pointer;":"")+ "'></div>");
-                var img_carousel =$("<img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; margin:0 auto;' alt='Picture "+i+"'>");
+                //var img_carousel =$("<img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; margin:0 auto;' alt='Picture "+i+"'>");
+                var img_carousel =$("<img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; margin:0 auto; object-fit:contain;' alt='Picture "+i+"'>");
                 carousel_itme.append(img_carousel);
                 carousel_control.append(carousel_itme);
                 var add = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:40%; cursor:pointer; '><span style='font-size:0.8em;'>Add a Photo</span></div>");
@@ -638,7 +639,8 @@ function getImages(){
                   $(e.data.target).toggle();
                 });
               }else {
-                var img = $("<div class='"+(!data_image && atleat_one_picture_exist?"hidden-profile-picture":"")+"'style='float:left; position:relative; "+(this_data && data_image?"cursor:pointer;":"")+ " margin-left:5px; "+(this_data && data_image?"":"border:1px solid lightgrey;")+"  "+(!data_image && atleat_one_picture_exist?"visibility: hidden;":"")+"'> <img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; text-align:center;' alt='Picture "+(i+1)+"'></div>");
+                //var img = $("<div class='"+(!data_image && atleat_one_picture_exist?"hidden-profile-picture":"")+"'style='float:left; position:relative; "+(this_data && data_image?"cursor:pointer;":"")+ " margin-left:5px; "+(this_data && data_image?"":"border:1px solid lightgrey;")+"  "+(!data_image && atleat_one_picture_exist?"visibility: hidden;":"")+"'> <img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; text-align:center;' alt='Picture "+(i+1)+"'></div>");
+                var img = $("<div class='"+(!data_image && atleat_one_picture_exist?"hidden-profile-picture":"")+"'style='float:left; position:relative; "+(this_data && data_image?"cursor:pointer;":"")+ " margin-left:5px; "+(this_data && data_image?"":"border:1px solid lightgrey;")+"  "+(!data_image && atleat_one_picture_exist?"visibility: hidden;":"")+"'> <img class='d-block img-fluid' src='"+(this_data && data_image?(data_image):"")+"' style='width:200px; height:200px; position:relative; text-align:center; width:200px; height:200px; object-fit:contain;' alt='Picture "+(i+1)+"'></div>");
                 $("#images_area").append(img);
                 var add = $("<div class='image_edit_btn' id ='image_edit_btn"+i+"' data-index='"+i+"' style='color:lightblue; position:absolute; top:45%; left:35%; cursor:pointer; '><span style='font-size:0.8em;'>Add a Photo</span></div>");
                 var del = $("<div class='image_edit_btn delete_picture_btn' data-imagename='"+(this_data?this_data.id:"")+"' style='color:red; position:absolute; top:0px; left:90%; cursor:pointer;  display:none; '><i class='fa fa-trash-o' aria-hidden='true' style='font-size:1.5em; color:red;'></i></div>");
