@@ -131,6 +131,17 @@
 
 
                 ],
+                hair_color:[
+                  {"displayName":"Black","value":"black"},
+                  {"displayName":"White","value":"white"},
+                  {"displayName":"Brown","value":"brown"},
+                  {"displayName":"Gray","value":"gray"},
+                  {"displayName":"Blonde","value":"blonde"},
+                  {"displayName":"Bald","value":"bald"},
+                  {"displayName":"Red","value":"red"},
+                  {"displayName":"Sandy","value":"sandy"},
+                  {"displayName":"Unknown","value":"unknown"},
+                ],
                 giveNoYesDropdown: function(id){
                    var selectBox = document.getElementById(id);
                    for(var i = 0; i<this.yes_no.length;  i++){
@@ -157,6 +168,13 @@
                   for(var i = 0; i<this.gender.length;  i++){
                   var gender = this.gender[i];
                   selectBox.options.add( new Option(gender.displayName, gender.value, gender.selected));
+                  }
+               },
+               giveHairColorToDropdown: function giveGenderToDropdown(id){
+                  var selectBox = document.getElementById(id);
+                  for(var i = 0; i < this.hair_color.length; i++){
+                    var hair_color = this.hair_color[i];
+                    selectBox.options.add(new Option(hair_color.displayName, hair_color.value, hair_color.selected));
                   }
                 },
                 isValid:{
