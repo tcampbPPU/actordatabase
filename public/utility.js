@@ -112,11 +112,19 @@
                   "cm" : 218.44
                 },
               ],
-       ethnicity:[
-                  {"displayName":"American Indian","value":"american indian"},
+   ethnicity:[
+                  {"displayName":"African American","value":"african american"},
+                  {"displayName":"Caucasian","value":"caucasian"},
                   {"displayName":"Asian","value":"asian"},
-                  {"displayName":"Black","value":"black"},
-                  {"displayName":"white","value":"white"},
+                  {"displayName":"Hispanic","value":"hispanic"},
+                  {"displayName":"Indian","value":"indian"},
+                  {"displayName":"Middle Eastern","value":"middle eastern"},
+                  {"displayName":"Native American","value":"native american"},
+                  // old values
+                  //{"displayName":"American Indian","value":"american indian"},
+                  //{"displayName":"Asian","value":"asian"},
+                  //{"displayName":"Black","value":"black"},
+                  //{"displayName":"white","value":"white"},
                 ],
                 gender:[
 
