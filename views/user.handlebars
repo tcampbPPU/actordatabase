@@ -287,7 +287,7 @@ function becomeActor(){
          }else if (name_ ==="skills") {
             var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='inputEdit'>New "+label+"</label><br><input type='text' class='form-control' id='inputEdit' "+(value_type?"data-type='"+value_type+"'":"")+" value='"+($("#skills"+table_id).html()?$("#skills"+table_id).html().trim():"")+"' name='skills[name]'><input type='hidden' name='table_name' value="+table_name+"><input type='hidden' name='skills[id]' value="+table_id+"></div>");
          }
-         else if (name_ ==="ethnicity" || name_ ==="height" || name_ ==="sex" || name_ ==="us_citizen" ) {
+         else if (name_ ==="ethnicity" || name_ ==="height" || name_ ==="sex" || name_ ==="us_citizen" || name_ ==="hair_color") {
              var input_div =$("<div class='form-group col-md-12'><label class='mr-sm-2' for='ethnicity_options'>New "+label+"</label><br><select class='custom-select mb-2 mr-sm-2 mb-sm-0' id='"+name_+"_options' name='"+name_+"'><option selected></option></select><input type='hidden' name='table_name' value="+table_name+"></div>");
 
          }
@@ -451,6 +451,7 @@ function becomeActor(){
                  ($("#height_options").length>0?utility.giveHeightToDropdown("height_options"):"");
                  ($("#sex_options").length>0?utility.giveGenderToDropdown("sex_options"):"");
                  ($("#us_citizen_options").length>0?utility.giveNoYesDropdown("us_citizen_options"):"");
+                 ($("#hair_color_options").length>0?utility.giveHairColorToDropdown("hair_color_options") :"");
 
 
   });
@@ -668,7 +669,7 @@ function getImages(){
                  }
                  var panel =$("<div id='image_upload_panel' style='border:1px solid lightgrey; width:300px; height: 200px; position:absolute; background-color:lightgrey; color:black;'></div>");
                  var close_btn =$("<button type='button' class='close' aria-label='Close'><span aria-hidden='true'>&times;</span></button>");
-                 var photo_field =$("<div class='form-group'><form id='upload_image_form' enctype='multipart/form-data' action='upload_image' method='POST'><label for='fieldPhoto' class ='col-form-label'>Upload Photo</label><div class='col-md-12' ><input type='file' class ='form-control' required accept='image/*'' id ='fieldPhoto' name='photo' ></div><br><br><button type='submit'>Upload</button></form></div>");
+                 var photo_field =$("<div class='form-group'><form id='upload_image_form' enctype='multipart/form-data' action='upload_image' method='POST'><label for='fieldPhoto' class ='col-form-label'>Upload Photo</label><div class='col-md-12' ><input type='file' class ='form-control' required accept='image/*'' id ='fieldPhoto' name='photo' multiple ></div><br><br><button type='submit'>Upload</button></form></div>");
                  panel.append(close_btn,photo_field);
                  $("#main_content").append(panel);
                  var width = panel.width(), height=panel.height();

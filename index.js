@@ -1603,19 +1603,28 @@ app.post("/send-message",function(req,res){
 app.post("/upload_image",function(req,res){
   if(req.session.user_id){
     var form = new formidable.IncomingForm();
-    form.parse(req,function(err, fields, files){
-      if (err) {
-        console.log(err);
-        res.send({success:false});
-      }
-      else {
-        if(fields){
-          if(files.photo.type == "image/jpeg" ||files.photo.type == "image/png"||files.photo.type == "image/gif" ){
+    var files = [];
+    form.on("file", function(field, file) {
+      files.push(file);
+    })
+    form.on("end", function() {
+      function next(i) {
+        if (i >= files.length) {
+          // done and successful
+          res.redirect(303, "user");
+        }
+        else {
+          var photo = files[i];
+          if (photo.type !== "image/jpeg" && photo.type !== "image/png" && photo.type !== "image/gif") {
+            var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
+            res.send({success:"Format error"});
+          }
+          else {
             var dataDir = __dirname+'/public/img';
-            var oldPhoto_name = files.photo.name;
+            var oldPhoto_name = photo.name;
             var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
-            var buf = fs.readFileSync(files.photo.path).toString("base64");//real image
-            Jimp.read(files.photo.path, function (err, lenna) {
+            var buf = fs.readFileSync(photo.path).toString("base64");//real image
+            Jimp.read(photo.path, function (err, lenna) {
               if (err) {
                 console.log(err);
                 res.send({success:false});
@@ -1636,65 +1645,30 @@ app.post("/upload_image",function(req,res){
                   var newwidth = Math.round(width / (height / maxwh));
                   var newheight = maxwh;
                 }
-                lenna.resize(newwidth, newheight)
-                //lenna.resize(200, Jimp.AUTO)
-                  .getBase64( Jimp.AUTO, function(err,thumbnail){
-                    connect(function(con){
-                      var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
-                      var values = [buf,req.session.user_id,thumbnail];
-                      con.query(query, values, function(err, result,fields){
-                        if (err) {
-                          console.log(err);
-                          res.send({success:false});
-                        }
-                        else {
-                          if(result){
-                            res.redirect(303,'user');
-                          }else {
-                            res.redirect(303,'user');
-                          }
-                        }
-                      });
+                lenna.resize(newwidth, newheight).getBase64(Jimp.AUTO, function(err,thumbnail) {
+                  connect(function(con){
+                    var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
+                    var values = [buf,req.session.user_id,thumbnail];
+                    con.query(query, values, function(err, result,fields){
+                      if (err) {
+                        console.log(err);
+                        res.send({success:false});
+                      }
+                      else {
+                        // added photo successfully, try next one
+                        next(i+1);
+                      }
                     });
                   });
+                });
               }
             });
-            // var buf = fs.readFileSync(files.photo.path).toString("base64");
-            //    connect(function(con){
-            //      var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
-            //      var values = [buf,req.session.user_id];
-            //      con.query(query, values, function(err, result,fields){
-            //        if(err) throw err;
-            //        if(result){
-            //                res.redirect(303,'user');
-            //        }else {
-            //                res.redirect(303,'user');
-            //        }
-            //      });
-            //    });
-            // var buf = fs.readFileSync(files.photo.path).toString("base64");
-            //    connect(function(con){
-            //      var query = "INSERT INTO images(image,actors_users_id) VALUES(?,?)";
-            //      var values = [buf,req.session.user_id];
-            //      con.query(query, values, function(err, result,fields){
-            //        if(err) throw err;
-            //        if(result){
-            //                res.redirect(303,'user');
-            //        }else {
-            //                res.redirect(303,'user');
-            //        }
-            //      });
-            //    });
-            //console.log("new fileName: ",buf);
-            //fs.renameSync(files.photo.path,dataDir+'/'+newPhoto_name);
-            //res.send({success:true});
-          } else {
-            var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
-            res.send({success:"Format error"});
           }
         }
       }
+      next(0);
     });
+    form.parse(req);
   }
   else {
     res.send({success:false});

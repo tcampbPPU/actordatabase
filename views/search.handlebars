@@ -779,7 +779,7 @@ function showResult(result,query,bucket){ //show the result of the search query
   //display the list pagination
   function displayList(){
     list =[[]];
-    var limit_per_page =10; //limit of how many actors should be displayed in each page
+    var limit_per_page = 100; //limit of how many actors should be displayed in each page
     //how many pagination item should be display i.e 1 2 3 4 5
     var number_of_pagination_item_based_on_n_of_actors = Math.ceil(allIds.length/limit_per_page);
     //if the number of pagination item is to large to be displayed on the screen, display only 10
