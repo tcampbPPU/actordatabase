@@ -125,7 +125,7 @@ function getMenu(req){
    menu.push({"page": ".", "label": "Home"},{"page": "about", "label": "About"});
 
   if(isAdmin){
-    menu.push({"page": "search", "label": "Search"}, {"page":"edit", "label":"Customize"});
+    menu.push({"page": "search", "label": "Search"}, {"page":"edit", "label":"Customize"},{"page":"add_actor", "label":"Add Actors"});
   } else{
     if(req.session.user_id){
 
@@ -204,6 +204,18 @@ app.get('/edit', function(req, res) {
     res.redirect(303, ".");
   }
 });
+app.get('/add_actor', function(req, res) {
+  if(req.session.is_admin){
+    res.render('add_actor', {
+       menu: getMenu(req),
+       admin:req.session.is_admin,
+       login:req.session.user_id?req.session.user_id:false,
+       user_name:req.session.user_first_name,
+     });
+  }else {
+    res.redirect(303, ".");
+  }
+});
 
 //upload font picture.
 app.post("/upload_font-image",function(req,res){
@@ -241,7 +253,7 @@ app.post("/upload_font-image",function(req,res){
           }
         }
       }
-    });  
+    });
   }
   else {
     res.redirect(303, ".");
@@ -347,7 +359,7 @@ app.post('/search-actors', function(req, res) {
         age_min: "number",
         age_max: "number"
   };
-  
+
   var sql = "SELECT DISTINCT users.*, FLOOR(DATEDIFF(CURDATE(), actors.birthday ) / 365.25) AS age, actors.*, images.*, cars.* FROM users LEFT OUTER JOIN actors ON users_id= users.id LEFT OUTER JOIN images ON users_id = images.actors_users_id LEFT OUTER JOIN cars ON users_id = cars.actors_users_id WHERE";
   var firstcondition = true;
   for (var property in req.body) {
@@ -605,6 +617,117 @@ app.post('/addUser', function(req, res){
   });
 });
 
+
+//lassana add multiple users
+
+app.post('/add-multiple-users', function(req, res){
+  function buildQueryActors(actors,user_id){
+    var actors_keys = Object.keys(actors);
+    var values=[user_id], str="users_id", val="?";
+    for(var i =0; i< actors_keys.length; i++){
+      if(actors[actors_keys[i]].trim().length>0){
+        str+=(",")+actors_keys[i];
+        val+=(",")+"?";
+        values.push(actors[actors_keys[i]]);
+      }
+    }
+    return {str:"INSERT INTO actors ("+str+")"+"Values("+val+");",vals:values};
+  }
+  function buildQuery(feat,user_id,con){
+    var feature = req.body[feat];
+    for(var i =0; i<feature.length; i++){
+      if(feature[i].trim().length>0){
+        var str ="INSERT INTO "+feat+" (actors_users_id,"+feat+") VALUES(?,?)";
+        var vals =[user_id,feature[i]];
+          con.query(str, vals, function(err, results) {
+            if(err){
+              console.log(err);
+            }
+          });
+      }
+    }
+  }
+  function buildQueryCars(user_id,con){
+    var cars = req.body.cars;
+    var cars_keys=Object.keys(cars);
+    if(typeof cars[cars_keys[0]] ==="object"){
+      var limit = cars[cars_keys[0]].length;
+        for(var i =0; i<limit; i++){
+          if(cars["make"][i].trim().length>0 || cars["color"][i].trim().length>0 || cars["year"][i].trim().length>0){
+            var str ="INSERT INTO cars(actors_users_id, make,color,year) VALUES(?,?,?,?)";
+            var vals =[
+                user_id,
+                (cars["make"][i].trim().length>0?cars["make"][i].trim():"unanswered"),
+                (cars["color"][i].trim().length>0?cars["color"][i].trim():"unanswered"),
+                (cars["year"][i].trim().length>0?cars["year"][i].trim():"unanswered"),
+            ];
+            con.query(str, vals, function(err, results) {
+              if(err){
+                console.log(err);
+              }
+            });
+          }
+        }
+    }else {
+      if(cars["make"].trim().length>0 || cars["color"].trim().length>0 || cars["year"].trim().length>0){
+        var str ="INSERT INTO cars(actors_users_id, make,color,year) VALUES(?,?,?,?)";
+        var vals =[
+            user_id,
+            (cars["make"].trim().length>0?cars["make"].trim():"unanswered"),
+            (cars["color"].trim().length>0?cars["color"].trim():"unanswered"),
+            (cars["year"].trim().length>0?cars["year"].trim():"unanswered"),
+        ];
+        con.query(str, vals, function(err, results) {
+          if(err){
+            console.log(err);
+          }
+        });
+      }
+    }
+  }
+
+
+
+  connect(function(con){
+    req.assert('users[first_name]', 'Name is required').notEmpty();
+    var salt = genRandomString(16);
+    var passwordData = sha512(req.body.users.password, salt);
+    var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    var values = [req.body.users.first_name, req.body.users.last_name, req.body.users.email, passwordData.passwordHash, passwordData.salt, (req.body.is_admin.toLowerCase()==="yes"?1:0), req.body.users.sex];
+    con.query(sql, values, function(err, results) {
+      //console.log(results.insertId);
+      if (err){
+        console.log(err);
+        res.send("error-page-users");
+      }
+      else {
+        if (results.insertId) {
+          var users_id =results.insertId;
+          var actors_query=buildQueryActors(req.body.actors,users_id);
+          con.query(actors_query.str, actors_query.vals, function(err, results) {
+            if (err){
+              console.log(err);
+              res.send("error-page");
+            }else {
+              buildQuery("skills",users_id,con);
+              buildQuery("dances",users_id,con);
+              buildQuery("wardrobes",users_id,con);
+              buildQuery("characteristics",users_id,con);
+              buildQuery("musicienship",users_id,con);
+              buildQuery("sports",users_id,con);
+              buildQueryCars(users_id,con);
+              res.send({id:users_id});
+            }
+          });
+        }
+        else {
+          console.log("Error Redirecting pages");
+          res.send('error-page results.insertId');
+        }
+      }
+    });
+  });
+});
 app.post('/delete-in-database', function(req, res){
   var table = req.body.table;
   var id = req.body.table_id;
@@ -811,7 +934,7 @@ app.get("/user", function(req,res){
           console.log(err);
           res.send({success:false});
         }
-        else {  
+        else {
           //get cars
           var cars =[];
           for(var i =0; i<result.length; i++){
@@ -1599,32 +1722,24 @@ app.post("/send-message",function(req,res){
     res.send({success:false});
   }
 });
-
-app.post("/upload_image",function(req,res){
-  if(req.session.user_id){
-    var form = new formidable.IncomingForm();
-    var files = [];
-    form.on("file", function(field, file) {
+app.post("/upload_image_for_actor",function(req,res){
+  var form = new formidable.IncomingForm();
+  var files=[],fields={},cust_id=false,failed=0,success=0;
+  form.multiples = true;
+  form.on('field', function(field, value) {
+      fields[field]=value;
+  })
+  form.on('file', function(field, file) {
       files.push(file);
-    })
-    form.on("end", function() {
-      function next(i) {
-        if (i >= files.length) {
-          // done and successful
-          res.redirect(303, "user");
-        }
-        else {
-          var photo = files[i];
-          if (photo.type !== "image/jpeg" && photo.type !== "image/png" && photo.type !== "image/gif") {
-            var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
-            res.send({success:"Format error"});
-          }
-          else {
-            var dataDir = __dirname+'/public/img';
-            var oldPhoto_name = photo.name;
-            var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
-            var buf = fs.readFileSync(photo.path).toString("base64");//real image
-            Jimp.read(photo.path, function (err, lenna) {
+  })
+  form.on('end', function() {
+      var cust_id = fields.CustomerId;
+      if(files.length >0 && cust_id){
+        for(var i =0; i< files.length; i++){
+          var file = files[i];
+          if(file.type == "image/jpeg" ||file.type == "image/png"||file.type == "image/gif" ){
+            var buf = fs.readFileSync(file.path).toString("base64");//real image
+            Jimp.read(file.path, function (err, lenna) {
               if (err) {
                 console.log(err);
                 res.send({success:false});
@@ -1645,30 +1760,108 @@ app.post("/upload_image",function(req,res){
                   var newwidth = Math.round(width / (height / maxwh));
                   var newheight = maxwh;
                 }
-                lenna.resize(newwidth, newheight).getBase64(Jimp.AUTO, function(err,thumbnail) {
-                  connect(function(con){
-                    var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
-                    var values = [buf,req.session.user_id,thumbnail];
-                    con.query(query, values, function(err, result,fields){
-                      if (err) {
-                        console.log(err);
-                        res.send({success:false});
-                      }
-                      else {
-                        // added photo successfully, try next one
-                        next(i+1);
-                      }
+                lenna.resize(newwidth, newheight)
+                  .getBase64( Jimp.AUTO, function(err,thumbnail){
+                    connect(function(con){
+                      var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
+                      var values = [buf,cust_id,thumbnail];
+                      con.query(query, values, function(err, result,fields){
+                        if (err) {
+                          console.log(err);
+                          res.send({success:"false query"});
+                        }
+                        else {
+                            res.send({success:true});
+                        }
+                      });
                     });
                   });
-                });
               }
             });
+          } else {
+            res.send({success:"This format is not allowed"});
           }
         }
+      }else {
+        res.send({success:false});
       }
-      next(0);
+  });
+  form.parse(req);
+});
+app.post("/upload_image",function(req,res){
+  if(req.session.user_id){
+    var form = new formidable.IncomingForm();
+    form.multiples = true;
+    form.on('file', function (name, file) {
+      if(file.type == "image/jpeg" ||file.type == "image/png"||file.type == "image/gif" ){
+        var buf = fs.readFileSync(file.path).toString("base64");//real image
+        Jimp.read(file.path, function (err, lenna) {
+          if (err) {
+            console.log(err);
+            res.send({success:false});
+          }
+          else {
+            var maxwh = 350;
+            var width = lenna.bitmap.width;
+            var height = lenna.bitmap.height;
+            if (width <= maxwh || height <= maxwh) {
+              var newwidth = width;
+              var newheight = height;
+            }
+            else if (width <= height) {
+              var newwidth = maxwh;
+              var newheight = Math.round(height / (width / maxwh));
+            }
+            else {
+              var newwidth = Math.round(width / (height / maxwh));
+              var newheight = maxwh;
+            }
+            lenna.resize(newwidth, newheight)
+            //lenna.resize(200, Jimp.AUTO)
+              .getBase64( Jimp.AUTO, function(err,thumbnail){
+                connect(function(con){
+                  var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
+                  var values = [buf,req.session.user_id,thumbnail];
+                  con.query(query, values, function(err, result,fields){
+                    if (err) {
+                      console.log(err);
+                      res.send({success:false});
+                    }
+                    else {
+                      if(result){
+                        //res.redirect(303,'user');
+                        console.log("success");
+                      }else {
+                      //  res.redirect(303,'user');
+                        console.log("success");
+                      }
+                    }
+                  });
+                });
+              });
+          }
+        });
+      } else {
+        var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
+        res.send({success:"Format error"});
+      }
     });
-    form.parse(req);
+    form.parse(req,function(err, fields, files){
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        console.log("parse----");
+        if(fields){
+
+          //console.log(files,"files");
+
+          res.send(false);
+          return;
+        }
+      }
+    });
   }
   else {
     res.send({success:false});
