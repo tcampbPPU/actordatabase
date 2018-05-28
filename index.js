@@ -204,18 +204,6 @@ app.get('/edit', function(req, res) {
     res.redirect(303, ".");
   }
 });
-app.get('/add_actor', function(req, res) {
-  if(req.session.is_admin){
-    res.render('add_actor', {
-       menu: getMenu(req),
-       admin:req.session.is_admin,
-       login:req.session.user_id?req.session.user_id:false,
-       user_name:req.session.user_first_name,
-     });
-  }else {
-    res.redirect(303, ".");
-  }
-});
 
 //upload font picture.
 app.post("/upload_font-image",function(req,res){
@@ -410,7 +398,18 @@ app.get("/logout", function(req,res){
   delete req.session.user_first_name;
   res.redirect(303, ".");
 });
-
+app.get('/add_actor', function(req, res) {
+  if(req.session.is_admin){
+    res.render('add_actor', {
+       menu: getMenu(req),
+       admin:req.session.is_admin,
+       login:req.session.user_id?req.session.user_id:false,
+       user_name:req.session.user_first_name,
+     });
+  }else {
+    res.redirect(303, ".");
+  }
+});
 app.get('/shared-search-result', function(req, res){
   var query_link = req.query.id;
   connect(function(con){
@@ -556,70 +555,72 @@ app.post('/check-email', function(req, res){
     });
   });
 });
-
-app.post('/check_email', function(req, res){
-  connect(function(con){
-    var email = req.body.email;
-    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
-    try {
-      con.query(sql, function(err, results, field) {
-        if (err) {
-          console.log(err);
-          res.send({success:false});
-        }
-        else {
-          if(results[0]["COUNT(id)"] <  1) {
-            // Email is valid not in DB yet
-            res.send("");
-          }else{
-            //console.log("Existing Email is attempted to be entered");
-            res.send("Email Already Used.");
+app.post("/upload_image_for_actor",function(req,res){
+  var form = new formidable.IncomingForm();
+  var files=[],fields={},cust_id=false,failed=0,success=0;
+  form.multiples = true;
+  form.on('field', function(field, value) {
+      fields[field]=value;
+  })
+  form.on('file', function(field, file) {
+      files.push(file);
+  })
+  form.on('end', function() {
+      var cust_id = fields.CustomerId;
+      if(files.length >0 && cust_id){
+        for(var i =0; i< files.length; i++){
+          var file = files[i];
+          if(file.type == "image/jpeg" ||file.type == "image/png"||file.type == "image/gif" ){
+            var buf = fs.readFileSync(file.path).toString("base64");//real image
+            Jimp.read(file.path, function (err, lenna) {
+              if (err) {
+                console.log(err);
+                res.send({success:false});
+              }
+              else {
+                var maxwh = 350;
+                var width = lenna.bitmap.width;
+                var height = lenna.bitmap.height;
+                if (width <= maxwh || height <= maxwh) {
+                  var newwidth = width;
+                  var newheight = height;
+                }
+                else if (width <= height) {
+                  var newwidth = maxwh;
+                  var newheight = Math.round(height / (width / maxwh));
+                }
+                else {
+                  var newwidth = Math.round(width / (height / maxwh));
+                  var newheight = maxwh;
+                }
+                lenna.resize(newwidth, newheight)
+                  .getBase64( Jimp.AUTO, function(err,thumbnail){
+                    connect(function(con){
+                      var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
+                      var values = [buf,cust_id,thumbnail];
+                      con.query(query, values, function(err, result,fields){
+                        if (err) {
+                          console.log(err);
+                          res.send({success:"false query"});
+                        }
+                        else {
+                            res.send({success:true});
+                        }
+                      });
+                    });
+                  });
+              }
+            });
+          } else {
+            res.send({success:"This format is not allowed"});
           }
         }
-      });
-    }catch (err) {
-      console.log(err, " Error in check_email.post function");
-    }
-  });
-});
-
-
-
-// To add new user
-app.post('/addUser', function(req, res){
-  connect(function(con){
-    req.assert('first_name', 'Name is required').notEmpty();
-    var salt = genRandomString(16);
-    var passwordData = sha512(req.body.password, salt);
-    var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
-    var values = [req.body.first_name, req.body.last_name, req.body.email, passwordData.passwordHash, passwordData.salt, 0, req.body.sex];
-    con.query(sql, values, function(err, results) {
-      //console.log(results.insertId);
-      if (err){
-        console.log(err);
-        res.redirect(303, "error-page");
+      }else {
+        res.send({success:false});
       }
-      else {
-        if (results.insertId) {
-          // Redirects new user to their own page
-          //console.log("New record created successfully. Last inserted ID is: " + results.insertId);
-          req.session.user_id = results.insertId;
-          req.session.user_first_name = req.body.first_name;
-          req.session.cookie.maxAge = 9000000;
-          res.redirect(303, 'user');
-        }
-        else {
-          console.log("Error Redirecting pages");
-          res.redirect(303, 'error-page');
-        }
-      }
-    });
   });
+  form.parse(req);
 });
-
-
-//lassana add multiple users
-
 app.post('/add-multiple-users', function(req, res){
   function buildQueryActors(actors,user_id){
     var actors_keys = Object.keys(actors);
@@ -728,6 +729,66 @@ app.post('/add-multiple-users', function(req, res){
     });
   });
 });
+app.post('/check_email', function(req, res){
+  connect(function(con){
+    var email = req.body.email;
+    var sql = "SELECT COUNT(id) FROM users WHERE email = '"+email+"';";
+    try {
+      con.query(sql, function(err, results, field) {
+        if (err) {
+          console.log(err);
+          res.send({success:false});
+        }
+        else {
+          if(results[0]["COUNT(id)"] <  1) {
+            // Email is valid not in DB yet
+            res.send("");
+          }else{
+            //console.log("Existing Email is attempted to be entered");
+            res.send("Email Already Used.");
+          }
+        }
+      });
+    }catch (err) {
+      console.log(err, " Error in check_email.post function");
+    }
+  });
+});
+
+
+
+// To add new user
+app.post('/addUser', function(req, res){
+  connect(function(con){
+    req.assert('first_name', 'Name is required').notEmpty();
+    var salt = genRandomString(16);
+    var passwordData = sha512(req.body.password, salt);
+    var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
+    var values = [req.body.first_name, req.body.last_name, req.body.email, passwordData.passwordHash, passwordData.salt, 0, req.body.sex];
+    con.query(sql, values, function(err, results) {
+      //console.log(results.insertId);
+      if (err){
+        console.log(err);
+        res.redirect(303, "error-page");
+      }
+      else {
+        if (results.insertId) {
+          // Redirects new user to their own page
+          //console.log("New record created successfully. Last inserted ID is: " + results.insertId);
+          req.session.user_id = results.insertId;
+          req.session.user_first_name = req.body.first_name;
+          req.session.cookie.maxAge = 9000000;
+          res.redirect(303, 'user');
+        }
+        else {
+          console.log("Error Redirecting pages");
+          res.redirect(303, 'error-page');
+        }
+      }
+    });
+  });
+});
+
 app.post('/delete-in-database', function(req, res){
   var table = req.body.table;
   var id = req.body.table_id;
@@ -1722,24 +1783,32 @@ app.post("/send-message",function(req,res){
     res.send({success:false});
   }
 });
-app.post("/upload_image_for_actor",function(req,res){
-  var form = new formidable.IncomingForm();
-  var files=[],fields={},cust_id=false,failed=0,success=0;
-  form.multiples = true;
-  form.on('field', function(field, value) {
-      fields[field]=value;
-  })
-  form.on('file', function(field, file) {
+
+app.post("/upload_image",function(req,res){
+  if(req.session.user_id){
+    var form = new formidable.IncomingForm();
+    var files = [];
+    form.on("file", function(field, file) {
       files.push(file);
-  })
-  form.on('end', function() {
-      var cust_id = fields.CustomerId;
-      if(files.length >0 && cust_id){
-        for(var i =0; i< files.length; i++){
-          var file = files[i];
-          if(file.type == "image/jpeg" ||file.type == "image/png"||file.type == "image/gif" ){
-            var buf = fs.readFileSync(file.path).toString("base64");//real image
-            Jimp.read(file.path, function (err, lenna) {
+    })
+    form.on("end", function() {
+      function next(i) {
+        if (i >= files.length) {
+          // done and successful
+          res.redirect(303, "user");
+        }
+        else {
+          var photo = files[i];
+          if (photo.type !== "image/jpeg" && photo.type !== "image/png" && photo.type !== "image/gif") {
+            var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
+            res.send({success:"Format error"});
+          }
+          else {
+            var dataDir = __dirname+'/public/img';
+            var oldPhoto_name = photo.name;
+            var newPhoto_name = "actor"+req.session.user_id+req.params.index+oldPhoto_name.substring(oldPhoto_name.indexOf("."));
+            var buf = fs.readFileSync(photo.path).toString("base64");//real image
+            Jimp.read(photo.path, function (err, lenna) {
               if (err) {
                 console.log(err);
                 res.send({success:false});
@@ -1760,108 +1829,30 @@ app.post("/upload_image_for_actor",function(req,res){
                   var newwidth = Math.round(width / (height / maxwh));
                   var newheight = maxwh;
                 }
-                lenna.resize(newwidth, newheight)
-                  .getBase64( Jimp.AUTO, function(err,thumbnail){
-                    connect(function(con){
-                      var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
-                      var values = [buf,cust_id,thumbnail];
-                      con.query(query, values, function(err, result,fields){
-                        if (err) {
-                          console.log(err);
-                          res.send({success:"false query"});
-                        }
-                        else {
-                            res.send({success:true});
-                        }
-                      });
+                lenna.resize(newwidth, newheight).getBase64(Jimp.AUTO, function(err,thumbnail) {
+                  connect(function(con){
+                    var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
+                    var values = [buf,req.session.user_id,thumbnail];
+                    con.query(query, values, function(err, result,fields){
+                      if (err) {
+                        console.log(err);
+                        res.send({success:false});
+                      }
+                      else {
+                        // added photo successfully, try next one
+                        next(i+1);
+                      }
                     });
                   });
+                });
               }
             });
-          } else {
-            res.send({success:"This format is not allowed"});
           }
         }
-      }else {
-        res.send({success:false});
       }
-  });
-  form.parse(req);
-});
-app.post("/upload_image",function(req,res){
-  if(req.session.user_id){
-    var form = new formidable.IncomingForm();
-    form.multiples = true;
-    form.on('file', function (name, file) {
-      if(file.type == "image/jpeg" ||file.type == "image/png"||file.type == "image/gif" ){
-        var buf = fs.readFileSync(file.path).toString("base64");//real image
-        Jimp.read(file.path, function (err, lenna) {
-          if (err) {
-            console.log(err);
-            res.send({success:false});
-          }
-          else {
-            var maxwh = 350;
-            var width = lenna.bitmap.width;
-            var height = lenna.bitmap.height;
-            if (width <= maxwh || height <= maxwh) {
-              var newwidth = width;
-              var newheight = height;
-            }
-            else if (width <= height) {
-              var newwidth = maxwh;
-              var newheight = Math.round(height / (width / maxwh));
-            }
-            else {
-              var newwidth = Math.round(width / (height / maxwh));
-              var newheight = maxwh;
-            }
-            lenna.resize(newwidth, newheight)
-            //lenna.resize(200, Jimp.AUTO)
-              .getBase64( Jimp.AUTO, function(err,thumbnail){
-                connect(function(con){
-                  var query = "INSERT INTO images(image,actors_users_id,thumbnail) VALUES(?,?,?)";
-                  var values = [buf,req.session.user_id,thumbnail];
-                  con.query(query, values, function(err, result,fields){
-                    if (err) {
-                      console.log(err);
-                      res.send({success:false});
-                    }
-                    else {
-                      if(result){
-                        //res.redirect(303,'user');
-                        console.log("success");
-                      }else {
-                      //  res.redirect(303,'user');
-                        console.log("success");
-                      }
-                    }
-                  });
-                });
-              });
-          }
-        });
-      } else {
-        var message = "This format is not allowed , please upload file with '.png','.gif','.jpg'";
-        res.send({success:"Format error"});
-      }
+      next(0);
     });
-    form.parse(req,function(err, fields, files){
-      if (err) {
-        console.log(err);
-        res.send({success:false});
-      }
-      else {
-        console.log("parse----");
-        if(fields){
-
-          //console.log(files,"files");
-
-          res.send(false);
-          return;
-        }
-      }
-    });
+    form.parse(req);
   }
   else {
     res.send({success:false});
