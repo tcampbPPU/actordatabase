@@ -887,23 +887,25 @@ function showResult(result,query,bucket){ //show the result of the search query
       console.log("done adding");
     });
   });
-    individual_pdf.click(function(){ // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
-      //target_id:groupe_selected_bucket is the id of the selected actor
-      var user_id = {target_id:groupe_selected_bucket};
-      var pdf = new jsPDF();
-      $.ajax({
-          url: "pdf-maker",
-          type: 'POST',
-          data: user_id.target_id,
-          success: function(data){
-              if(data.success){
-                console.log("info ",data.success.info);
-                console.log("pics ",data.success.thumbnails);
-                for (var i = 0; i < data.success.info.length; i++) {
+  individual_pdf.click(function(){ // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
+    //target_id:groupe_selected_bucket is the id of the selected actor
+    var user_id = {target_id:groupe_selected_bucket};
+    var pdf = new jsPDF();
+    $.ajax({
+        url: "pdf-maker",
+        type: 'POST',
+        data: user_id.target_id,
+        success: function(data){
+          if(data.success){
+          // TODO: Find way to match the First picture associated with actor and keep order in sync
+            for (var i = 0; i < data.success.info.length; i++) {
+              for (var j = 0; j < data.success.thumbnails.length; j++) { //Find way to use original image
+                if (data.success.info[i].id === data.success.thumbnails[j].id){ // still need to be able to get a specific image ,not just adding the last
                   if (i > 0) {
                     pdf.addPage();
                   }
                   pdf.setPage(i+1);// Current working page
+                  //Set Text data X, Y Grid
                   pdf.text(10, 10,data.success.info[i].first_name+" "+data.success.info[i].last_name);
                   pdf.text(10, 20, 'Age: '+ data.success.info[i].birthday);
                   pdf.text(10, 30, 'Phone: '+ data.success.info[i].cell_phone);
@@ -911,32 +913,21 @@ function showResult(result,query,bucket){ //show the result of the search query
                   pdf.text(10, 50, 'Height: '+ getHeightInFeet(data.success.info[i].height));
                   pdf.text(10, 60, 'Weight: '+ data.success.info[i].weight);
                   pdf.text(10, 70, 'Gender: '+ data.success.info[i].sex);
-                  for (var j = 0; j < data.success.thumbnails.length; j++) {
-                    if (j > 0) {
-                      pdf.addPage();
-                    }
-                    pdf.setPage(j+1);
-                    if (data.success.info[i].id == data.success.thumbnails[j].id) {
-                      pdf.addImage(data.success.thumbnails[j].thumbnail, 'JPEG', 10, 80, 180, 160);
-                    }
-                    else{
-                      continue;
-                    }
+                  if (data.success.info[i].id != data.success.thumbnails[j].id) {
+                    pdf.addImage(data.success.thumbnails[j].thumbnail, 'JPEG', 10, 80, 180, 160);
+                  }else{
+                    continue;
                   }
-                      // if (data.success.info[i].id != data.success.thumbnails[j].id) {
-                      //   continue;
-                      // }else{
-                      //   pdf.addImage(data.success.thumbnails[j].thumbnail, 'JPEG', 10, 80, 180, 160);
-                      // }
-                    // }
-                  // }
                 }
               }
-              pdf.deletePage(j+1); //deletes the last blank page that gets added due to loop
-              pdf.save('actor_download.pdf');
-          },
-     });
-    });
+            }
+          }
+          // TODO: Stop pdf from adding extra blank pages
+          pdf.deletePage(j+1); //deletes the last blank page that gets added due to loop
+          pdf.save('actor_download.pdf');
+      },
+   });
+  });
   function showTheseUSers(result,body,actor_ids,page_number){
     for (elt in result){
       var box = $("<div class='each-profile-box b' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
