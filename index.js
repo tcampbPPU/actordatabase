@@ -1681,6 +1681,32 @@ app.post("/get-profile",function(req,res){
   //   res.send({success:false});
   // }
 });
+app.post("/pdf-maker",function(req,res){
+  // var user_id = req.body.user_id;
+  var query ="SELECT distinct u.id, u.first_name, u.last_name,u.sex, u.email ,a.height,a.weight,a.us_citizen,a.union_status,a.union_number,a.ethnicity,a.state,a.city,a.street,a.zip,a.home_phone,a.cell_phone,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id in('88','89','152')";
+  console.log(query);
+  connect(function(con){
+    con.query(query,function(err,result,fields){
+      if (err) {
+        console.log(err);
+        res.send({success:false});
+      }
+      else {
+        var info = result;
+        var query2 ="SELECT users.id,images.thumbnail FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in('88','89','152')";
+        con.query(query2,function(err, result2,fields){
+          if (err) {
+            console.log(err);
+            res.send({success:false});
+          }
+          else {
+            res.send({success:{info:info,thumbnails:result2}});
+          }
+        });
+      }
+    });
+  });
+});
 
 
 app.post("/save-bucket",function(req,res){
