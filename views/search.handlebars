@@ -899,13 +899,14 @@ function showResult(result,query,bucket){ //show the result of the search query
           if(data.success){
           // TODO: Find way to match the First picture associated with actor and keep order in sync
             for (var i = 0; i < data.success.info.length; i++) {
-              for (var j = 0; j < data.success.thumbnails.length; j++) { //Find way to use original image
+              if (i > 0) {
+                pdf.addPage();
+              }
+              pdf.setPage(i+1);// Current working page
+              //Set Text data X, Y Grid
+              for (var j = 0; j < data.success.thumbnails.length; j++) {
                 if (data.success.info[i].id === data.success.thumbnails[j].id){ // still need to be able to get a specific image ,not just adding the last
-                  if (i > 0) {
-                    pdf.addPage();
-                  }
-                  pdf.setPage(i+1);// Current working page
-                  //Set Text data X, Y Grid
+                  console.log("info ",i);
                   pdf.text(10, 10,data.success.info[i].first_name+" "+data.success.info[i].last_name);
                   pdf.text(10, 20, 'Age: '+ data.success.info[i].birthday);
                   pdf.text(10, 30, 'Phone: '+ data.success.info[i].cell_phone);
@@ -913,7 +914,8 @@ function showResult(result,query,bucket){ //show the result of the search query
                   pdf.text(10, 50, 'Height: '+ getHeightInFeet(data.success.info[i].height));
                   pdf.text(10, 60, 'Weight: '+ data.success.info[i].weight);
                   pdf.text(10, 70, 'Gender: '+ data.success.info[i].sex);
-                  if (data.success.info[i].id != data.success.thumbnails[j].id) {
+                  if (data.success.info[i].id == data.success.thumbnails[j].id) {
+                    console.log("piccs ",j);
                     pdf.addImage(data.success.thumbnails[j].thumbnail, 'JPEG', 10, 80, 180, 160);
                   }else{
                     continue;
@@ -922,7 +924,6 @@ function showResult(result,query,bucket){ //show the result of the search query
               }
             }
           }
-          // TODO: Stop pdf from adding extra blank pages
           pdf.deletePage(j+1); //deletes the last blank page that gets added due to loop
           pdf.save('actor_download.pdf');
       },
