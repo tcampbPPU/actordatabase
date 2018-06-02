@@ -1629,7 +1629,7 @@ app.post("/get-history",function(req,res){
 app.post("/get-buckets",function(req,res){
   if(req.session.user_id){
     var search_titles = req.body.search_titles;
-    var count=0,query = "SELECT bucket,id FROM searches WHERE users_id ='"+req.session.user_id+"' AND"
+    var count=0,query = "SELECT bucket,id FROM searches WHERE users_id =''"+req.session.user_id+"' AND"
     for(t in search_titles){
       console.log("titles",t);
       query+= (count ===0?"":" OR ")+" title = \'"+t+"\'";
@@ -1682,19 +1682,20 @@ app.post("/get-profile",function(req,res){
   // }
 });
 app.post("/pdf-maker",function(req,res){
-  // var user_id = req.body.user_id;
-  var query ="SELECT distinct u.id, u.first_name, u.last_name,u.sex, u.email ,a.height,a.weight,a.us_citizen,a.union_status,a.union_number,a.ethnicity,a.state,a.city,a.street,a.zip,a.home_phone,a.cell_phone,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id in('88','89','152')";
-  console.log(query);
+  // TODO: Fixs user_id query
+  var user_id = JSON.stringify(req.body.data.target_id); //[num]
+  console.log(user_id);
+  var query ="SELECT distinct u.id, u.first_name, u.last_name,u.sex, u.email ,a.height,a.weight,a.us_citizen,a.union_status,a.union_number,a.ethnicity,a.state,a.city,a.street,a.zip,a.home_phone,a.cell_phone,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id in (?)";
   connect(function(con){
-    con.query(query,function(err,result,fields){
+    con.query(query,user_id,function(err,result,fields){
       if (err) {
         console.log(err);
         res.send({success:false});
       }
       else {
         var info = result;
-        var query2 ="SELECT users.id,images.thumbnail FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in('88','89','152')";
-        con.query(query2,function(err, result2,fields){
+        var query2 ="SELECT users.id,images.thumbnail FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in (?)";
+        con.query(query2,user_id,function(err, result2,fields){
           if (err) {
             console.log(err);
             res.send({success:false});

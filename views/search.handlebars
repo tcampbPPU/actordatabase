@@ -728,7 +728,7 @@ function showResult(result,query,bucket){ //show the result of the search query
     var button_share = $("<input type='submit'  style='cursor:pointer;' value='Share Result'>");
     var download_pdf = $("<input type='submit'  style='cursor:pointer;' value='Download Pdf'>");
     var center = $("<center></center>");
-    center.append(button_save,button_send,button_share, download_pdf);
+    center.append(button_save,button_send,button_share,download_pdf);
     $("#btn_div").append(center);
     //the tool if user want to select multiple actors
     var tools = $("<div id='tools' style='width:90%; height:30px; margin-bottom:7px; margin:0 auto; position:relative;'></div>");
@@ -887,56 +887,42 @@ function showResult(result,query,bucket){ //show the result of the search query
       console.log("done adding");
     });
   });
-    individual_pdf.click(function(){ // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
-      //target_id:groupe_selected_bucket is the id of the selected actor
-      var user_id = {target_id:groupe_selected_bucket};
-      var pdf = new jsPDF();
-      $.ajax({
-          url: "pdf-maker",
-          type: 'POST',
-          data: user_id.target_id,
-          success: function(data){
-              if(data.success){
-                console.log("info ",data.success.info);
-                console.log("pics ",data.success.thumbnails);
-                for (var i = 0; i < data.success.info.length; i++) {
-                  if (i > 0) {
-                    pdf.addPage();
-                  }
-                  pdf.setPage(i+1);// Current working page
-                  pdf.text(10, 10,data.success.info[i].first_name+" "+data.success.info[i].last_name);
-                  pdf.text(10, 20, 'Age: '+ data.success.info[i].birthday);
-                  pdf.text(10, 30, 'Phone: '+ data.success.info[i].cell_phone);
-                  pdf.text(10, 40, 'Email: '+ data.success.info[i].email);
-                  pdf.text(10, 50, 'Height: '+ getHeightInFeet(data.success.info[i].height));
-                  pdf.text(10, 60, 'Weight: '+ data.success.info[i].weight);
-                  pdf.text(10, 70, 'Gender: '+ data.success.info[i].sex);
-                  for (var j = 0; j < data.success.thumbnails.length; j++) {
-                    if (j > 0) {
-                      pdf.addPage();
-                    }
-                    pdf.setPage(j+1);
-                    if (data.success.info[i].id == data.success.thumbnails[j].id) {
-                      pdf.addImage(data.success.thumbnails[j].thumbnail, 'JPEG', 10, 80, 180, 160);
-                    }
-                    else{
-                      continue;
-                    }
-                  }
-                      // if (data.success.info[i].id != data.success.thumbnails[j].id) {
-                      //   continue;
-                      // }else{
-                      //   pdf.addImage(data.success.thumbnails[j].thumbnail, 'JPEG', 10, 80, 180, 160);
-                      // }
-                    // }
-                  // }
+  individual_pdf.click(function(){ // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
+    //target_id:groupe_selected_bucket is the id of the selected actor
+    var data = {target_id:groupe_selected_bucket};
+    var pdf = new jsPDF();
+    $.ajax({
+        url: "pdf-maker",
+        type: 'POST',
+        data: data,
+        success: function(data){
+          if(data.success){
+          // TODO: Find way to match the First picture associated with actor and keep order in sync
+            for (var i = 0; i < data.success.info.length; i++) {
+              if (i > 0) {
+                pdf.addPage();
+              }
+              pdf.setPage(i+1);// Current working page
+              //Set Text data X, Y Grid
+              pdf.text(10, 10,data.success.info[i].first_name+" "+data.success.info[i].last_name);
+              pdf.text(10, 20, 'Age: '+ data.success.info[i].birthday);
+              pdf.text(10, 30, 'Phone: '+ data.success.info[i].cell_phone);
+              pdf.text(10, 40, 'Email: '+ data.success.info[i].email);
+              pdf.text(10, 50, 'Height: '+ getHeightInFeet(data.success.info[i].height));
+              pdf.text(10, 60, 'Weight: '+ data.success.info[i].weight);
+              pdf.text(10, 70, 'Gender: '+ data.success.info[i].sex);
+              for (var j = 0; j < data.success.thumbnails.length; j++) {
+                if (data.success.info[i].id === data.success.thumbnails[j].id){ // still need to be able to get a specific image ,not just adding the last
+                  pdf.addImage(data.success.thumbnails[j].thumbnail, 'JPEG', 10, 80, 180, 160);
                 }
               }
-              pdf.deletePage(j+1); //deletes the last blank page that gets added due to loop
-              pdf.save('actor_download.pdf');
-          },
-     });
-    });
+            }
+          }
+          pdf.deletePage(i+1); //deletes the last blank page that gets added due to loop
+          pdf.save('actor_download.pdf');
+      },
+   });
+  });
   function showTheseUSers(result,body,actor_ids,page_number){
     for (elt in result){
       var box = $("<div class='each-profile-box b' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
@@ -944,14 +930,14 @@ function showResult(result,query,bucket){ //show the result of the search query
         box.css({"background-color":"rgba(100,200,100,0.4)"});
       }
       var centered_name =$("<center></center>");
-      var name = $("<span style='font-size:1.2em; clear:both;'>"+result[elt].first_name+" "+result[elt].last_name+" "+(result[elt].is_admin?"<small id='admin_or_not'>&#x1f511;</small>":"")+"</span>");
+      var name = $("<span class='each-profile-box-name' style='font-size:1.2em; clear:both;'>"+result[elt].first_name+" "+result[elt].last_name+" "+(result[elt].is_admin?"<small id='admin_or_not'>&#x1f511;</small>":"")+"</span>");
       centered_name.append(name);
       var centered_image =$("<center></center>");
-      var image = $("<img src='"+(result[elt].first_thumbnail?(result[elt].first_thumbnail):"img/blank.png")+"' alt='' style='width:200px; height:200px; object-fit:contain;'>");
+      var image = $("<img class='each-profile-box-image' src='"+(result[elt].first_thumbnail?(result[elt].first_thumbnail):"img/blank.png")+"' alt='' style='width:200px; height:200px; object-fit:contain;'>");
       centered_image.append(image);
-      var age = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Age</span> "+(result[elt].age?Math.floor(result[elt].age*0.0027397260273973):"")+" </span>");
-      var phone = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>Phone</span> "+(result[elt].cell_phone?result[elt].cell_phone:"")+" </span>");
-      var email = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>E</span> "+result[elt].email+" </span>");
+      var age = $("<span style='font-size:0.8em;'><span class='each-profile-box-age' style='background-color:grey; padding:2px;'>Age</span> "+(result[elt].age?Math.floor(result[elt].age*0.0027397260273973):"")+" </span>");
+      var phone = $("<span style='font-size:0.8em;'><span class='each-profile-box-phone' style='background-color:grey; padding:2px;'>Phone</span> "+(result[elt].cell_phone?result[elt].cell_phone:"")+" </span>");
+      var email = $("<span class='each-profile-box-email' style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>E</span> "+result[elt].email+" </span>");
       var union_status = $("<span style='font-size:0.8em;'><span style='background-color:grey; padding:2px;'>U</span> "+(result[elt].union_status?result[elt].union_status:"")+" </span>");
       var profile=$("<span id='profile_in_bucket' style='position:absolute; bottom:0px; left:5px; font-size:0.9em; cursor:pointer;'>Options</span>");
       var delete_profile=$("<span id='delete_in_bucket'style='position:absolute; bottom:0px; left:90%;  cursor:pointer;'>	&#x1F5D1;</span>");
@@ -1291,11 +1277,69 @@ function showResult(result,query,bucket){ //show the result of the search query
       var destination_emails =[];
       postEmailSend({data:{actors_ids:Object.keys(actor_ids)}, url:"get-emails", destination_emails:destination_emails });
     });
-    // download_pdf.click(function(e){
-    //   $.each('.each-profile-box'){
+    download_pdf.click(function(e) {
+      // var doc = new jsPDF('p', 'pt', 'letter');
+      // $(".each-profile-box").each(function(i){
+      //   if (i>0) {
+      //     doc.addPage();
+      //   }
+      //   doc.setPage(i+1);
+      //   doc.text(10, 10,$('div.each-profile-box span.each-profile-box-name').text());
+      //   doc.text(10, 20,$('div.each-profile-box span.each-profile-box-age').val());
+      //   doc.text(10, 30,$('div.each-profile-box span.each-profile-box-phone').text());
+      //   doc.text(10, 40,$('div.each-profile-box span.each-profile-box-email').text());
+      //   // doc.addImage($('each-profile-box-image img').attr('src'), 'JPEG', 10, 80, 180, 160);
+      // });
+      // doc.save('test-download.pdf');
+      // var pdf = new jsPDF('p', 'pt', 'letter');
+      // var source = $('#result_display')[0];
+    //   $(".each-profile-box").each(function(){
+    //     var name = $(this).find(".each-profile-box-name");
     //
-    //   }
+    //     console.log(name);
+    //     // var width = images.getTotalWidth();
+    //     // console.log(images);
+    //     // $(this).find(".scrolling").width( width * 1.2 );
     // });
+
+        // hides unused elements from pdf
+    //   var specialElementHandlers = {
+    //     '#profile_in_bucket': function(element, renderer){
+    //       return true
+    //     },
+    //     '#delete_in_bucket': function(element, renderer){
+    //       return true
+    //     },
+    //     '#admin_or_not': function(element, renderer){
+    //       return true
+    //     },
+    //     '#add_tool': function(element, renderer){
+    //       return true
+    //     },
+    //     '.page-link': function(element, renderer){
+    //       return true
+    //     }
+    //   }
+    // margins = {
+    // top: 60,
+    // bottom: 60,
+    // left: 100,
+    // width: 500
+    // };
+    //     pdf.fromHTML(
+    //       source,
+    //       margins.left,
+    //       margins.top,
+    //       {
+    //         'width': margins.width,
+    //         'elementHandlers': specialElementHandlers
+    //       },
+    //       function (download) {
+    //         // pdf.save('test-download.pdf');
+    //       },
+    //       margins
+    //     )
+    });
   }
  console.log("actors id ",actor_ids);
 }
