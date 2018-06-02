@@ -1683,7 +1683,7 @@ app.post("/get-profile",function(req,res){
 });
 app.post("/pdf-maker",function(req,res){
   // TODO: Fixs user_id query
-  var user_id = JSON.stringify(req.body.data.target_id); //[num]
+  var user_id = JSON.stringify(req.body.data.groupe_selected_bucket); //[num]
   console.log(user_id);
   var query ="SELECT distinct u.id, u.first_name, u.last_name,u.sex, u.email ,a.height,a.weight,a.us_citizen,a.union_status,a.union_number,a.ethnicity,a.state,a.city,a.street,a.zip,a.home_phone,a.cell_phone,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id in (?)";
   connect(function(con){
