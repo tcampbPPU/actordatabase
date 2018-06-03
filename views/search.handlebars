@@ -14,9 +14,6 @@ body {
  margin-top:2%;
  padding-top:5px;
 }
-/* .page-break {
-  display: block; page-break-before: always;
-} */
 </style>
 {{#if admin }}
 <div id="result_container" style="width:100%; padding-bottom:30px;  display:none; color:white;">
@@ -897,6 +894,7 @@ function showResult(result,query,bucket){ //show the result of the search query
         data: data,
         success: function(data){
           if(data.success){
+            console.log(data.success);
           // TODO: Find way to match the First picture associated with actor and keep order in sync
             for (var i = 0; i < data.success.info.length; i++) {
               if (i > 0) {
@@ -1278,70 +1276,9 @@ function showResult(result,query,bucket){ //show the result of the search query
       postEmailSend({data:{actors_ids:Object.keys(actor_ids)}, url:"get-emails", destination_emails:destination_emails });
     });
     download_pdf.click(function(e) {
-      // var doc = new jsPDF('p', 'pt', 'letter');
-      // $(".each-profile-box").each(function(i){
-      //   if (i>0) {
-      //     doc.addPage();
-      //   }
-      //   doc.setPage(i+1);
-      //   doc.text(10, 10,$('div.each-profile-box span.each-profile-box-name').text());
-      //   doc.text(10, 20,$('div.each-profile-box span.each-profile-box-age').val());
-      //   doc.text(10, 30,$('div.each-profile-box span.each-profile-box-phone').text());
-      //   doc.text(10, 40,$('div.each-profile-box span.each-profile-box-email').text());
-      //   // doc.addImage($('each-profile-box-image img').attr('src'), 'JPEG', 10, 80, 180, 160);
-      // });
-      // doc.save('test-download.pdf');
-      // var pdf = new jsPDF('p', 'pt', 'letter');
-      // var source = $('#result_display')[0];
-    //   $(".each-profile-box").each(function(){
-    //     var name = $(this).find(".each-profile-box-name");
-    //
-    //     console.log(name);
-    //     // var width = images.getTotalWidth();
-    //     // console.log(images);
-    //     // $(this).find(".scrolling").width( width * 1.2 );
-    // });
-
-        // hides unused elements from pdf
-    //   var specialElementHandlers = {
-    //     '#profile_in_bucket': function(element, renderer){
-    //       return true
-    //     },
-    //     '#delete_in_bucket': function(element, renderer){
-    //       return true
-    //     },
-    //     '#admin_or_not': function(element, renderer){
-    //       return true
-    //     },
-    //     '#add_tool': function(element, renderer){
-    //       return true
-    //     },
-    //     '.page-link': function(element, renderer){
-    //       return true
-    //     }
-    //   }
-    // margins = {
-    // top: 60,
-    // bottom: 60,
-    // left: 100,
-    // width: 500
-    // };
-    //     pdf.fromHTML(
-    //       source,
-    //       margins.left,
-    //       margins.top,
-    //       {
-    //         'width': margins.width,
-    //         'elementHandlers': specialElementHandlers
-    //       },
-    //       function (download) {
-    //         // pdf.save('test-download.pdf');
-    //       },
-    //       margins
-    //     )
+      // TODO: Create Button that creates Pdf of all results
     });
   }
- console.log("actors id ",actor_ids);
 }
 function buildProfilePanel(user_id){
  $(".each-profile-Panel").remove();
