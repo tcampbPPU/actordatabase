@@ -1629,7 +1629,7 @@ app.post("/get-history",function(req,res){
 app.post("/get-buckets",function(req,res){
   if(req.session.user_id){
     var search_titles = req.body.search_titles;
-    var count=0,query = "SELECT bucket,id FROM searches WHERE users_id =''"+req.session.user_id+"' AND"
+    var count=0,query = "SELECT bucket,id FROM searches WHERE users_id ='"+req.session.user_id+"' AND"
     for(t in search_titles){
       console.log("titles",t);
       query+= (count ===0?"":" OR ")+" title = \'"+t+"\'";
