@@ -1682,20 +1682,18 @@ app.post("/get-profile",function(req,res){
   // }
 });
 app.post("/pdf-maker",function(req,res){
-  // TODO: Fixs user_id query
-  var user_id = JSON.stringify(req.body.data.groupe_selected_bucket); //[num]
-  console.log(user_id);
-  var query ="SELECT distinct u.id, u.first_name, u.last_name,u.sex, u.email ,a.height,a.weight,a.us_citizen,a.union_status,a.union_number,a.ethnicity,a.state,a.city,a.street,a.zip,a.home_phone,a.cell_phone,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id in (?)";
+  var query ="SELECT distinct u.id, u.first_name, u.last_name,u.sex, u.email ,a.height,a.weight,a.us_citizen,a.union_status,a.union_number,a.ethnicity,a.state,a.city,a.street,a.zip,a.home_phone,a.cell_phone,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id in ("+ req.body.target_id+')';
   connect(function(con){
-    con.query(query,user_id,function(err,result,fields){
+    con.query(query,function(err,result,fields){
+      console.log(query);
       if (err) {
         console.log(err);
         res.send({success:false});
       }
       else {
         var info = result;
-        var query2 ="SELECT users.id,images.thumbnail FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in (?)";
-        con.query(query2,user_id,function(err, result2,fields){
+        var query2 ="SELECT users.id,images.thumbnail FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in ("+ req.body.target_id+')';
+        con.query(query2,function(err, result2,fields){
           if (err) {
             console.log(err);
             res.send({success:false});
