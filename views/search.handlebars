@@ -930,7 +930,7 @@ function showResult(result,query,bucket){ //show the result of the search query
                 pdf.text(10, 60, "Weight: " + (data.success.info[i].weight || ""));
                 pdf.text(10, 70, "Gender: " + (data.success.info[i].sex || ""));
                 function nextImage(j, cnt) {
-                  if (j >= data.success.thumbnails || cnt >= 2) {
+                  if (j >= data.success.thumbnails.length || cnt >= 2) {
                     nextPage(i+1);
                   }
                   else {
