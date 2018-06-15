@@ -746,6 +746,15 @@ function showResult(result,query,bucket){ //show the result of the search query
          $(this).append("<i id='check-circle' class='fa fa-check-circle' aria-hidden='true' style='color:green; margin-left:3px;'></i>");
       }
     });
+    var downloadPdf = $("<a>");
+    $(tools).append(downloadPdf);
+    var ids = [];
+    for (var i = 0; i < result.length; i++) {
+      ids.push(result[i].id);
+    }
+    downloadPdf.attr("href", "results.pdf?ids="+ids.join(","));
+    downloadPdf.attr("target", "_blank");
+    downloadPdf.append("Download PDF");
     var displays_result_area = $("<div class='col-lg-12' style='width:100%; margin:0 auto; position:relative; '></div>");
     var pagination = $("<div class='container' style='width:100%; clear:both; padding-top:30px;'></div>");
     var pagination_ul = $("<ul class='pagination justify-content-center' ></ul>");
