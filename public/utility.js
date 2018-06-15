@@ -191,7 +191,7 @@
 
                options_field:{
                  sports: ["Basketball","Karate","Football","Baseball","Hockey","Soccer","Boxing","Tennis","Golf","Racing","Swimming","Volleyball"],
-                 characteristics: ["Juggle"],
+                 characteristics: ["Energetic", "Imaginative", "Intelligence" "Charisma"],
                  dances: ["Ballet","Jazz","Tap"],
                  wardrobes: ["Hippie","Military","70s","80s","90s","cocktail Dresses","Formal Gown","Gothic","Halloween Costume"],
                  musicienship: ["Guitar","Piano","Flute"],
