@@ -15,6 +15,8 @@ var crypto = require('crypto');
 var Jimp = require("jimp");
 var gm = require('gm');//.subClass({imageMagick: true});;
 
+global.atob = require("atob");
+
 app.engine("handlebars",handlebars.engine);
 app.set("view engine","handlebars");
 app.set('port', process.env.PORT || credentials.port || 4000);
@@ -1165,6 +1167,174 @@ app.post("/search_database",function(req,res){
   }
 });
 
+app.get("/results.pdf", function(req, res) {
+  if (req.session.user_id) {
+    createPDF(req, res);
+  } else {
+    res.status(404);
+    res.render("404");
+  }
+});
+
+function makeid() {
+  var text = "";
+  var possible = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+  for (var i = 0; i < 16; i++) {
+    text += possible.charAt(Math.floor(Math.random() * possible.length));
+  }
+  return text;
+}
+
+function createPDF(req, res) {
+  var ids = req.query.ids.split(",");
+  var query = "SELECT distinct u.id, u.first_name, u.last_name, a.height, a.weight, a.neck_size, a.sleeve_size, a.waist_size, a.inseam_size, a.shoe_size FROM users as u LEFT JOIN actors a ON u.id=a.users_id WHERE u.id in (" + ids.join(",") + ")";
+  connect(function(con){
+    con.query(query, function(err,result,fields) {
+      if (err) {
+        console.log(err);
+        //res.send({success:false});
+      }
+      else {
+        var info = result;
+        var query2 = "SELECT users.id, images.thumbnail FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in (" + ids + ")";
+        con.query(query2, function(err, result2,fields) {
+          if (err) {
+            console.log(err);
+            //res.send({success:false});
+          }
+          else {
+            //res.send({success:{info:info,thumbnails:result2}});
+            
+            var data = {success:{info:info,thumbnails:result2}};
+            
+            var PDFDocument = require("pdfkit");
+            var pdf = new PDFDocument({
+              layout: "landscape"
+            });
+            
+            var maxwidth = 792;
+            var maxheight = 612;
+            
+            function nextPage(i) {
+              if (i >= data.success.info.length) {
+                pdf.end();
+                var id = makeid();
+                var stream = pdf.pipe(fs.createWriteStream("/tmp/actors-" + id + ".pdf"));
+                stream.on("finish", function() {
+                  res.sendFile("/tmp/actors-" + id + ".pdf", function() {
+                    fs.unlink("/tmp/actors-" + id + ".pdf", function() {});
+                  });
+                });
+              }
+              else {
+                if (i > 0) {
+                  pdf.addPage();
+                }
+                
+                function nextImage(j, cnt, images) {
+                  if (j >= data.success.thumbnails.length || cnt >= 2) {
+                    if (images.length >= 1) {
+                      var x1 = images[0].image.bitmap.width;
+                      var y1 = images[0].image.bitmap.height;
+                    }
+                    if (images.length >= 2) {
+                      var x2 = images[1].image.bitmap.width * (y1 / images[1].image.bitmap.height);
+                      var y2 = y1;
+                    }
+                    else {
+                      var x2 = 0;
+                      var y2 = y1;
+                    }
+                    
+                    var scale = Math.min((792-190)/(x1+x2), (maxheight-20)/y1);
+                    if (images.length >= 1) {
+                      x1 *= scale;
+                      y1 *= scale;
+                    }
+                    if (images.length >= 2) {
+                      x2 *= scale;
+                      y2 *= scale;
+                    }
+                    
+                    if (images.length >= 1) {
+                      pdf.image(images[0].thumbnail, 170, maxheight/2 - y1/2, {width: x1, height: y1}); //{fit: [250,250]});
+                    }
+                    if (images.length >= 2) {
+                      pdf.image(images[1].thumbnail, 180+x1, maxheight/2 - y1/2, {width: x2, height: y2}); //{fit: [250,250]});
+                    }
+                    
+                    pdf.fontSize(25);
+                    var text = data.success.info[i].first_name + "\n" + data.success.info[i].last_name + "\n";
+                    pdf.text(text, 10, !images.length ? 10 : maxheight/2 - y1/2, {width:150});
+                    
+                    pdf.fontSize(20);
+                    text = "\n" +
+                      "Height: " + (getHeightInFeet(data.success.info[i].height) || "") + "\n" +
+                      "Weight: " + (data.success.info[i].weight || "") + "\n" +
+                      "Collar: " + (data.success.info[i].neck_size || "") + "\n" +
+                      "Sleeve: " + (data.success.info[i].sleeve_size || "") + "\n" +
+                      "Waist: " + (data.success.info[i].waist_size || "") + "\n" +
+                      "Inseam: " + (data.success.info[i].inseam_size || "") + "\n" +
+                      "Shoes: " + (data.success.info[i].shoe_size || "") + "\n";
+                    pdf.text(text, {width:150});
+                    
+                    nextPage(i+1);
+                  }
+                  else {
+                    if (data.success.info[i].id !== data.success.thumbnails[j].id) {
+                      nextImage(j+1, cnt, images);
+                    }
+                    else {
+                      var imgtype = data.success.thumbnails[j].thumbnail.substring(0, data.success.thumbnails[j].thumbnail.indexOf(","));
+                      Jimp.read(Buffer.from(data.success.thumbnails[j].thumbnail.substring(data.success.thumbnails[j].thumbnail.indexOf(",") + 1), "base64"), function(err, image) {
+                        if (err) {
+                          console.log(err);
+                        }
+                        else {
+                          images.push({
+                            image: image,
+                            thumbnail: data.success.thumbnails[j].thumbnail
+                          });
+                          nextImage(j+1, cnt+1, images);
+                        }
+                      });
+                    }
+                  }
+                }
+                nextImage(0, 0, []);
+              }
+            }
+            nextPage(0);
+          }
+        });
+      }
+    });
+  });
+}
+
+function getHeightInFeet(value) {
+  var height = heights;
+  for(var i = 0; i< height.length; i++) {
+    if (height[i].cm ===value) {
+      return height[i].feet;
+    }
+  }
+}
+
+function getAge(dateString) {
+  if (!dateString) {
+    return null;
+  }
+  var today = new Date();
+  var birthDate = new Date(dateString);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  var m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+    age--;
+  }
+  return age;
+}
+
 app.post("/get-user-info-search",function(req,res){
   var ids = req.body.users_id, count =0, query ="SELECT users.*, actors.*,DATEDIFF(CURDATE(),actors.birthday) as age, (SELECT thumbnail FROM images WHERE users.id = actors_users_id LIMIT 1 ) as first_thumbnail, GROUP_CONCAT( cars.year,' ',cars.color,' ',cars.make SEPARATOR ',') as cars FROM users LEFT JOIN actors ON  users.id = actors.users_id LEFT JOIN cars ON  users.id = cars.actors_users_id WHERE ";
     for(var i =0; i< ids.length; i++ ){
@@ -2046,14 +2216,6 @@ var heights =[
               "cm" : 218.44
             },
           ];
-          function getHeightInFeet(value){
-            var height = heights;
-            for(var i =0; i< height.length; i++ ){
-              if(height[i].cm ===value){
-                return height[i].feet
-              }
-            }
-          }
 
           /////
 

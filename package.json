@@ -9,6 +9,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "atob": "^2.1.1",
     "body-parser": "^1.18.3",
     "cookie-parser": "^1.4.3",
     "express": "^4.16.3",
@@ -20,7 +21,9 @@
     "jimp": "^0.2.28",
     "jspdf": "^1.4.1",
     "mysql": "^2.15.0",
+    "node-jspdf": "git+https://github.com/calvinfroedge/node-jspdf.git",
     "nodemailer": "^4.6.6",
+    "pdfkit": "^0.8.3",
     "randomstring": "^1.1.5"
   },
   "devDependencies": {
