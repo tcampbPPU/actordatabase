@@ -1212,19 +1212,17 @@ function createPDF(req, res) {
               layout: "landscape"
             });
             
+            res.writeHead(200, {
+              "Content-Type": "application/pdf"
+            });
+            pdf.pipe(res);
+            
             var maxwidth = 792;
             var maxheight = 612;
             
             function nextPage(i) {
               if (i >= data.success.info.length) {
                 pdf.end();
-                var id = makeid();
-                var stream = pdf.pipe(fs.createWriteStream("/tmp/actors-" + id + ".pdf"));
-                stream.on("finish", function() {
-                  res.sendFile("/tmp/actors-" + id + ".pdf", function() {
-                    fs.unlink("/tmp/actors-" + id + ".pdf", function() {});
-                  });
-                });
               }
               else {
                 if (i > 0) {
