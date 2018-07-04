@@ -1276,7 +1276,9 @@ function createPDF(req, res) {
                       "Shoes: " + (data.success.info[i].shoe_size || "") + "\n";
                     pdf.text(text, {width:150});
                     
-                    nextPage(i+1);
+                    setTimeout(function() {
+                      nextPage(i+1);
+                    }, 0);
                   }
                   else {
                     if (data.success.info[i].id !== data.success.thumbnails[j].id) {
