@@ -1129,7 +1129,7 @@ function showResult(result,query,bucket){ //show the result of the search query
         function sendTextOrEmail(data0){
           var pane_to_send_text = $("<div  title='Sending "+(data0.isText?"Text":"Email")+" to "+data0.who+"' style='font-size:0.8em;'></div>");
           var senderLabels =$("<div class='form-group'><label for='sender'>From:</label></div>");
-          var sender = $("<input type='email' class='form-control' id='sender' name='sender' value='lkonatpointpark@gmail.com'>");
+          var sender = $("<input type='email' class='form-control' id='sender' name='sender' value='{{emailUser}}'>");
           senderLabels.append(sender);
           var toLabels =$("<div class='form-group'><label for='email-targets'>Bcc:</label></div>");
           var to =$("<input type='email' class='form-control' id='email-targets' name='to' value='"+(data0.email?data0.email:"")+"'>");
@@ -1486,7 +1486,7 @@ function postEmailSend(email_data){
             }
             //console.log("sending",Object.keys(actor_ids));
             var pane_to_get_title = $("<div id='pane_to_send_email' title='Send Email' style='font-size:0.8em;'> </div>");
-            var sender =$("<div class='form-group'><label for='sender'>From:</label><input type='email' class='form-control' id='sender' name='sender' value='lkonatpointpark@gmail.com'></div>");
+            var sender =$("<div class='form-group'><label for='sender'>From:</label><input type='email' class='form-control' id='sender' name='sender' value='{{emailUser}}'></div>");
             var to =$("<div class='form-group'><label for='email-targets'>Bcc:</label><input type='email' class='form-control' id='email-targets' name='to' value='"+(email_data.destination_emails?email_data.destination_emails:"")+"'></div>");
             var subject =$("<div class='form-group'><label for='email-subject'>Subject:</label><input type='text' class='form-control' id='email-subject' name='subject' value='"+(email_data.data.shared_actors_ids?"Share Search Result":"No Subject?")+"'></div>");
             var text =$("<div class='form-group'><label for='email-text'>Message:</label><textarea class='form-control' rows='20' id='email-text' name='text'></textarea></div>");

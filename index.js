@@ -308,6 +308,7 @@ app.get("/search", function(req,res){
       user_name:req.session.user_first_name,
       menu: getMenu(req),
       login:req.session.user_id?req.session.user_id:false,
+      emailUser:credentials.emailUser || "none@address.com",
       });
   }else {
     res.render("search",{
@@ -315,6 +316,7 @@ app.get("/search", function(req,res){
       user_name:req.session.user_first_name,
       menu: getMenu(req),
       login:req.session.user_id?req.session.user_id:false,
+      emailUser:credentials.emailUser || "none@address.com",
     });
   }
 });
