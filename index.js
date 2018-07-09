@@ -308,6 +308,7 @@ app.get("/search", function(req,res){
       user_name:req.session.user_first_name,
       menu: getMenu(req),
       login:req.session.user_id?req.session.user_id:false,
+      emailUser:credentials.emailUser || "none@address.com",
       });
   }else {
     res.render("search",{
@@ -315,6 +316,7 @@ app.get("/search", function(req,res){
       user_name:req.session.user_first_name,
       menu: getMenu(req),
       login:req.session.user_id?req.session.user_id:false,
+      emailUser:credentials.emailUser || "none@address.com",
     });
   }
 });
@@ -1211,20 +1213,16 @@ function createPDF(req, res) {
             var pdf = new PDFDocument({
               layout: "landscape"
             });
-
+            res.writeHead(200, {
+              "Content-Type": "application/pdf"
+            });
+            pdf.pipe(res);
             var maxwidth = 792;
             var maxheight = 612;
 
             function nextPage(i) {
               if (i >= data.success.info.length) {
                 pdf.end();
-                var id = makeid();
-                var stream = pdf.pipe(fs.createWriteStream("/tmp/actors-" + id + ".pdf"));
-                stream.on("finish", function() {
-                  res.sendFile("/tmp/actors-" + id + ".pdf", function() {
-                    fs.unlink("/tmp/actors-" + id + ".pdf", function() {});
-                  });
-                });
               }
               else {
                 if (i > 0) {
@@ -1277,8 +1275,9 @@ function createPDF(req, res) {
                       "Inseam: " + (data.success.info[i].inseam_size || "") + "\n" +
                       "Shoes: " + (data.success.info[i].shoe_size || "") + "\n";
                     pdf.text(text, {width:150});
-
-                    nextPage(i+1);
+                    setTimeout(function() {
+                      nextPage(i+1);
+                    }, 0);
                   }
                   else {
                     if (data.success.info[i].id !== data.success.thumbnails[j].id) {
