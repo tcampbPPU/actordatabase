@@ -906,79 +906,13 @@ function showResult(result,query,bucket){ //show the result of the search query
     }
     return age;
   }
+  
+  individual_pdf.click(function() {
+    // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
+    window.open("results.pdf?ids="+groupe_selected_bucket.join(","), "_blank");
 
-  individual_pdf.click(function(){ // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
-    //target_id:groupe_selected_bucket is the id of the selected actor
-    var data = {target_id:groupe_selected_bucket};
-    var pdf = new jsPDF();
-    $.ajax({
-        url: "pdf-maker",
-        type: "POST",
-        data: data,
-        success: function(data) {
-          if(data.success) {
-            console.log(data.success);
-            // TODO: Find way to match the First picture associated with actor and keep order in sync
-            function nextPage(i) {
-              if (i >= data.success.info.length) {
-                pdf.deletePage(i+1); //deletes the last blank page that gets added due to loop
-                pdf.save("actor_download.pdf");
-              }
-              else {
-                if (i > 0) {
-                  pdf.addPage();
-                }
-                pdf.setPage(i+1);// Current working page
-                //Set Text data X, Y Grid
-                pdf.text(10, 10, data.success.info[i].first_name + " " + data.success.info[i].last_name);
-                pdf.text(10, 20, "Age: " + (getAge(data.success.info[i].birthday) || ""));
-                pdf.text(10, 30, "Phone: " + (data.success.info[i].cell_phone || ""));
-                pdf.text(10, 40, "Email: " + (data.success.info[i].email || ""));
-                pdf.text(10, 50, "Height: " + (getHeightInFeet(data.success.info[i].height) || ""));
-                pdf.text(10, 60, "Weight: " + (data.success.info[i].weight || ""));
-                pdf.text(10, 70, "Gender: " + (data.success.info[i].sex || ""));
-                function nextImage(j, cnt) {
-                  if (j >= data.success.thumbnails.length || cnt >= 2) {
-                    nextPage(i+1);
-                  }
-                  else {
-                    if (data.success.info[i].id !== data.success.thumbnails[j].id) {
-                      nextImage(j+1, cnt);
-                    }
-                    else {
-                      var image = new Image();
-                      image.onload = function() {
-                        var maxwh = Math.min(pdf.internal.pageSize.width, pdf.internal.pageSize.height) * 0.8 / 2;
-                        // get width and height and convert px to mm
-                        var width = image.width / 3.779528;
-                        var height = image.height / 3.779528;
-                        if (width <= maxwh && height <= maxwh) {
-                          var newwidth = width;
-                          var newheight = height;
-                        }
-                        else if (width >= height) {
-                          var newwidth = maxwh;
-                          var newheight = Math.round(height / (width / maxwh));
-                        }
-                        else {
-                          var newwidth = Math.round(width / (height / maxwh));
-                          var newheight = maxwh;
-                        }
-                        pdf.addImage(data.success.thumbnails[j].thumbnail, "JPEG", cnt*pdf.internal.pageSize.width/2+0.05*pdf.internal.pageSize.width, 80, newwidth, newheight);
-                        nextImage(j+1, cnt+1);
-                      };
-                      image.src = data.success.thumbnails[j].thumbnail;
-                    }
-                  }
-                }
-                nextImage(0, 0);
-              }
-            }
-            nextPage(0);
-          }
-        },
-    });
   });
+
   function showTheseUSers(result,body,actor_ids,page_number){
     for (elt in result){
       var box = $("<div class='each-profile-box b' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
