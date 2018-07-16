@@ -723,9 +723,8 @@ function showResult(result,query,bucket){ //show the result of the search query
     var button_save = $("<input type='submit'  style='cursor:pointer;' value='Save'>");
     var button_send = $("<input type='submit'  style='cursor:pointer;' value='Send Email to Selected Actors'>");
     var button_share = $("<input type='submit'  style='cursor:pointer;' value='Share Result'>");
-    var download_pdf = $("<input type='submit'  style='cursor:pointer;' value='Download Pdf'>");
     var center = $("<center></center>");
-    center.append(button_save,button_send,button_share,download_pdf);
+    center.append(button_save,button_send,button_share);
     $("#btn_div").append(center);
     //the tool if user want to select multiple actors
     var tools = $("<div id='tools' style='width:90%; height:30px; margin-bottom:7px; margin:0 auto; position:relative;'></div>");
@@ -893,7 +892,7 @@ function showResult(result,query,bucket){ //show the result of the search query
       console.log("done adding");
     });
   });
-  
+
   function getAge(dateString) {
     if (!dateString) {
       return null;
@@ -907,12 +906,12 @@ function showResult(result,query,bucket){ //show the result of the search query
     }
     return age;
   }
-  
+    
   individual_pdf.click(function() {
     // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
     window.open("results.pdf?ids="+groupe_selected_bucket.join(","), "_blank");
   });
-  
+
   function showTheseUSers(result,body,actor_ids,page_number){
     for (elt in result){
       var box = $("<div class='each-profile-box b' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
@@ -1266,9 +1265,6 @@ function showResult(result,query,bucket){ //show the result of the search query
     button_send.click(function(e){
       var destination_emails =[];
       postEmailSend({data:{actors_ids:Object.keys(actor_ids)}, url:"get-emails", destination_emails:destination_emails });
-    });
-    download_pdf.click(function(e) {
-      // TODO: Create Button that creates Pdf of all results
     });
   }
 }
