@@ -1128,7 +1128,7 @@ function showResult(result,query,bucket){ //show the result of the search query
         function sendTextOrEmail(data0){
           var pane_to_send_text = $("<div  title='Sending "+(data0.isText?"Text":"Email")+" to "+data0.who+"' style='font-size:0.8em;'></div>");
           var senderLabels =$("<div class='form-group'><label for='sender'>From:</label></div>");
-          var sender = $("<input type='email' class='form-control' id='sender' name='sender' value='{{emailUser}}'>");
+          var sender = $("<input type='email' class='form-control' id='sender' name='sender' value='lkonatpointpark@gmail.com'>");
           senderLabels.append(sender);
           var toLabels =$("<div class='form-group'><label for='email-targets'>Bcc:</label></div>");
           var to =$("<input type='email' class='form-control' id='email-targets' name='to' value='"+(data0.email?data0.email:"")+"'>");
@@ -1414,10 +1414,26 @@ close.click(function(){
             info.append(table);
             for(key in data.success.info[0]){
               table.append("<tr style='font-size:0.8em;'><td style='color:grey;'>"+upperCaseFirstLetter(key)+"</td><td>"+(key==="height"? getHeightInFeet((data.success.info[0][key]===null?"":data.success.info[0][key])):(data.success.info[0][key]===null?"":data.success.info[0][key]))+"</td></tr>");
+              if (key==="birthday") {
+                table.append("<tr style='font-size:0.8em;'><td style='color:grey;'>"+'Age'+"</td><td>"+getAge2(data.success.info[0].birthday) || ""+"</td></tr>");
+              }
             }
           }
       },
  });
+}
+function getAge2(dateString) {
+  if (!dateString) {
+    return null;
+  }
+  var today = new Date();
+  var birthDate = new Date(dateString);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  var m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age;
 }
 function upperCaseIt(word){
   return word[0].toUpperCase()+word.substring(1,word.length);
@@ -1482,7 +1498,7 @@ function postEmailSend(email_data){
             }
             //console.log("sending",Object.keys(actor_ids));
             var pane_to_get_title = $("<div id='pane_to_send_email' title='Send Email' style='font-size:0.8em;'> </div>");
-            var sender =$("<div class='form-group'><label for='sender'>From:</label><input type='email' class='form-control' id='sender' name='sender' value='{{emailUser}}'></div>");
+            var sender =$("<div class='form-group'><label for='sender'>From:</label><input type='email' class='form-control' id='sender' name='sender' value='lkonatpointpark@gmail.com'></div>");
             var to =$("<div class='form-group'><label for='email-targets'>Bcc:</label><input type='email' class='form-control' id='email-targets' name='to' value='"+(email_data.destination_emails?email_data.destination_emails:"")+"'></div>");
             var subject =$("<div class='form-group'><label for='email-subject'>Subject:</label><input type='text' class='form-control' id='email-subject' name='subject' value='"+(email_data.data.shared_actors_ids?"Share Search Result":"No Subject?")+"'></div>");
             var text =$("<div class='form-group'><label for='email-text'>Message:</label><textarea class='form-control' rows='20' id='email-text' name='text'></textarea></div>");
