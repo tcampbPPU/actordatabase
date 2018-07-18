@@ -1206,22 +1206,20 @@ function createPDF(req, res) {
           }
           else {
             //res.send({success:{info:info,thumbnails:result2}});
-            
+
             var data = {success:{info:info,thumbnails:result2}};
-            
+
             var PDFDocument = require("pdfkit");
             var pdf = new PDFDocument({
               layout: "landscape"
             });
-            
             res.writeHead(200, {
               "Content-Type": "application/pdf"
             });
             pdf.pipe(res);
-            
             var maxwidth = 792;
             var maxheight = 612;
-            
+
             function nextPage(i) {
               if (i >= data.success.info.length) {
                 pdf.end();
@@ -1230,7 +1228,7 @@ function createPDF(req, res) {
                 if (i > 0) {
                   pdf.addPage();
                 }
-                
+
                 function nextImage(j, cnt, images) {
                   if (j >= data.success.thumbnails.length || cnt >= 2) {
                     if (images.length >= 1) {
@@ -1245,7 +1243,7 @@ function createPDF(req, res) {
                       var x2 = 0;
                       var y2 = y1;
                     }
-                    
+
                     var scale = Math.min((792-190)/(x1+x2), (maxheight-20)/y1);
                     if (images.length >= 1) {
                       x1 *= scale;
@@ -1255,18 +1253,18 @@ function createPDF(req, res) {
                       x2 *= scale;
                       y2 *= scale;
                     }
-                    
+
                     if (images.length >= 1) {
                       pdf.image(images[0].thumbnail, 170, maxheight/2 - y1/2, {width: x1, height: y1}); //{fit: [250,250]});
                     }
                     if (images.length >= 2) {
                       pdf.image(images[1].thumbnail, 180+x1, maxheight/2 - y1/2, {width: x2, height: y2}); //{fit: [250,250]});
                     }
-                    
+
                     pdf.fontSize(25);
                     var text = data.success.info[i].first_name + "\n" + data.success.info[i].last_name + "\n";
                     pdf.text(text, 10, !images.length ? 10 : maxheight/2 - y1/2, {width:150});
-                    
+
                     pdf.fontSize(20);
                     text = "\n" +
                       "Height: " + (getHeightInFeet(data.success.info[i].height) || "") + "\n" +
@@ -1277,7 +1275,6 @@ function createPDF(req, res) {
                       "Inseam: " + (data.success.info[i].inseam_size || "") + "\n" +
                       "Shoes: " + (data.success.info[i].shoe_size || "") + "\n";
                     pdf.text(text, {width:150});
-                    
                     setTimeout(function() {
                       nextPage(i+1);
                     }, 0);
@@ -1836,7 +1833,7 @@ app.post("/get-profile",function(req,res){
         }
         else {
           var thumbnails = result;
-          var query2 ="SELECT u.first_name, u.last_name,u.sex, u.email ,a.height,a.eye_color,	a.weight,	a.hair_color,	a.hair_type,	a.tattoo,	a.piercings,	a.facial_hair,	a.us_citizen,	a.neck_size	,a.sleeve_size	,a.waist_size	,a.inseam_size	,a.dress_size	,a.jacket_size	,a.shoe_size	,a.bust_size	,a.chest_size	,a.hip_size	,a.hat_size	,a.union_status	,a.union_number	,a.emergency_name	,a.emergency_number	,a.ethnicity	,a.state	,a.city	,a.street	,a.zip	,a.home_phone	,a.cell_phone	,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id =?";
+          var query2 ="SELECT u.first_name, u.last_name,u.sex, u.email, a.birthday, a.height,a.eye_color,	a.weight,	a.hair_color,	a.hair_type,	a.tattoo,	a.piercings,	a.facial_hair,	a.us_citizen,	a.neck_size	,a.sleeve_size	,a.waist_size	,a.inseam_size	,a.dress_size	,a.jacket_size	,a.shoe_size	,a.bust_size	,a.chest_size	,a.hip_size	,a.hat_size	,a.union_status	,a.union_number	,a.emergency_name	,a.emergency_number	,a.ethnicity	,a.state	,a.city	,a.street	,a.zip	,a.home_phone	,a.cell_phone	,a.birthday FROM users as u LEFT JOIN actors a ON u.id = a.users_id WHERE u.id =?";
           con.query(query2, [user_id],function(err, result2,fields){
             if (err) {
               console.log(err);
