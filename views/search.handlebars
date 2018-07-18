@@ -32,7 +32,7 @@ body {
    <div id="btn_div" style='clear:both;'></div>
 
 </div>
-<div class="container b" id='search_container'style="width:100%;  overflow:scroll; ">
+<div class="container" id='search_container'style="width:100%;  overflow:scroll; ">
   <div class="form-row">
     <div class="form-group col-md-12" id='history-search'>
       <span id="history_open_link" style="margin:10px; cursor:pointer;">History </span>
@@ -729,9 +729,9 @@ function showResult(result,query,bucket){ //show the result of the search query
     $("#btn_div").append(center);
     //the tool if user want to select multiple actors
     var tools = $("<div id='tools' style='width:90%; height:30px; margin-bottom:7px; margin:0 auto; position:relative;'></div>");
-    var select = $("<span style='float:right; cursor:pointer; margin:3px;'>Select</span>");
-    var add =$("<span id='add_tool' style='float:right;cursor:pointer;margin:3px;display:none;'>Add |</span>");
-    var individual_pdf = $("<span id='individual_pdf' style='float:right;cursor:pointer;margin:4px;display:none;'>Download Individual PDF |</span>");
+    var select = $("<span style='float:right; cursor:pointer; margin:3px;color:black;'>Select</span>");
+    var add =$("<span id='add_tool' style='float:right;cursor:pointer;margin:3px;display:none;color:black;'>Add |</span>");
+    var individual_pdf = $("<span id='individual_pdf' style='float:right;cursor:pointer;margin:4px;display:none; color:black;'>Download Individual PDF |</span>");
     $(tools).append(select,add,individual_pdf);
     select.click(function(){
       if(select_groupe_mode){
@@ -915,7 +915,7 @@ function showResult(result,query,bucket){ //show the result of the search query
 
   function showTheseUSers(result,body,actor_ids,page_number){
     for (elt in result){
-      var box = $("<div class='each-profile-box b' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
+      var box = $("<div class='each-profile-box' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
       if(groupe_selected_bucket.indexOf(result[elt].id)!==-1){
         box.css({"background-color":"rgba(100,200,100,0.4)"});
       }
