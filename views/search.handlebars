@@ -893,7 +893,7 @@ function showResult(result,query,bucket){ //show the result of the search query
       console.log("done adding");
     });
   });
-  
+
   function getAge(dateString) {
     if (!dateString) {
       return null;
@@ -907,12 +907,12 @@ function showResult(result,query,bucket){ //show the result of the search query
     }
     return age;
   }
-  
+    
   individual_pdf.click(function() {
     // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
     window.open("results.pdf?ids="+groupe_selected_bucket.join(","), "_blank");
   });
-  
+
   function showTheseUSers(result,body,actor_ids,page_number){
     for (elt in result){
       var box = $("<div class='each-profile-box' style='position:relative; width:"+($(document).width()<510?"100%":"250px")+"; height:450px; padding:5px; margin: 3px; float:left;'></div>");
@@ -1351,11 +1351,29 @@ close.click(function(){
             info.append(table);
             for(key in data.success.info[0]){
               table.append("<tr style='font-size:0.8em;'><td style='color:black; font-weight:bold;'>"+upperCaseFirstLetter(key)+"</td><td>"+(key==="height"? getHeightInFeet((data.success.info[0][key]===null?"":data.success.info[0][key])):(data.success.info[0][key]===null?"":data.success.info[0][key]))+"</td></tr>");
+      	      if(key==="birthday"){
+		            table.append("<tr style='font-size:0.8em;'><td style='color:black; font-weight:bold;'>"+'Age'+"</td><td>"+getAge2(data.success.info[0].birthday) || ""+"</td></tr>");
+	            }
             }
           }
       },
  });
 }
+function getAge2(dateString) {
+//Scope Reference Error, so duplicated the function from the pdf generator
+  if (!dateString) {
+    return null;
+  }
+  var today = new Date();
+  var birthDate = new Date(dateString);
+  var age = today.getFullYear() - birthDate.getFullYear();
+  var m = today.getMonth() - birthDate.getMonth();
+  if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+      age--;
+  }
+  return age;
+}
+
 function upperCaseIt(word){
   return word[0].toUpperCase()+word.substring(1,word.length);
 }
