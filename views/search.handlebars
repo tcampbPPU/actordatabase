@@ -1351,9 +1351,9 @@ close.click(function(){
             info.append(table);
             for(key in data.success.info[0]){
               table.append("<tr style='font-size:0.8em;'><td style='color:black; font-weight:bold;'>"+upperCaseFirstLetter(key)+"</td><td>"+(key==="height"? getHeightInFeet((data.success.info[0][key]===null?"":data.success.info[0][key])):(data.success.info[0][key]===null?"":data.success.info[0][key]))+"</td></tr>");
-	      if(key==="birthday"){
-          table.append("<tr style='font-size:0.8em;'><td style='color:black; font-weight:bold;'>"+'Age'+"</td><td>"+getAge2(data.success.info[0].birthday) || ""+"</td></tr>");
-	      }
+      	      if(key==="birthday"){
+		            table.append("<tr style='font-size:0.8em;'><td style='color:black; font-weight:bold;'>"+'Age'+"</td><td>"+getAge2(data.success.info[0].birthday) || ""+"</td></tr>");
+	            }
             }
           }
       },
