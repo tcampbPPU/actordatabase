@@ -1198,7 +1198,7 @@ function createPDF(req, res) {
       }
       else {
         var info = result;
-        var query2 = "SELECT users.id, images.image FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in (" + ids + ")";
+        var query2 = "SELECT users.id, images.id as image_id FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in (" + ids + ")";
         con.query(query2, function(err, result2,fields) {
           if (err) {
             console.log(err);
@@ -1318,15 +1318,24 @@ function createPDF(req, res) {
                       nextImage(j+1, cnt, images);
                     }
                     else {
-                      Jimp.read(Buffer.from(data.success.images[j].image.substring(data.success.images[j].image.indexOf(",") + 1), "base64"), function(err, image) {
+                      var query3 = "SELECT image FROM images WHERE id=" + data.success.images[j].image_id + ";";
+                      con.query(query3, function(err,  result3, fields) {
                         if (err) {
                           console.log(err);
                         }
                         else {
-                          images.push({
-                            image: image
+                          var base64image = result3[0].image;
+                          Jimp.read(Buffer.from(base64image.substring(base64image.indexOf(",") + 1), "base64"), function(err, image) {
+                            if (err) {
+                              console.log(err);
+                            }
+                            else {
+                              images.push({
+                                image: image
+                              });
+                              nextImage(j+1, cnt+1, images);
+                            }
                           });
-                          nextImage(j+1, cnt+1, images);
                         }
                       });
                     }
