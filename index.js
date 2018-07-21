@@ -74,20 +74,28 @@ function connect(cb){
     }
     else {
       try {
-        cb(con);
+        cb(con, closeAfterDelay);
       }
       catch(e) {
         console.log("ERROR: connect: cb(con): " + e);
       }
-      // close connection after 60 seconds
-      setTimeout(function() {
-        try {
-          con.end();
+      var timeout = null;
+      function closeAfterDelay() {
+        if (timeout) {
+          clearTimeout(timeout);
         }
-        catch (e) {
-          console.log("ERROR: connect: con.end(): " + e);
-        }
-      }, 300*1000);
+        // close connection after 60 seconds
+        timeout = setTimeout(function() {
+          timeout = null;
+          try {
+            con.end();
+          }
+          catch (e) {
+            console.log("ERROR: connect: con.end(): " + e);
+          }
+        }, 60*1000);
+      }
+      closeAfterDelay();
     }
   });
 }
@@ -1190,7 +1198,7 @@ function makeid() {
 function createPDF(req, res) {
   var ids = req.query.ids.split(",");
   var query = "SELECT distinct u.id, u.first_name, u.last_name, a.height, a.weight, a.neck_size, a.sleeve_size, a.waist_size, a.inseam_size, a.shoe_size FROM users as u LEFT JOIN actors a ON u.id=a.users_id WHERE u.id in (" + ids.join(",") + ")";
-  connect(function(con){
+  connect(function(con, delayClose) {
     con.query(query, function(err,result,fields) {
       if (err) {
         console.log(err);
@@ -1221,6 +1229,8 @@ function createPDF(req, res) {
             var maxheight = 612;
 
             function nextPage(i) {
+              delayClose();
+              
               if (i >= data.success.info.length) {
                 pdf.end();
               }
