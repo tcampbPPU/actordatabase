@@ -87,7 +87,7 @@ function connect(cb){
         catch (e) {
           console.log("ERROR: connect: con.end(): " + e);
         }
-      }, 60*1000);
+      }, 300*1000);
     }
   });
 }
