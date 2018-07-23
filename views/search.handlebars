@@ -729,7 +729,7 @@ function showResult(result,query,bucket){ //show the result of the search query
     $("#btn_div").append(center);
     //the tool if user want to select multiple actors
     var tools = $("<div id='tools' style='width:90%; height:30px; margin-bottom:7px; margin:0 auto; position:relative;'></div>");
-    var select = $("<span style='float:right; cursor:pointer; margin:3px;color:black;'>Select</span>");
+    var select = $("<span style='float:right; position:fixed; cursor:pointer; margin:3px;color:black;'>Select</span>");
     var add =$("<span id='add_tool' style='float:right;cursor:pointer;margin:3px;display:none;color:black;'>Add |</span>");
     var individual_pdf = $("<span id='individual_pdf' style='float:right;cursor:pointer;margin:4px;display:none; color:black;'>Download Individual PDF |</span>");
     $(tools).append(select,add,individual_pdf);
