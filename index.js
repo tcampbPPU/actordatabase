@@ -706,7 +706,7 @@ app.post('/add-multiple-users', function(req, res){
     var salt = genRandomString(16);
     var passwordData = sha512(req.body.users.password, salt);
     var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
-    var values = [req.body.users.first_name, req.body.users.last_name, req.body.users.email, passwordData.passwordHash, passwordData.salt, (req.body.is_admin.toLowerCase()==="yes"?1:0), req.body.users.sex];
+    var values = [req.body.users.first_name, req.body.users.last_name, req.body.users.email, passwordData.passwordHash, passwordData.salt, (req.body.is_admin&&req.body.is_admin.toLowerCase()==="yes"?1:0), req.body.users.sex];
     con.query(sql, values, function(err, results) {
       //console.log(results.insertId);
       if (err){
