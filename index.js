@@ -74,20 +74,28 @@ function connect(cb){
     }
     else {
       try {
-        cb(con);
+        cb(con, closeAfterDelay);
       }
       catch(e) {
         console.log("ERROR: connect: cb(con): " + e);
       }
-      // close connection after 60 seconds
-      setTimeout(function() {
-        try {
-          con.end();
+      var timeout = null;
+      function closeAfterDelay() {
+        if (timeout) {
+          clearTimeout(timeout);
         }
-        catch (e) {
-          console.log("ERROR: connect: con.end(): " + e);
-        }
-      }, 60*1000);
+        // close connection after 60 seconds
+        timeout = setTimeout(function() {
+          timeout = null;
+          try {
+            con.end();
+          }
+          catch (e) {
+            console.log("ERROR: connect: con.end(): " + e);
+          }
+        }, 60*1000);
+      }
+      closeAfterDelay();
     }
   });
 }
@@ -698,7 +706,7 @@ app.post('/add-multiple-users', function(req, res){
     var salt = genRandomString(16);
     var passwordData = sha512(req.body.users.password, salt);
     var sql = "INSERT INTO users (first_name, last_name, email, password, salt, is_admin, sex) VALUES (?, ?, ?, ?, ?, ?, ?);";
-    var values = [req.body.users.first_name, req.body.users.last_name, req.body.users.email, passwordData.passwordHash, passwordData.salt, (req.body.is_admin.toLowerCase()==="yes"?1:0), req.body.users.sex];
+    var values = [req.body.users.first_name, req.body.users.last_name, req.body.users.email, passwordData.passwordHash, passwordData.salt, (req.body.is_admin&&req.body.is_admin.toLowerCase()==="yes"?1:0), req.body.users.sex];
     con.query(sql, values, function(err, results) {
       //console.log(results.insertId);
       if (err){
@@ -1190,7 +1198,7 @@ function makeid() {
 function createPDF(req, res) {
   var ids = req.query.ids.split(",");
   var query = "SELECT distinct u.id, u.first_name, u.last_name, a.height, a.weight, a.neck_size, a.sleeve_size, a.waist_size, a.inseam_size, a.shoe_size FROM users as u LEFT JOIN actors a ON u.id=a.users_id WHERE u.id in (" + ids.join(",") + ")";
-  connect(function(con){
+  connect(function(con, delayClose) {
     con.query(query, function(err,result,fields) {
       if (err) {
         console.log(err);
@@ -1198,16 +1206,16 @@ function createPDF(req, res) {
       }
       else {
         var info = result;
-        var query2 = "SELECT users.id, images.thumbnail FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in (" + ids + ")";
+        var query2 = "SELECT users.id, images.id as image_id FROM images left join users on users.id = images.actors_users_id WHERE actors_users_id in (" + ids + ")";
         con.query(query2, function(err, result2,fields) {
           if (err) {
             console.log(err);
             //res.send({success:false});
           }
           else {
-            //res.send({success:{info:info,thumbnails:result2}});
+            //res.send({success:{info:info,images:result2}});
 
-            var data = {success:{info:info,thumbnails:result2}};
+            var data = {success:{info:info,images:result2}};
 
             var PDFDocument = require("pdfkit");
             var pdf = new PDFDocument({
@@ -1221,6 +1229,8 @@ function createPDF(req, res) {
             var maxheight = 612;
 
             function nextPage(i) {
+              delayClose();
+              
               if (i >= data.success.info.length) {
                 pdf.end();
               }
@@ -1230,7 +1240,8 @@ function createPDF(req, res) {
                 }
 
                 function nextImage(j, cnt, images) {
-                  if (j >= data.success.thumbnails.length || cnt >= 2) {
+                  if (j >= data.success.images.length || cnt >= 2) {
+                    // we loaded zero, one, or two images
                     if (images.length >= 1) {
                       var x1 = images[0].image.bitmap.width;
                       var y1 = images[0].image.bitmap.height;
@@ -1253,48 +1264,88 @@ function createPDF(req, res) {
                       x2 *= scale;
                       y2 *= scale;
                     }
-
+                    
                     if (images.length >= 1) {
-                      pdf.image(images[0].thumbnail, 170, maxheight/2 - y1/2, {width: x1, height: y1}); //{fit: [250,250]});
+                      images[0].x = 170;
+                      images[0].y = maxheight/2 - y1/2;
+                      images[0].width = x1;
+                      images[0].height = y1;
                     }
                     if (images.length >= 2) {
-                      pdf.image(images[1].thumbnail, 180+x1, maxheight/2 - y1/2, {width: x2, height: y2}); //{fit: [250,250]});
+                      images[1].x = 180+x1;
+                      images[1].y = maxheight/2 - y1/2;
+                      images[1].width = x2;
+                      images[1].height = y2;
+                    }
+                    
+                    function process() {
+                      if (images.length >= 1) {
+                        pdf.image(images[0].image, images[0].x, images[0].y, {width: images[0].width, height: images[0].height});
+                      }
+                      if (images.length >= 2) {
+                        pdf.image(images[1].image, images[1].x, images[1].y, {width: images[1].width, height: images[1].height});
+                      }
+                      
+                      pdf.fontSize(25);
+                      var text = data.success.info[i].first_name + "\n" + data.success.info[i].last_name + "\n";
+                      pdf.text(text, 10, !images.length ? 10 : maxheight/2 - y1/2, {width:150});
+                      
+                      pdf.fontSize(20);
+                      text = "\n" +
+                        "Height: " + (getHeightInFeet(data.success.info[i].height) || "") + "\n" +
+                        "Weight: " + (data.success.info[i].weight || "") + "\n" +
+                        "Collar: " + (data.success.info[i].neck_size || "") + "\n" +
+                        "Sleeve: " + (data.success.info[i].sleeve_size || "") + "\n" +
+                        "Waist: " + (data.success.info[i].waist_size || "") + "\n" +
+                        "Inseam: " + (data.success.info[i].inseam_size || "") + "\n" +
+                        "Shoes: " + (data.success.info[i].shoe_size || "") + "\n";
+                      pdf.text(text, {width:150});
+                      setTimeout(function() {
+                        nextPage(i+1);
+                      }, 0);
                     }
 
-                    pdf.fontSize(25);
-                    var text = data.success.info[i].first_name + "\n" + data.success.info[i].last_name + "\n";
-                    pdf.text(text, 10, !images.length ? 10 : maxheight/2 - y1/2, {width:150});
-
-                    pdf.fontSize(20);
-                    text = "\n" +
-                      "Height: " + (getHeightInFeet(data.success.info[i].height) || "") + "\n" +
-                      "Weight: " + (data.success.info[i].weight || "") + "\n" +
-                      "Collar: " + (data.success.info[i].neck_size || "") + "\n" +
-                      "Sleeve: " + (data.success.info[i].sleeve_size || "") + "\n" +
-                      "Waist: " + (data.success.info[i].waist_size || "") + "\n" +
-                      "Inseam: " + (data.success.info[i].inseam_size || "") + "\n" +
-                      "Shoes: " + (data.success.info[i].shoe_size || "") + "\n";
-                    pdf.text(text, {width:150});
-                    setTimeout(function() {
-                      nextPage(i+1);
-                    }, 0);
+                    if (!images.length) {
+                      process();
+                    }
+                    else {
+                      var nresized = 0;
+                      for (var k = 0; k < images.length; k++) {
+                        (function(k) {
+                          images[k].image.resize(2*images[k].width, 2*images[k].height).getBuffer(Jimp.MIME_JPEG, function(err, newimage) {
+                            images[k].image = newimage;
+                            nresized++;
+                            if (nresized === images.length) {
+                              process();
+                            }
+                          });
+                        })(k);
+                      }
+                    }
                   }
                   else {
-                    if (data.success.info[i].id !== data.success.thumbnails[j].id) {
+                    if (data.success.info[i].id !== data.success.images[j].id) {
                       nextImage(j+1, cnt, images);
                     }
                     else {
-                      var imgtype = data.success.thumbnails[j].thumbnail.substring(0, data.success.thumbnails[j].thumbnail.indexOf(","));
-                      Jimp.read(Buffer.from(data.success.thumbnails[j].thumbnail.substring(data.success.thumbnails[j].thumbnail.indexOf(",") + 1), "base64"), function(err, image) {
+                      var query3 = "SELECT image FROM images WHERE id=" + data.success.images[j].image_id + ";";
+                      con.query(query3, function(err,  result3, fields) {
                         if (err) {
                           console.log(err);
                         }
                         else {
-                          images.push({
-                            image: image,
-                            thumbnail: data.success.thumbnails[j].thumbnail
+                          var base64image = result3[0].image;
+                          Jimp.read(Buffer.from(base64image.substring(base64image.indexOf(",") + 1), "base64"), function(err, image) {
+                            if (err) {
+                              console.log(err);
+                            }
+                            else {
+                              images.push({
+                                image: image
+                              });
+                              nextImage(j+1, cnt+1, images);
+                            }
                           });
-                          nextImage(j+1, cnt+1, images);
                         }
                       });
                     }
