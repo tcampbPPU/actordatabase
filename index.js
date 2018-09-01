@@ -1230,7 +1230,7 @@ function createPDF(req, res) {
 
             function nextPage(i) {
               delayClose();
-              
+
               if (i >= data.success.info.length) {
                 pdf.end();
               }
@@ -1264,7 +1264,7 @@ function createPDF(req, res) {
                       x2 *= scale;
                       y2 *= scale;
                     }
-                    
+
                     if (images.length >= 1) {
                       images[0].x = 170;
                       images[0].y = maxheight/2 - y1/2;
@@ -1277,7 +1277,7 @@ function createPDF(req, res) {
                       images[1].width = x2;
                       images[1].height = y2;
                     }
-                    
+
                     function process() {
                       if (images.length >= 1) {
                         pdf.image(images[0].image, images[0].x, images[0].y, {width: images[0].width, height: images[0].height});
@@ -1285,11 +1285,11 @@ function createPDF(req, res) {
                       if (images.length >= 2) {
                         pdf.image(images[1].image, images[1].x, images[1].y, {width: images[1].width, height: images[1].height});
                       }
-                      
+
                       pdf.fontSize(25);
                       var text = data.success.info[i].first_name + "\n" + data.success.info[i].last_name + "\n";
                       pdf.text(text, 10, !images.length ? 10 : maxheight/2 - y1/2, {width:150});
-                      
+
                       pdf.fontSize(20);
                       text = "\n" +
                         "Height: " + (getHeightInFeet(data.success.info[i].height) || "") + "\n" +
@@ -1411,8 +1411,9 @@ app.post("/get-user-info-search",function(req,res){
 });
 
 app.post("/get-search-bucket", function(req,res) {
-  var ids = req.body.actors_ids;
-  console.log(JSON.stringify(ids));
+  var ids_body =req.body.actors_ids;
+  var ids = Object.keys(ids_body);
+  console.log("ids",ids);
   var query = "SELECT users.*, actors.*,DATEDIFF(CURDATE(),actors.birthday) as age, (SELECT thumbnail FROM images WHERE users.id = actors_users_id LIMIT 1 ) as first_thumbnail, GROUP_CONCAT( cars.year,' ',cars.color,' ',cars.make SEPARATOR ',') as cars FROM users LEFT JOIN actors ON  users.id = actors.users_id LEFT JOIN cars ON  users.id = cars.actors_users_id ";
   if (ids.length > 0) {
     query += " WHERE ";
@@ -1421,6 +1422,7 @@ app.post("/get-search-bucket", function(req,res) {
     }
   }
   query += " GROUP BY users.id";
+  console.log("QUERY", query);
   connect(function(con){
     con.query(query, function (err, result, fields){
       if (err) {
@@ -1707,6 +1709,7 @@ app.post("/save_search",function(req,res){
     else if(req.body.bucket_id){ //svaing the bucket
       console.log("this is a bucket so i will save it on its table");
       var query = "UPDATE searches SET bucket=?, last_update_date=? WHERE id = ?;";
+      console.log("req.body.actor_ids",Object.keys(req.body.actor_ids).length);
       connect(function(con){
         con.query(query,[JSON.stringify(req.body.actor_ids),new Date(),req.body.bucket_id],function (err, result, fields){
           if (err) {
@@ -2306,3 +2309,4 @@ function send(phone, message, cb) {
     }
   });
 }
+
