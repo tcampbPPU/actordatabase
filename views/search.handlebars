@@ -1643,11 +1643,11 @@ function addToBucket(data0,callback){
                                 this_bucket = $.merge( this_bucket, data0.target_id );
                                 console.log("merged ",this_bucket);
                                }else {
-                                 console.log("not merged ",this_bucket);
-                                 if(this_bucket.indexOf(data0.target_id.toString())!==-1){
+                                 console.log("not merged ",this_bucket,data0.target_id);
+                                 if(this_bucket[data0.target_id.toString()]){
                                    console.log("This users already exist in the selected bucket");
                                  }else {
-                                    this_bucket.push(data0.target_id);
+                                    this_bucket[data0.target_id]=data0.target_id;
                                  }
                                }
                                $.ajax({
