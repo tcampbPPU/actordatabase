@@ -676,6 +676,7 @@ $('#searchForm').on('submit', function(evt){
  });
 });
 function getBucket(data,callback){
+  console.log(data);
   $.ajax({
     xhr: function() {
           var xhr = new window.XMLHttpRequest();
@@ -907,7 +908,7 @@ function showResult(result,query,bucket){ //show the result of the search query
     }
     return age;
   }
-    
+
   individual_pdf.click(function() {
     // allows Admin to download PDF of selected actor or Actors, instead of printing PDF of whole results page
     window.open("results.pdf?ids="+groupe_selected_bucket.join(","), "_blank");
@@ -1210,6 +1211,7 @@ function showResult(result,query,bucket){ //show the result of the search query
         });
       }
           function saveIt(title,overwrite,callback){
+            console.log("bucket@@@",bucket);
              var data = {actor_ids:actor_ids, message:$("#text_area").val(),title:title,query:query,bucket_id:bucket,overwrite_id:overwrite};
              console.log("data to be saved",data);
              $.ajax({
@@ -1641,11 +1643,11 @@ function addToBucket(data0,callback){
                                 this_bucket = $.merge( this_bucket, data0.target_id );
                                 console.log("merged ",this_bucket);
                                }else {
-                                 console.log("not merged ",this_bucket);
-                                 if(this_bucket.indexOf(data0.target_id.toString())!==-1){
+                                 console.log("not merged ",this_bucket,data0.target_id);
+                                 if(this_bucket[data0.target_id.toString()]){
                                    console.log("This users already exist in the selected bucket");
                                  }else {
-                                    this_bucket.push(data0.target_id);
+                                    this_bucket[data0.target_id]=data0.target_id;
                                  }
                                }
                                $.ajax({
@@ -1683,3 +1685,4 @@ function addToBucket(data0,callback){
   {{else}}
   <center><h1>You are not allowed on this page, Please login as an admin</h1></center>
 {{/ if}}
+
