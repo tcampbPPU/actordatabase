@@ -205,19 +205,22 @@ h1 {
           success: function(data){
           if (data.success) {
              var result = data.success;
-             $("#project_name").html(result[0].app_name);
-             $("#project_name2").html(result[0].app_name);
-             $("#project_name3").html(result[0].app_name);
-             $("#project_intro").html(result[0].app_intro);
-             $("#project_about").html(result[0].app_about);
-             $("#app_name").val(result[0].app_name);
-             $("#app_intro").val(result[0].app_intro);
-             $("#app_about").val(result[0].app_about);
-             $("body").css("background-image",'url("data:image/png;base64,' + result[0].photo + '" )');
-            	} else {
-                	console.log("error");
-            	}
-            },
+             if(result[0]){
+               $("#project_name").html(result[0].app_name);
+               $("#project_name2").html(result[0].app_name);
+               $("#project_name3").html(result[0].app_name);
+               $("#project_intro").html(result[0].app_intro);
+               $("#project_about").html(result[0].app_about);
+               $("#app_name").val(result[0].app_name);
+               $("#app_intro").val(result[0].app_intro);
+               $("#app_about").val(result[0].app_about);
+               $("body").css("background-image",'url("data:image/png;base64,' + result[0].photo + '" )');
+             }
+           }
+            else {
+                console.log("error");
+            }
+           },
             error: function(){
                 console.log("There was a problem.");
             }
